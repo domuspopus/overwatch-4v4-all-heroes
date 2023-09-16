@@ -90,10 +90,10 @@ settings
 
 			Wrecking Ball
 			{
-				Adaptive Shield Cooldown Time: 50%
-				Grappling Claw Cooldown Time: 50%
+				Adaptive Shield Cooldown Time: 40%
+				Grappling Claw Cooldown Time: 40%
 				Health: 65%
-				Piledriver Cooldown Time: 50%
+				Piledriver Cooldown Time: 40%
 			}
 
 			Zarya
