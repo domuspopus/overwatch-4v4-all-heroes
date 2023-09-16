@@ -2,7 +2,8 @@ settings
 {
 	main
 	{
-		Mode Name: "4v4 all heroes (John edit)"
+		Description: "All new OW2 heroes. All changes and info at: https://github.com/domuspopus/overwatch-4v4-all-heroes"
+		Mode Name: "4v4 All Heroes (John edit v1.0)"
 	}
 
 	lobby
