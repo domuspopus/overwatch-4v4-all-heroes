@@ -9,3 +9,4 @@ Differences between this and what is currently used ([original script](https://g
 - Hammond can grapple onto thin air.
 - Several tanks have reduced HP.
 - Moira and Roadhog start without an ultimate ready.
+- Heroes wont fly too far away from map.
