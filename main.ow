@@ -89,7 +89,10 @@ settings
 
 			Wrecking Ball
 			{
+				Adaptive Shield Cooldown Time: 50%
+				Grappling Claw Cooldown Time: 50%
 				Health: 65%
+				Piledriver Cooldown Time: 50%
 			}
 
 			Zarya
@@ -449,29 +452,54 @@ rule("Hero: Ana (self ult)")
 	}
 }
 
-rule("Hero: Hammond (grapple jump yank)")
+rule("Hero: Hammond (icicle grapple)")
 {
 	event
 	{
 		Ongoing - Each Player;
 		All;
-		All;
+		Wrecking Ball;
 	}
 
 	conditions
 	{
+		"NOTE: if eventually this proves to be too unreliable, consider creating icicle on \"crouch\" instead of on the fly"
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
-		Hero Of(Event Player) == Hero(Wrecking Ball);
-		Y Component Of(Position Of(Event Player)) > 0;
+		Y Component Of(Position Of(Event Player)) > -0.500;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
 	}
 
 	actions
 	{
-		Apply Impulse(Event Player, Facing Direction Of(Event Player), 20, To World, Incorporate Contrary Motion);
-		Set Ability Cooldown(Event Player, Button(Secondary Fire), 2);
-		Set Move Speed(Event Player, 150);
-		Wait(1.500, Ignore Condition);
-		Set Move Speed(Event Player, 100);
+		"TODO: dont create icicle if ray hits too close on the ground"
+		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player)
+			+ Facing Direction Of(Event Player) * 14, All Players(All Teams), Event Player, True), Vector(0, 0, 0));
+		Start Forcing Player Position(Players In Slot(11, Team Of(Event Player)), Position Of(Players In Slot(11, Team Of(Event Player))),
+			True);
+		Set Invisible(Players In Slot(11, Team Of(Event Player)), All);
+		Wait(0.065, Ignore Condition);
+		Press Button(Players In Slot(11, Team Of(Event Player)), Button(Ability 1));
+	}
+}
+
+rule("Hero: Hammond (icicle grapple - cleanup)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Wrecking Ball;
+	}
+
+	conditions
+	{
+		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds && Is Button Held(Event Player, Button(
+			Secondary Fire))) != True;
+	}
+
+	actions
+	{
+		Destroy Dummy Bot(Team Of(Event Player), 11);
 	}
 }
