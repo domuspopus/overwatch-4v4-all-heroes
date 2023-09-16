@@ -1,0 +1,347 @@
+settings
+{
+	main
+	{
+		Description: "Bugfixed 4v4 nano with hp balancer"
+		Mode Name: "4v4 all heroes."
+	}
+
+	lobby
+	{
+		Allow Players Who Are In Queue: Yes
+		Map Rotation: Paused
+		Match Voice Chat: Enabled
+		Max Team 1 Players: 4
+		Max Team 2 Players: 4
+		Return To Lobby: Never
+		Swap Teams After Match: No
+		Team Balancing: After A Game
+	}
+
+	modes
+	{
+		Elimination
+		{
+			Capture Objective Tiebreaker: Off
+			Hero Selection: Limited
+			Score To Win: 9
+
+			enabled maps
+			{
+				Workshop Island Night 0
+			}
+		}
+
+		General
+		{
+			Allow Hero Switching: Off
+			Game Mode Start: Immediately
+			Respawn As Random Hero: On
+			Respawn Time Scalar: 0%
+		}
+	}
+
+	heroes
+	{
+		General
+		{
+			Ability Cooldown Time: 25%
+			Spawn With Ultimate Ready: On
+			Ultimate Generation: 280%
+			Ultimate Generation - Combat: 137%
+
+			Ana
+			{
+				Spawn With Ultimate Ready: On
+				Ultimate Generation - Combat Nano Boost: 20%
+				Ultimate Generation - Passive Nano Boost: 20%
+				Ultimate Generation Nano Boost: 20%
+			}
+
+			Cassidy
+			{
+				Ultimate Generation - Combat Deadeye: 200%
+				Ultimate Generation - Passive Deadeye: 10%
+			}
+
+			D.Va
+			{
+				Self Destruct Knockback Scalar: 200%
+				Ultimate Generation - Combat Self-Destruct: 0%
+				Ultimate Generation - Passive Self-Destruct: 0%
+				Ultimate Generation Self-Destruct: 10%
+			}
+
+			Genji
+			{
+				Spawn With Ultimate Ready: On
+				Ultimate Generation - Combat Dragonblade: 20%
+				Ultimate Generation - Passive Dragonblade: 20%
+				Ultimate Generation Dragonblade: 20%
+			}
+
+			Reinhardt
+			{
+				Spawn With Ultimate Ready: On
+				Ultimate Generation - Passive Earthshatter: 300%
+			}
+
+			disabled heroes
+			{
+				Bastion
+				Illari
+				Junker Queen
+				Kiriko
+				Lifeweaver
+				Ramattra
+				Sojourn
+			}
+		}
+	}
+}
+
+variables
+{
+	global:
+		0: StartingTrigger
+		1: MaxHPAdd
+		2: MaxHPOfTeam1
+		3: MaxHPOfTeam2
+		4: RoundTrigger
+		5: HPTriggerTeam1
+		6: HPTriggerTeam2
+		7: DamageAdd
+		8: DamageAddTeam1
+		9: DamageAddTeam2
+		10: MatchStartTrigger
+}
+
+subroutines
+{
+	0: StopShooting
+}
+
+rule("SET: Fourth DPS hero")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.DamageAddTeam2 = Hero(Cassidy);
+	}
+}
+
+rule("SET: Amount of max HP and damage advantage")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.MaxHPAdd = 20;
+		Global.DamageAdd = 50;
+	}
+}
+
+rule("Disable scores and announcer, Set global variables")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		"Scoreboard"
+		Is Game In Progress == True;
+		Global.StartingTrigger != True;
+	}
+
+	actions
+	{
+		Global.StartingTrigger = True;
+		Disable Built-In Game Mode Announcer;
+		Global.RoundTrigger = True;
+	}
+}
+
+rule("Skip hero select")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Is Assembling Heroes == True;
+	}
+
+	actions
+	{
+		"res"
+		Set Match Time(0);
+	}
+}
+
+rule("Set triggers on round end, reset score")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		(Team Score(Team 1) > 0 || Team Score(Team 2) > 0) == True;
+	}
+
+	actions
+	{
+		Set Team Score(All Teams, 0);
+		Global.RoundTrigger = True;
+	}
+}
+
+rule("Auto Balance - Set hp and damage difference general")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		((Global.RoundTrigger && !Is Between Rounds) || Global.MatchStartTrigger) == True;
+	}
+
+	actions
+	{
+		Global.MatchStartTrigger = False;
+		Global.RoundTrigger = False;
+		Global.HPTriggerTeam1 = True;
+		Global.HPTriggerTeam2 = True;
+		"0 or player difference"
+		Global.MaxHPOfTeam2 = Global.MaxHPAdd * Max(Number Of Players(Team 1) - Number Of Players(Team 2), 0);
+		"0 or player difference"
+		Global.MaxHPOfTeam1 = Global.MaxHPAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
+		"0 or player difference"
+		Global.DamageAddTeam2 = Global.DamageAdd * Max(Number Of Players(Team 1) - Number Of Players(Team 2), 0);
+		"0 or player difference"
+		Global.DamageAddTeam1 = Global.DamageAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
+		Call Subroutine(StopShooting);
+	}
+}
+
+rule("Auto Balance - Set hp and damage of team 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Global.HPTriggerTeam1 == True;
+		Is Between Rounds == False;
+	}
+
+	actions
+	{
+		Global.HPTriggerTeam1 = False;
+		Set Max Health(Event Player, 100 + Global.MaxHPOfTeam1);
+		Set Damage Dealt(Event Player, 100 + Global.DamageAddTeam1);
+		If(Global.MaxHPOfTeam1 > 0);
+			Small Message(All Players(All Teams), Custom String("Team 1 Powered up!"));
+	}
+}
+
+rule("Auto Balance - Set hp and damage of team 2")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Global.HPTriggerTeam2 == True;
+		Is Between Rounds == False;
+	}
+
+	actions
+	{
+		Global.HPTriggerTeam2 = False;
+		Set Max Health(Event Player, 100 + Global.MaxHPOfTeam2);
+		Set Damage Dealt(Event Player, 100 + Global.DamageAddTeam2);
+		If(Global.MaxHPOfTeam2 > 0);
+			Small Message(All Players(All Teams), Custom String("team 2 Powered up!"));
+	}
+}
+
+rule("Disable Shooting on Round Start")
+{
+	event
+	{
+		Subroutine;
+		StopShooting;
+	}
+
+	actions
+	{
+		Disallow Button(All Players(All Teams), Button(Primary Fire));
+		Wait(0.500, Ignore Condition);
+		Allow Button(All Players(All Teams), Button(Primary Fire));
+	}
+}
+
+rule("Set Match Start trigger")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.MatchStartTrigger = True;
+	}
+}
+
+disabled rule("Auto Balance - Set hp and damage difference general OLD")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.RoundTrigger == True;
+		Is Between Rounds == False;
+	}
+
+	actions
+	{
+		Global.RoundTrigger = False;
+		Global.HPTriggerTeam1 = True;
+		Global.HPTriggerTeam2 = True;
+		"0 or player difference"
+		Global.MaxHPOfTeam2 = Global.MaxHPAdd * Max(Number Of Players(Team 1) - Number Of Players(Team 2), 0);
+		"0 or player difference"
+		Global.MaxHPOfTeam1 = Global.MaxHPAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
+		"0 or player difference"
+		Global.DamageAddTeam2 = Global.DamageAdd * Max(Number Of Players(Team 1) - Number Of Players(Team 2), 0);
+		"0 or player difference"
+		Global.DamageAddTeam1 = Global.DamageAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
+	}
+}
