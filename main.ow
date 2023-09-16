@@ -117,7 +117,7 @@ variables
 		25: DBG
 }
 
-rule("NOTES")
+rule("NOTES/TODO'S")
 {
 	event
 	{
@@ -126,7 +126,11 @@ rule("NOTES")
 
 	actions
 	{
-		"TODO: Ultimate generation values need to be simplified and re-thought, replace Ultimate Generation: 280% entry in some way. I cant make sense of it."
+		"TODO: ultimate generation values need to be simplified and re-thought, replace Ultimate Generation: 280% entry in some way. I cant make sense of it."
+		Abort;
+		"TODO: disable all abilities if hero is too far away from the ring"
+		Abort;
+		"TODO: ensure all new synthetic abilities play well with \"hacked\" etc."
 		Abort;
 	}
 }
@@ -222,7 +226,7 @@ rule("DBG: Persistent bot aim and shoot")
 	}
 }
 
-rule("DBG: Melee (for drafts)")
+rule("DBG: Melee actions (for dev drafts)")
 {
 	event
 	{
@@ -244,7 +248,7 @@ rule("DBG: Melee (for drafts)")
 	}
 }
 
-rule("Set global variables")
+rule("Base: Set global variables")
 {
 	event
 	{
@@ -259,7 +263,7 @@ rule("Set global variables")
 	}
 }
 
-rule("Set round start trigger variable for the first time")
+rule("Base: Set round start trigger variable for the first time")
 {
 	event
 	{
@@ -279,7 +283,7 @@ rule("Set round start trigger variable for the first time")
 	}
 }
 
-rule("Skip hero select")
+rule("Base: Skip hero select")
 {
 	event
 	{
@@ -301,7 +305,7 @@ rule("Skip hero select")
 	}
 }
 
-rule("Round end trigger and cleanup")
+rule("Base: Round end trigger and cleanup")
 {
 	event
 	{
@@ -333,6 +337,7 @@ rule("Auto balance: set hp and damage difference general")
 
 	conditions
 	{
+		"TODO FIXME: count number of NON-DUMMY players, not ALL players"
 		Global.RoundTrigger == True;
 		Is Between Rounds == False;
 	}
@@ -417,16 +422,15 @@ rule("Hero: Ana (self ult)")
 	{
 		Ongoing - Each Player;
 		All;
-		All;
+		Ana;
 	}
 
 	conditions
 	{
 		Is Button Held(Event Player, Button(Ultimate)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
-		Hero Of(Event Player) == Hero(Ana);
 		Is Dummy Bot(Event Player) == False;
-		Is Game In Progress == True;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
 	}
 
 	actions
