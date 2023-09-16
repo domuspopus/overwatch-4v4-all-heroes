@@ -2,7 +2,7 @@ settings
 {
 	main
 	{
-		Mode Name: "4v4 ALL (John edit)"
+		Mode Name: "4v4 all heroes (John edit)"
 	}
 
 	lobby
@@ -44,14 +44,7 @@ settings
 			Ability Cooldown Time: 25%
 			Spawn With Ultimate Ready: On
 			Ultimate Generation: 280%
-			Ultimate Generation - Combat: 137%
-
-			Ana
-			{
-				Ultimate Generation - Combat Nano Boost: 20%
-				Ultimate Generation - Passive Nano Boost: 20%
-				Ultimate Generation Nano Boost: 20%
-			}
+			Ultimate Generation - Combat: 130%
 
 			Cassidy
 			{
@@ -67,16 +60,14 @@ settings
 				Ultimate Generation Self-Destruct: 10%
 			}
 
-			Genji
-			{
-				Ultimate Generation - Combat Dragonblade: 20%
-				Ultimate Generation - Passive Dragonblade: 20%
-				Ultimate Generation Dragonblade: 20%
-			}
-
 			Moira
 			{
 				Spawn With Ultimate Ready: Off
+			}
+
+			Orisa
+			{
+				Health: 70%
 			}
 
 			Reinhardt
@@ -84,14 +75,26 @@ settings
 				Ultimate Generation - Passive Earthshatter: 300%
 			}
 
+			Roadhog
+			{
+				Health: 75%
+				Spawn With Ultimate Ready: Off
+			}
+
+			Winston
+			{
+				Damage Dealt: 140%
+				Health: 75%
+			}
+
 			Wrecking Ball
 			{
-				Health: 40%
+				Health: 65%
 			}
 
 			Zarya
 			{
-				Health: 35%
+				Health: 50%
 			}
 		}
 	}
@@ -114,7 +117,21 @@ variables
 		25: DBG
 }
 
-rule("DBG: Toggle")
+rule("NOTES")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		"TODO: Ultimate generation values need to be simplified and re-thought, replace Ultimate Generation: 280% entry in some way. I cant make sense of it."
+		Abort;
+	}
+}
+
+disabled rule("DBG: Toggle")
 {
 	event
 	{
@@ -124,7 +141,8 @@ rule("DBG: Toggle")
 	actions
 	{
 		Global.DBG = True;
-		Small Message(All Players(All Teams), Custom String("copy-paste template below"));
+		"Copy-pastable snippet below this entry"
+		Abort;
 		If(Global.DBG == True);
 			Small Message(All Players(All Teams), Custom String(""));
 		End;
