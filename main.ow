@@ -444,3 +444,30 @@ rule("Hero: Ana (self ult)")
 		Destroy Dummy Bot(Team Of(Event Player), 10);
 	}
 }
+
+rule("Hero: Hammond (grapple jump yank)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
+		Hero Of(Event Player) == Hero(Wrecking Ball);
+		Y Component Of(Position Of(Event Player)) > 0;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Facing Direction Of(Event Player), 20, To World, Incorporate Contrary Motion);
+		Set Ability Cooldown(Event Player, Button(Secondary Fire), 2);
+		Set Move Speed(Event Player, 150);
+		Wait(1.500, Ignore Condition);
+		Set Move Speed(Event Player, 100);
+	}
+}
