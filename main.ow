@@ -2,8 +2,7 @@ settings
 {
 	main
 	{
-		Description: "Bugfixed 4v4 nano with hp balancer"
-		Mode Name: "4v4 all heroes."
+		Mode Name: "4v4 ALL (John edit)"
 	}
 
 	lobby
@@ -22,10 +21,6 @@ settings
 	{
 		Elimination
 		{
-			Capture Objective Tiebreaker: Off
-			Hero Selection: Limited
-			Score To Win: 9
-
 			enabled maps
 			{
 				Workshop Island Night 0
@@ -35,7 +30,9 @@ settings
 		General
 		{
 			Allow Hero Switching: Off
+			Capture Objective Tiebreaker: Off
 			Game Mode Start: Immediately
+			Hero Selection: Limited
 			Respawn As Random Hero: On
 			Respawn Time Scalar: 0%
 		}
@@ -52,7 +49,6 @@ settings
 
 			Ana
 			{
-				Spawn With Ultimate Ready: On
 				Ultimate Generation - Combat Nano Boost: 20%
 				Ultimate Generation - Passive Nano Boost: 20%
 				Ultimate Generation Nano Boost: 20%
@@ -74,7 +70,6 @@ settings
 
 			Genji
 			{
-				Spawn With Ultimate Ready: On
 				Ultimate Generation - Combat Dragonblade: 20%
 				Ultimate Generation - Passive Dragonblade: 20%
 				Ultimate Generation Dragonblade: 20%
@@ -82,20 +77,28 @@ settings
 
 			Reinhardt
 			{
-				Spawn With Ultimate Ready: On
 				Ultimate Generation - Passive Earthshatter: 300%
 			}
 
-			disabled heroes
+			Zarya
 			{
-				Bastion
-				Illari
-				Junker Queen
-				Kiriko
-				Lifeweaver
-				Ramattra
-				Sojourn
+				Health: 35%
 			}
+
+			Wrecking Ball
+			{
+				Health: 40%
+			}
+
+			Moira
+			{
+				Spawn With Ultimate Ready: Off
+			}
+
+			// enabled heroes
+			// {
+			// 	Moira
+			// }
 		}
 	}
 }
@@ -103,17 +106,17 @@ settings
 variables
 {
 	global:
-		0: StartingTrigger
-		1: MaxHPAdd
-		2: MaxHPOfTeam1
-		3: MaxHPOfTeam2
-		4: RoundTrigger
-		5: HPTriggerTeam1
-		6: HPTriggerTeam2
-		7: DamageAdd
-		8: DamageAddTeam1
-		9: DamageAddTeam2
-		10: MatchStartTrigger
+		0: MatchStartTrigger
+		1: DamageAddTeam2
+		2: MaxHPAdd
+		3: DamageAdd
+		4: StartingTrigger
+		5: RoundTrigger
+		6: HPTriggerTeam1
+		7: HPTriggerTeam2
+		8: MaxHPOfTeam2
+		9: MaxHPOfTeam1
+		10: DamageAddTeam1
 }
 
 subroutines
@@ -121,20 +124,7 @@ subroutines
 	0: StopShooting
 }
 
-rule("SET: Fourth DPS hero")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-
-	actions
-	{
-		Global.DamageAddTeam2 = Hero(Cassidy);
-	}
-}
-
-rule("SET: Amount of max HP and damage advantage")
+rule("Set global variables")
 {
 	event
 	{
@@ -145,10 +135,37 @@ rule("SET: Amount of max HP and damage advantage")
 	{
 		Global.MaxHPAdd = 20;
 		Global.DamageAdd = 50;
+		Global.MatchStartTrigger = True;
+		Disable Built-In Game Mode Announcer;
+		disabled Create Dummy Bot(Hero(Roadhog), Team 1, 1, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zenyatta), Team 2, 2, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Widowmaker), Team 2, 3, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Symmetra), Team 2, 4, Vector(0, 0, 0), Vector(0, 0, 0));
 	}
 }
 
-rule("Disable scores and announcer, Set global variables")
+disabled rule("Debug dummy bot behaviour")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == True;
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Start Holding Button(Event Player, Button(Primary Fire));
+	}
+}
+
+rule("Set global trigger variables")
 {
 	event
 	{
@@ -165,7 +182,6 @@ rule("Disable scores and announcer, Set global variables")
 	actions
 	{
 		Global.StartingTrigger = True;
-		Disable Built-In Game Mode Announcer;
 		Global.RoundTrigger = True;
 	}
 }
@@ -184,7 +200,6 @@ rule("Skip hero select")
 
 	actions
 	{
-		"res"
 		Set Match Time(0);
 	}
 }
@@ -208,7 +223,23 @@ rule("Set triggers on round end, reset score")
 	}
 }
 
-rule("Auto Balance - Set hp and damage difference general")
+rule("Disable shooting on round start")
+{
+	event
+	{
+		Subroutine;
+		StopShooting;
+	}
+
+	actions
+	{
+		Disallow Button(All Players(All Teams), Button(Primary Fire));
+		Wait(0.300, Ignore Condition);
+		Allow Button(All Players(All Teams), Button(Primary Fire));
+	}
+}
+
+rule("Auto balance: set hp and damage difference general")
 {
 	event
 	{
@@ -222,6 +253,7 @@ rule("Auto Balance - Set hp and damage difference general")
 
 	actions
 	{
+		disabled Big Message(All Players(All Teams), Custom String("BALANCE START"));
 		Global.MatchStartTrigger = False;
 		Global.RoundTrigger = False;
 		Global.HPTriggerTeam1 = True;
@@ -235,10 +267,11 @@ rule("Auto Balance - Set hp and damage difference general")
 		"0 or player difference"
 		Global.DamageAddTeam1 = Global.DamageAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
 		Call Subroutine(StopShooting);
+		disabled Big Message(All Players(All Teams), Custom String("BALANCE END"));
 	}
 }
 
-rule("Auto Balance - Set hp and damage of team 1")
+rule("Auto balance: set hp and damage of team 1")
 {
 	event
 	{
@@ -255,6 +288,7 @@ rule("Auto Balance - Set hp and damage of team 1")
 
 	actions
 	{
+		disabled Small Message(All Players(All Teams), Custom String("ballance1"));
 		Global.HPTriggerTeam1 = False;
 		Set Max Health(Event Player, 100 + Global.MaxHPOfTeam1);
 		Set Damage Dealt(Event Player, 100 + Global.DamageAddTeam1);
@@ -263,7 +297,7 @@ rule("Auto Balance - Set hp and damage of team 1")
 	}
 }
 
-rule("Auto Balance - Set hp and damage of team 2")
+rule("Auto balance: set hp and damage of team 2")
 {
 	event
 	{
@@ -280,68 +314,11 @@ rule("Auto Balance - Set hp and damage of team 2")
 
 	actions
 	{
+		disabled Small Message(All Players(All Teams), Custom String("ballance2"));
 		Global.HPTriggerTeam2 = False;
 		Set Max Health(Event Player, 100 + Global.MaxHPOfTeam2);
 		Set Damage Dealt(Event Player, 100 + Global.DamageAddTeam2);
 		If(Global.MaxHPOfTeam2 > 0);
-			Small Message(All Players(All Teams), Custom String("team 2 Powered up!"));
-	}
-}
-
-rule("Disable Shooting on Round Start")
-{
-	event
-	{
-		Subroutine;
-		StopShooting;
-	}
-
-	actions
-	{
-		Disallow Button(All Players(All Teams), Button(Primary Fire));
-		Wait(0.500, Ignore Condition);
-		Allow Button(All Players(All Teams), Button(Primary Fire));
-	}
-}
-
-rule("Set Match Start trigger")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-
-	actions
-	{
-		Global.MatchStartTrigger = True;
-	}
-}
-
-disabled rule("Auto Balance - Set hp and damage difference general OLD")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-
-	conditions
-	{
-		Global.RoundTrigger == True;
-		Is Between Rounds == False;
-	}
-
-	actions
-	{
-		Global.RoundTrigger = False;
-		Global.HPTriggerTeam1 = True;
-		Global.HPTriggerTeam2 = True;
-		"0 or player difference"
-		Global.MaxHPOfTeam2 = Global.MaxHPAdd * Max(Number Of Players(Team 1) - Number Of Players(Team 2), 0);
-		"0 or player difference"
-		Global.MaxHPOfTeam1 = Global.MaxHPAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
-		"0 or player difference"
-		Global.DamageAddTeam2 = Global.DamageAdd * Max(Number Of Players(Team 1) - Number Of Players(Team 2), 0);
-		"0 or player difference"
-		Global.DamageAddTeam1 = Global.DamageAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
+			Small Message(All Players(All Teams), Custom String("Team 2 Powered up!"));
 	}
 }
