@@ -132,9 +132,9 @@ rule("NOTES/TODO'S")
 	{
 		"TODO: ultimate generation values need to be simplified and re-thought, replace Ultimate Generation: 280% entry in some way. I cant make sense of it."
 		Abort;
-		"TODO: disable all abilities if hero is too far away from the ring"
+		"TODO: add visual indication when hero is near fake \"hack\" bounds"
 		Abort;
-		"TODO: ensure all new synthetic abilities play well with \"hacked\" etc."
+		"TODO FIXME: make all new synthetic abilities play well with \"hacked\" etc. staggering status effects"
 		Abort;
 	}
 }
@@ -333,7 +333,28 @@ rule("Base: Round end trigger and cleanup")
 	}
 }
 
-rule("Auto balance: set hp and damage difference general")
+rule("Base: Prevent heroes flying away")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Y Component Of(Position Of(Event Player)) > 25 || Absolute Value(X Component Of(Position Of(Event Player)))
+			> 40 || Absolute Value(Z Component Of(Position Of(Event Player))) > 40) == True;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Hacked, 2);
+	}
+}
+
+rule("Auto balance: Set hp and damage difference general")
 {
 	event
 	{
@@ -369,7 +390,7 @@ rule("Auto balance: set hp and damage difference general")
 	}
 }
 
-rule("Auto balance: set hp and damage of team 1")
+rule("Auto balance: Set hp and damage of team 1")
 {
 	event
 	{
@@ -395,7 +416,7 @@ rule("Auto balance: set hp and damage of team 1")
 	}
 }
 
-rule("Auto balance: set hp and damage of team 2")
+rule("Auto balance: Set hp and damage of team 2")
 {
 	event
 	{
