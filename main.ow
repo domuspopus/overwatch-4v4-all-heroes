@@ -215,6 +215,7 @@ rule("DBG: Persistent bot aim and shoot")
 		Slot Of(Event Player) == 0;
 		Is Dummy Bot(Event Player) == True;
 		Is Game In Progress == True;
+		Global.DBG == True;
 	}
 
 	actions
