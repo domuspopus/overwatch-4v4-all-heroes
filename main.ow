@@ -63,6 +63,9 @@ settings
 
 			Moira
 			{
+				Biotic Orb Cooldown Time: 45%
+				Fade Cooldown Time: 35%
+				Health: 85%
 				Spawn With Ultimate Ready: Off
 			}
 
