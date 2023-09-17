@@ -118,6 +118,9 @@ variables
 		8: MaxHPOfTeam2
 		9: MaxHPOfTeam1
 		10: DamageAddTeam1
+		11: BoundryVertical
+		12: BoundryHorizontal
+		13: IteratorIndex1
 		25: DBG
 }
 
@@ -146,6 +149,8 @@ rule("Base: Set global variables")
 	{
 		Global.MaxHPAdd = 20;
 		Global.DamageAdd = 50;
+		Global.BoundryVertical = 25;
+		Global.BoundryHorizontal = 45;
 		Disable Built-In Game Mode Announcer;
 	}
 }
@@ -208,9 +213,9 @@ rule("Base: Round end trigger and cleanup")
 	{
 		Set Team Score(All Teams, 0);
 		Global.RoundTrigger = True;
-		For Global Variable(N, 4, 12, 1);
-			Destroy Dummy Bot(Team 1, Global.N);
-			Destroy Dummy Bot(Team 2, Global.N);
+		For Global Variable(IteratorIndex1, 4, 12, 1);
+			Destroy Dummy Bot(Team 1, Global.IteratorIndex1);
+			Destroy Dummy Bot(Team 2, Global.IteratorIndex1);
 		End;
 	}
 }
@@ -226,13 +231,18 @@ rule("Base: Prevent heroes flying away")
 
 	conditions
 	{
-		(Y Component Of(Position Of(Event Player)) > 25 || Absolute Value(X Component Of(Position Of(Event Player)))
-			> 40 || Absolute Value(Z Component Of(Position Of(Event Player))) > 40) == True;
+		(Y Component Of(Position Of(Event Player)) > Global.BoundryVertical || Absolute Value(X Component Of(Position Of(Event Player)))
+			> Global.BoundryHorizontal || Absolute Value(Z Component Of(Position Of(Event Player))) > Global.BoundryHorizontal) == True;
 	}
 
 	actions
 	{
-		Set Status(Event Player, Null, Hacked, 2);
+		If(Y Component Of(Position Of(Event Player)) > Global.BoundryVertical);
+			Set Status(Event Player, Null, Frozen, 2);
+		Else;
+			"If character lives long enough for the freeze to expire during horizontal escape - they can fly away anyway so we just kill them (with longer freeze) to prevent it."
+			Set Status(Event Player, Null, Frozen, 5);
+		End;
 	}
 }
 
