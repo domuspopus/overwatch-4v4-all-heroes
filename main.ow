@@ -135,120 +135,6 @@ rule("NOTES/TODO'S")
 	}
 }
 
-disabled rule("DBG: Toggle")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-
-	actions
-	{
-		Global.DBG = True;
-		"Copy-pastable snippet below this entry"
-		Abort;
-		If(Global.DBG == True);
-			Small Message(All Players(All Teams), Custom String(""));
-		End;
-	}
-}
-
-rule("DBG: Persistent dummy bots")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Event Player == Host Player;
-		Global.DBG == True;
-	}
-
-	actions
-	{
-		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Ana), Opposite Team Of(Team Of(Event Player)), 1, Vector(0, 0, 0), Vector(0, 0, 0));
-	}
-}
-
-rule("DBG: Persistent bot shooting toggler")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Crouch)) == True;
-		Is Button Held(Event Player, Button(Interact)) == True;
-		Event Player == Host Player;
-		Global.DBG == True;
-	}
-
-	actions
-	{
-		Global.DBGBotShooting = !Global.DBGBotShooting;
-	}
-}
-
-rule("DBG: Persistent bot aim and shoot")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Slot Of(Event Player) == 0;
-		Is Dummy Bot(Event Player) == True;
-		Is Game In Progress == True;
-		Global.DBG == True;
-	}
-
-	actions
-	{
-		Start Facing(Event Player, Direction From Angles(90, 3), 100, To Player, None);
-		While(0 == 0);
-			Wait(2, Ignore Condition);
-			If(Global.DBGBotShooting);
-				Press Button(Event Player, Button(Primary Fire));
-			End;
-		End;
-	}
-}
-
-rule("DBG: Melee actions (for dev drafts)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Event Player == Host Player;
-		Is Button Held(Event Player, Button(Melee)) == True;
-		Global.DBG == True;
-	}
-
-	actions
-	{
-		Small Message(All Players(All Teams), Custom String("Melee DBG"));
-	}
-}
-
 rule("Base: Set global variables")
 {
 	event
@@ -524,5 +410,119 @@ rule("Hero: Hammond (icicle grapple - cleanup)")
 	actions
 	{
 		Destroy Dummy Bot(Team Of(Event Player), 11);
+	}
+}
+
+disabled rule("DBG: Toggle")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.DBG = True;
+		"Copy-pastable snippet below this entry"
+		Abort;
+		If(Global.DBG == True);
+			Small Message(All Players(All Teams), Custom String(""));
+		End;
+	}
+}
+
+rule("DBG: Persistent dummy bots")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player == Host Player;
+		Global.DBG == True;
+	}
+
+	actions
+	{
+		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Ana), Opposite Team Of(Team Of(Event Player)), 1, Vector(0, 0, 0), Vector(0, 0, 0));
+	}
+}
+
+rule("DBG: Persistent bot shooting toggler")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Is Button Held(Event Player, Button(Interact)) == True;
+		Event Player == Host Player;
+		Global.DBG == True;
+	}
+
+	actions
+	{
+		Global.DBGBotShooting = !Global.DBGBotShooting;
+	}
+}
+
+rule("DBG: Persistent bot aim and shoot")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Slot Of(Event Player) == 0;
+		Is Dummy Bot(Event Player) == True;
+		Is Game In Progress == True;
+		Global.DBG == True;
+	}
+
+	actions
+	{
+		Start Facing(Event Player, Direction From Angles(90, 3), 100, To Player, None);
+		While(0 == 0);
+			Wait(2, Ignore Condition);
+			If(Global.DBGBotShooting);
+				Press Button(Event Player, Button(Primary Fire));
+			End;
+		End;
+	}
+}
+
+rule("DBG: Melee actions (for dev drafts)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player == Host Player;
+		Is Button Held(Event Player, Button(Melee)) == True;
+		Global.DBG == True;
+	}
+
+	actions
+	{
+		Small Message(All Players(All Teams), Custom String("Melee DBG"));
 	}
 }
