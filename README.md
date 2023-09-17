@@ -10,3 +10,5 @@ Differences between this and what is currently used ([original script](https://g
 - Several tanks have reduced HP.
 - Moira and Roadhog start without an ultimate ready.
 - Heroes wont fly too far away from map.
+
+![preview](preview.jpg)
