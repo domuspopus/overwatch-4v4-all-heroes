@@ -90,10 +90,10 @@ settings
 
 			Wrecking Ball
 			{
-				Adaptive Shield Cooldown Time: 40%
-				Grappling Claw Cooldown Time: 40%
+				Adaptive Shield Cooldown Time: 35%
+				Grappling Claw Cooldown Time: 35%
 				Health: 65%
-				Piledriver Cooldown Time: 40%
+				Piledriver Cooldown Time: 35%
 			}
 
 			Zarya
@@ -131,10 +131,6 @@ rule("NOTES/TODO'S")
 	actions
 	{
 		"TODO: ultimate generation values need to be simplified and re-thought, replace Ultimate Generation: 280% entry in some way. I cant make sense of it."
-		Abort;
-		"TODO: add visual indication when hero is near fake \"hack\" bounds"
-		Abort;
-		"TODO FIXME: make all new synthetic abilities play well with \"hacked\" etc. staggering status effects"
 		Abort;
 	}
 }
@@ -488,7 +484,7 @@ rule("Hero: Hammond (icicle grapple)")
 
 	conditions
 	{
-		"NOTE: if eventually this proves to be too unreliable, consider creating icicle on \"crouch\" instead of on the fly"
+		"XXX: if eventually this ability proves to be too unreliable, consider creating icicle on \"crouch\" instead of on the fly"
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
 		Y Component Of(Position Of(Event Player)) > -0.500;
@@ -499,9 +495,9 @@ rule("Hero: Hammond (icicle grapple)")
 
 	actions
 	{
-		"TODO: dont create icicle if ray hits too close on the ground"
 		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player)
 			+ Facing Direction Of(Event Player) * 14, All Players(All Teams), Event Player, True), Vector(0, 0, 0));
+		Start Forcing Dummy Bot Name(Players In Slot(11, Team Of(Event Player)), Custom String("Icicle"));
 		Start Forcing Player Position(Players In Slot(11, Team Of(Event Player)), Position Of(Players In Slot(11, Team Of(Event Player))),
 			True);
 		Set Invisible(Players In Slot(11, Team Of(Event Player)), All);
