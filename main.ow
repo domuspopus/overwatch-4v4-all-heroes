@@ -44,7 +44,7 @@ settings
 		{
 			Ability Cooldown Time: 25%
 			Spawn With Ultimate Ready: On
-			Ultimate Generation: 280%
+			Ultimate Generation: 200%
 			Ultimate Generation - Combat: 130%
 
 			Cassidy
@@ -112,7 +112,7 @@ variables
 		2: MaxHPAdd
 		3: DamageAdd
 		4: HasGameBegan
-		5: RoundTrigger
+		5: HPBallancingTrigger
 		6: HPTriggerTeam1
 		7: HPTriggerTeam2
 		8: MaxHPOfTeam2
@@ -133,7 +133,7 @@ rule("NOTES/TODO'S")
 
 	actions
 	{
-		"TODO: ultimate generation values need to be simplified and re-thought, replace Ultimate Generation: 280% entry in some way. I cant make sense of it."
+		"TODO: ultimate generation values need to be simplified and re-thought, replace general \"Ultimate Generation:\" entry in some way. I cant make sense of it."
 		Abort;
 	}
 }
@@ -171,7 +171,7 @@ rule("Base: Set round start trigger variable for the first time")
 	actions
 	{
 		Global.HasGameBegan = True;
-		Global.RoundTrigger = True;
+		Global.HPBallancingTrigger = True;
 	}
 }
 
@@ -212,7 +212,7 @@ rule("Base: Round end trigger and cleanup")
 	actions
 	{
 		Set Team Score(All Teams, 0);
-		Global.RoundTrigger = True;
+		Global.HPBallancingTrigger = True;
 		For Global Variable(IteratorIndex1, 4, 12, 1);
 			Destroy Dummy Bot(Team 1, Global.IteratorIndex1);
 			Destroy Dummy Bot(Team 2, Global.IteratorIndex1);
@@ -281,8 +281,8 @@ rule("Auto balance: Set hp and damage difference general")
 
 	conditions
 	{
-		"TODO FIXME: count number of NON-DUMMY players, not ALL players"
-		Global.RoundTrigger == True;
+		"NOTE: this might occasionally count dummy players created by faux abilities"
+		Global.HPBallancingTrigger == True;
 		Is Between Rounds == False;
 	}
 
@@ -296,7 +296,7 @@ rule("Auto balance: Set hp and damage difference general")
 		Global.DamageAddTeam2 = Global.DamageAdd * Max(Number Of Players(Team 1) - Number Of Players(Team 2), 0);
 		"0 or player difference"
 		Global.DamageAddTeam1 = Global.DamageAdd * Max(Number Of Players(Team 2) - Number Of Players(Team 1), 0);
-		Global.RoundTrigger = False;
+		Global.HPBallancingTrigger = False;
 		Global.HPTriggerTeam1 = True;
 		Global.HPTriggerTeam2 = True;
 		Disallow Button(All Players(All Teams), Button(Primary Fire));
