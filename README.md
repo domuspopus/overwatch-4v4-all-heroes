@@ -12,3 +12,24 @@ Differences between this and what is currently used ([original script](https://g
 - Heroes wont fly too far away from map.
 
 ![preview](preview.jpg)
+
+Changelog:
+
+### 1.2
+
+- Add team sizes ballancing between rounds.
+- Add measures to prevent overly long 1v1s (e.g Moira vs Moira).
+- Restrict HP/DPS auto-ballancing only to teams with a single player.
+- Improvements to anti-fly rules.
+- Decrease ultimate generation rate (280% -> 200%).
+- Slightly nerf Moira.
+
+### 1.1
+
+- Add trolling prevention (anti-fly rules).
+- Ensure faux abilities are affected by "hacked" etc. status effects.
+- Ballance Hammond cooldowns.
+
+### 1.0
+
+- Initial version.
