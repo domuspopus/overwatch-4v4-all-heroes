@@ -210,7 +210,7 @@ rule("Base: Skip hero select")
 	}
 }
 
-rule("Base: Round end trigger and cleanup")
+rule("Base: Round end triggers and cleanup")
 {
 	event
 	{
@@ -232,6 +232,8 @@ rule("Base: Round end trigger and cleanup")
 		If(Number Of Players(Team 1) == 1 || Number Of Players(Team 2) == 1);
 			Global.HPBallancingTrigger = True;
 		End;
+		Stop All Healing Modifications;
+		Stop All Damage Over Time(All Players(All Teams));
 	}
 }
 
@@ -282,6 +284,33 @@ rule("Base: Ballance team sizes at round end")
 		Else If(Global.O < -1);
 			Move Player to Team(Players In Slot(0, Team 2), Team 1, -1);
 		End;
+	}
+}
+
+rule("Base: Prevent overly long 1v1s")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Is Game In Progress == True;
+		Number Of Living Players(Team 1) == 1;
+		Number Of Living Players(Team 2) == 1;
+	}
+
+	actions
+	{
+		If(Number Of Dead Players(All Teams) > 0);
+			Wait(30, Abort When False);
+		Else;
+			Wait(100, Abort When False);
+		End;
+		Small Message(All Players(All Teams), Custom String("Hurry up, you're DYING!"));
+		Start Healing Modification(All Players(All Teams), All Players(All Teams), 0, None);
+		Start Damage Over Time(All Players(All Teams), Null, 9999, 10);
 	}
 }
 
