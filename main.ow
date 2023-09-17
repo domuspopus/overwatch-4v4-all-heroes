@@ -457,6 +457,8 @@ rule("Hero: Ana (self ult)")
 		Ultimate Charge Percent(Event Player) == 100;
 		Is Dummy Bot(Event Player) == False;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
+		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
+			Event Player, Stunned)) == False;
 	}
 
 	actions
@@ -491,6 +493,8 @@ rule("Hero: Hammond (icicle grapple)")
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
 		Y Component Of(Position Of(Event Player)) > -0.500;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
+		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
+			Event Player, Stunned)) == False;
 	}
 
 	actions
