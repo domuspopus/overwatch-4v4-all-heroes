@@ -212,10 +212,12 @@ rule("Base: Round end trigger and cleanup")
 	actions
 	{
 		Set Team Score(All Teams, 0);
-		Global.HPBallancingTrigger = True;
 		For Global Variable(IteratorIndex1, 4, 12, 1);
 			Destroy Dummy Bot(Team 1, Global.IteratorIndex1);
 			Destroy Dummy Bot(Team 2, Global.IteratorIndex1);
+		End;
+		If(Number Of Players(Team 1) == 1 || Number Of Players(Team 2) == 1);
+			Global.HPBallancingTrigger = True;
 		End;
 	}
 }
@@ -272,7 +274,7 @@ rule("Base: Ballance team sizes at round end")
 	}
 }
 
-rule("Auto balance: Set hp and damage difference general")
+rule("HP/DPS balance: Set hp and damage difference general")
 {
 	event
 	{
@@ -308,7 +310,7 @@ rule("Auto balance: Set hp and damage difference general")
 	}
 }
 
-rule("Auto balance: Set hp and damage of team 1")
+rule("HP/DPS balance: Set hp and damage of team 1")
 {
 	event
 	{
@@ -334,7 +336,7 @@ rule("Auto balance: Set hp and damage of team 1")
 	}
 }
 
-rule("Auto balance: Set hp and damage of team 2")
+rule("HP/DPS balance: Set hp and damage of team 2")
 {
 	event
 	{
