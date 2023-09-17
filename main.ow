@@ -152,6 +152,16 @@ rule("Base: Set global variables")
 		Global.BoundryVertical = 25;
 		Global.BoundryHorizontal = 45;
 		Disable Built-In Game Mode Announcer;
+		"Padding"
+		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
+			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
+			Default Visibility);
+		"Tips"
+		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can use your ultimate on yourself"), Null,
+			Left, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Players On Hero(Hero(Wrecking Ball), All Teams), Null, Custom String(
+			"TIP: You can grapple onto air (but not floor)"), Null, Left, 1, Color(White), Color(White), Color(White),
+			Visible To and String, Default Visibility);
 	}
 }
 
@@ -418,7 +428,7 @@ rule("Hero: Hammond (icicle grapple)")
 	actions
 	{
 		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player)
-			+ Facing Direction Of(Event Player) * 14, All Players(All Teams), Event Player, True), Vector(0, 0, 0));
+			+ Facing Direction Of(Event Player) * 12, All Players(All Teams), Event Player, True), Vector(0, 0, 0));
 		Start Forcing Dummy Bot Name(Players In Slot(11, Team Of(Event Player)), Custom String("Icicle"));
 		Start Forcing Player Position(Players In Slot(11, Team Of(Event Player)), Position Of(Players In Slot(11, Team Of(Event Player))),
 			True);
