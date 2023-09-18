@@ -250,7 +250,7 @@ rule("Base: Ballance team sizes at round end")
 
 	actions
 	{
-		"NOTE: In case of teams being 1:4 players it will take 2 rounds to ballance."
+		"NOTE: in case of teams being 1:4 players it will take 2 rounds to ballance"
 		Global.Temp = Number Of Players(Team 1) - Number Of Players(Team 2);
 		If(Global.Temp > 1);
 			Move Player to Team(Players In Slot(0, Team 1), Team 2, -1);
@@ -288,7 +288,7 @@ rule("Base: Prevent overly long 1v1s")
 	}
 }
 
-rule("HP/Damage Balance: Powerup players belonging to smaller teams")
+rule("HP/Damage Balance: Powerup players belonging to smaller team")
 {
 	event
 	{
