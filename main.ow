@@ -304,9 +304,9 @@ rule("Base: Prevent overly long 1v1s")
 	actions
 	{
 		If(Number Of Dead Players(All Teams) > 0);
-			Wait(30, Abort When False);
+			Wait(40, Abort When False);
 		Else;
-			Wait(100, Abort When False);
+			Wait(120, Abort When False);
 		End;
 		Small Message(All Players(All Teams), Custom String("Hurry up, you're DYING!"));
 		Start Healing Modification(All Players(All Teams), All Players(All Teams), 0, None);
