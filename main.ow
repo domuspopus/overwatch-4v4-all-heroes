@@ -162,7 +162,7 @@ rule("Base: Set global variables")
 	{
 		"Auto-ballancing variables. Bumps percentage of HP / damage of each player in smaller team."
 		Global.PowerupHPPercent = 20;
-		Global.PowerupDamagePercent = 25;
+		Global.PowerupDamagePercent = 30;
 		"Map boundaries"
 		Global.MapBoundryVertical = 25;
 		Global.MapBoundryHorizontal = 45;

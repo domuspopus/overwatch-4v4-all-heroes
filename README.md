@@ -22,7 +22,7 @@ Changelog:
 - Allow Junkrat to ult in mid-air.
 - Fix D.Va having instant ult on re-mech (constant D.Va explosions).
 - Re-enable HP/Damage auto-ballancing for 2+ players teams.
-- Nerf HP/Damage auto-ballancing (from +50% Damage to +25%).
+- Nerf HP/Damage auto-ballancing (decrease damage multiplier).
 - Character ballance changes:
     - Soldier: start with some % of ult instead of full, decrease ult duration.
     - Mercy: decrease HP, increase resurrection cooldown.
