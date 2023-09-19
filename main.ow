@@ -348,7 +348,7 @@ rule("Hero: Ana (self ult)")
 			Event Player), 1000, To World, Direction and Turn Rate);
 		Wait(0.400, Ignore Condition);
 		Press Button(Players In Slot(10, Team Of(Event Player)), Button(Ultimate));
-		Wait(10, Ignore Condition);
+		Wait Until((Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) != True, 9);
 		Destroy Dummy Bot(Team Of(Event Player), 10);
 	}
 }
@@ -383,26 +383,8 @@ rule("Hero: Hammond (icicle grapple)")
 		Set Invisible(Players In Slot(11, Team Of(Event Player)), All);
 		Wait(0.065, Ignore Condition);
 		Press Button(Players In Slot(11, Team Of(Event Player)), Button(Ability 1));
-	}
-}
-
-rule("Hero: Hammond (icicle grapple - cleanup)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		Wrecking Ball;
-	}
-
-	conditions
-	{
-		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds && Is Button Held(Event Player, Button(
-			Secondary Fire))) != True;
-	}
-
-	actions
-	{
+		Wait Until((Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds && Is Button Held(Event Player, Button(
+			Secondary Fire))) != True, 5);
 		Destroy Dummy Bot(Team Of(Event Player), 11);
 	}
 }
