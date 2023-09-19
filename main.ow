@@ -162,6 +162,8 @@ rule("Base: Set global variables")
 			Color(White), Null, Visible To and String, Default Visibility);
 		Create HUD Text(Players On Hero(Hero(Wrecking Ball), All Teams), Null, Custom String("TIP: Try to grapple air/sky"), Null, Left, 3,
 			Null, Color(White), Null, Visible To and String, Default Visibility);
+		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 3,
+			Null, Color(White), Null, Visible To and String, Default Visibility);
 	}
 }
 
@@ -206,9 +208,10 @@ rule("Base: Round end triggers and cleanup")
 			Destroy Dummy Bot(Team 1, Global.IteratorIndex1);
 			Destroy Dummy Bot(Team 2, Global.IteratorIndex1);
 		End;
+		Global.PowerupMessageSent = False;
 		Stop All Healing Modifications;
 		Stop All Damage Over Time(All Players(All Teams));
-		Global.PowerupMessageSent = False;
+		Stop Forcing Player Position(All Players(All Teams));
 	}
 }
 
@@ -386,6 +389,41 @@ rule("Hero: Hammond (icicle grapple)")
 		Wait Until((Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds && Is Button Held(Event Player, Button(
 			Secondary Fire))) != True, 5);
 		Destroy Dummy Bot(Team Of(Event Player), 11);
+	}
+}
+
+rule("Hero: Junkrat (mid-air ult)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Junkrat;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Ultimate Charge Percent(Event Player) == 100;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
+		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
+			Event Player, Stunned)) == False;
+	}
+
+	actions
+	{
+		Start Forcing Player Position(Event Player, Position Of(Event Player), False);
+		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 8, Position Of(Event Player) - Vector(0, 2.600, 0), Vector(0, 0, 0));
+		Start Forcing Dummy Bot Name(Players In Slot(8, Team Of(Event Player)), Custom String("Icicle"));
+		Set Invisible(Players In Slot(8, Team Of(Event Player)), All);
+		Start Forcing Player Position(Players In Slot(8, Team Of(Event Player)), Position Of(Players In Slot(8, Team Of(Event Player))),
+			False);
+		Wait(0.065, Ignore Condition);
+		Press Button(Players In Slot(8, Team Of(Event Player)), Button(Ability 1));
+		Stop Forcing Player Position(Event Player);
+		Wait Until(!Is In Air(Event Player), 1);
+		Press Button(Event Player, Button(Ultimate));
+		Destroy Dummy Bot(Team Of(Event Player), 8);
 	}
 }
 
