@@ -147,7 +147,7 @@ rule("NOTES/TODO'S")
 
 	actions
 	{
-		"TODO: ultimate generation values need to be simplified and re-thought, replace general \"Ultimate Generation:\" entry in some way. I cant make sense of it."
+		"NOTE: The general Ultimate Generation setting multiplies with specific ones (combat/passive). So when you set passive generation to say 200% and general to 200%, your passive will result in 400%."
 		Abort;
 		"NOTE: \"IsGameInProgress = True\" condition evaluates to true only several seconds after round actually starts, prefer \"IsBetweenRounds != True\" for actions that need to happen with round start."
 		Abort;
