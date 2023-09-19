@@ -108,11 +108,8 @@ settings
 
 			Wrecking Ball
 			{
-				Adaptive Shield Cooldown Time: 35%
-				Grappling Claw Cooldown Time: 35%
 				Grappling Claw Knockback Scalar: 115%
 				Health: 65%
-				Piledriver Cooldown Time: 35%
 			}
 
 			Zarya
@@ -176,11 +173,11 @@ rule("Base: Set global variables")
 			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
 			Default Visibility);
 		"Tips"
-		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can self-ultimate"), Null, Left, 3, Null,
+		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can self-ultimate"), Null, Left, 1, Null,
 			Color(White), Null, Visible To and String, Default Visibility);
-		Create HUD Text(Players On Hero(Hero(Wrecking Ball), All Teams), Null, Custom String("TIP: Try to grapple air/sky"), Null, Left, 3,
+		Create HUD Text(Players On Hero(Hero(Wrecking Ball), All Teams), Null, Custom String("TIP: Try to grapple air/sky"), Null, Left, 1,
 			Null, Color(White), Null, Visible To and String, Default Visibility);
-		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 3,
+		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 1,
 			Null, Color(White), Null, Visible To and String, Default Visibility);
 	}
 }
@@ -392,7 +389,7 @@ rule("Hero: Hammond (icicle grapple)")
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
 		Y Component Of(Position Of(Event Player)) > -0.500;
-		(Is Alive(Event Player) && Entity Exists(Event Player)) == True;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
 	}
