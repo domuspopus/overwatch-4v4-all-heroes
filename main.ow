@@ -66,6 +66,12 @@ settings
 				Concussion Mine Knockback Scalar: 120%
 			}
 
+			Mercy
+			{
+				Health: 85%
+				Resurrect Cooldown Time: 60%
+			}
+
 			Moira
 			{
 				Biotic Orb Cooldown Time: 45%
@@ -88,6 +94,12 @@ settings
 			{
 				Health: 75%
 				Spawn With Ultimate Ready: Off
+			}
+
+			Soldier: 76
+			{
+				Spawn With Ultimate Ready: Off
+				Ultimate Duration: 65%
 			}
 
 			Winston
@@ -433,6 +445,26 @@ rule("Hero: Junkrat (mid-air ult)")
 		Wait Until(!Is In Air(Event Player), 1);
 		Press Button(Event Player, Button(Ultimate));
 		Destroy Dummy Bot(Team Of(Event Player), 8);
+	}
+}
+
+rule("Hero: Soldier 76 (start with some ult%)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Between Rounds != True;
+	}
+
+	actions
+	{
+		Set Ultimate Charge(Event Player, 65);
 	}
 }
 
