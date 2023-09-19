@@ -27,6 +27,7 @@ Changelog:
     - Soldier: start with some % of ult instead of full, decrease ult duration.
     - Mercy: decrease HP, increase resurrection cooldown.
     - Junkrat: increase mines knockback.
+    - Hammond: slightly increase grapple knockback.
 - Shorter / better UI messages.
 - Increase 1v1 time limit.
 - Various fixes.
