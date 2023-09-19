@@ -28,6 +28,8 @@ Changelog:
     - Mercy: decrease HP, increase resurrection cooldown.
     - Junkrat: increase mines knockback.
     - Hammond: slightly increase grapple knockback.
+    - Zarya: slightly increase HP.
+    - Orisa: decrease HP.
 - Shorter / better UI messages.
 - Increase 1v1 time limit.
 - Various fixes.

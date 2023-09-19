@@ -80,7 +80,7 @@ settings
 
 			Orisa
 			{
-				Health: 70%
+				Health: 50%
 			}
 
 			Reinhardt
@@ -117,7 +117,7 @@ settings
 
 			Zarya
 			{
-				Health: 50%
+				Health: 55%
 			}
 		}
 	}
@@ -467,7 +467,7 @@ rule("Hero: Soldier 76 (start with some ult%)")
 
 	actions
 	{
-		Set Ultimate Charge(Event Player, 65);
+		Set Ultimate Charge(Event Player, 75);
 	}
 }
 
