@@ -145,12 +145,15 @@ rule("Base: Set global variables")
 
 	actions
 	{
+		"Auto-ballancing variables. Bumps percentage of HP / damage of each player in smaller team."
 		Global.PowerupHPPercent = 20;
-		Global.PowerupDamagePercent = 50;
+		Global.PowerupDamagePercent = 20;
+		"Map boundaries"
 		Global.MapBoundryVertical = 25;
 		Global.MapBoundryHorizontal = 45;
+		"Misc"
 		Disable Built-In Game Mode Announcer;
-		"Padding"
+		"HUD spacing"
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
 			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
 			Default Visibility);
@@ -299,7 +302,7 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 
 	conditions
 	{
-		"NOTE: this might occasionally count dummy players created by faux abilities"
+		"NOTE: this rule might occasionally count dummy players created by faux abilities, although unlikely given it takes place at the very start of round"
 		Is Game In Progress == True;
 		Number Of Players(Team Of(Event Player)) < Number Of Players(Opposite Team Of(Team Of(Event Player)));
 	}
