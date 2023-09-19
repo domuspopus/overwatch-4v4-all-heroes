@@ -56,9 +56,7 @@ settings
 			D.Va
 			{
 				Self Destruct Knockback Scalar: 200%
-				Ultimate Generation - Combat Self-Destruct: 0%
-				Ultimate Generation - Passive Self-Destruct: 0%
-				Ultimate Generation Self-Destruct: 10%
+				Spawn With Ultimate Ready: Off
 			}
 
 			Junkrat
@@ -470,6 +468,28 @@ rule("Hero: Soldier 76 (start with some ult%)")
 	actions
 	{
 		Set Ultimate Charge(Event Player, 65);
+	}
+}
+
+rule("Hero: D.Va (start with an ult)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		D.Va;
+	}
+
+	conditions
+	{
+		"NOTE: We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
+		Is Between Rounds != True;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Set Ultimate Charge(Event Player, 100);
 	}
 }
 
