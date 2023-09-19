@@ -61,6 +61,11 @@ settings
 				Ultimate Generation Self-Destruct: 10%
 			}
 
+			Junkrat
+			{
+				Concussion Mine Knockback Scalar: 120%
+			}
+
 			Moira
 			{
 				Biotic Orb Cooldown Time: 45%
