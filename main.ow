@@ -100,6 +100,7 @@ settings
 			{
 				Adaptive Shield Cooldown Time: 35%
 				Grappling Claw Cooldown Time: 35%
+				Grappling Claw Knockback Scalar: 115%
 				Health: 65%
 				Piledriver Cooldown Time: 35%
 			}
@@ -376,15 +377,18 @@ rule("Hero: Hammond (icicle grapple)")
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
 		Y Component Of(Position Of(Event Player)) > -0.500;
-		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
+		(Is Alive(Event Player) && Entity Exists(Event Player)) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
 	}
 
 	actions
 	{
-		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player)
-			+ Facing Direction Of(Event Player) * 12, All Players(All Teams), Event Player, True), Vector(0, 0, 0));
+		"Position of where a fake icicle should be created (what hammond is looking at)."
+		Global.Temp = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(Event Player)
+			* 13, All Players(All Teams), Event Player, True);
+		Abort If(Distance Between(Eye Position(Event Player), Global.Temp) < 13);
+		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Global.Temp - Vector(0, 0.300, 0), Vector(0, 0, 0));
 		Start Forcing Dummy Bot Name(Players In Slot(11, Team Of(Event Player)), Custom String("Icicle"));
 		Start Forcing Player Position(Players In Slot(11, Team Of(Event Player)), Position Of(Players In Slot(11, Team Of(Event Player))),
 			True);
