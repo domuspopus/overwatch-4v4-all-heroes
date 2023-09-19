@@ -27,7 +27,7 @@ Changelog:
     - Soldier: start with some % of ult instead of full, decrease ult duration.
     - Mercy: decrease HP, increase resurrection cooldown.
     - Junkrat: increase mines knockback.
-    - Hammond: slightly increase grapple knockback.
+    - Hammond: increase grapple knockback, dont create icicle too close, decrease cooldowns.
     - Zarya: slightly increase HP.
     - Orisa: decrease HP.
 - Shorter / better UI messages.
