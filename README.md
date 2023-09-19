@@ -17,7 +17,7 @@ Differences between this and what is currently used ([original script](https://g
 
 Changelog:
 
-### 1.3
+### 1.3 (in-development)
 
 - Allow Junkrat to ult in mid-air.
 - Fix D.Va having instant ult on re-mech (constant D.Va explosions).
