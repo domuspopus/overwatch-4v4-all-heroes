@@ -260,6 +260,7 @@ rule("Base: Prevent heroes flying away")
 
 	actions
 	{
+		Small Message(Event Player, Custom String("Don't stray too far"));
 		If(Y Component Of(Position Of(Event Player)) > Global.MapBoundryVertical);
 			Set Status(Event Player, Null, Frozen, 2);
 		Else;
@@ -302,20 +303,21 @@ rule("Base: Prevent overly long 1v1s")
 
 	conditions
 	{
+		Global.DBG != True;
 		Is Game In Progress == True;
 		Number Of Living Players(Team 1) == 1;
 		Number Of Living Players(Team 2) == 1;
-		Global.DBG != True;
 	}
 
 	actions
 	{
 		If(Number Of Dead Players(All Teams) > 0);
+			"Harsher limit when there are players waiting"
 			Wait(40, Abort When False);
 		Else;
 			Wait(120, Abort When False);
 		End;
-		Small Message(All Players(All Teams), Custom String("1v1 time limit. Applying damage over time."));
+		Small Message(All Players(All Teams), Custom String("1v1 time limit: applying damage over time"));
 		Start Healing Modification(All Players(All Teams), All Players(All Teams), 0, None);
 		Start Damage Over Time(All Players(All Teams), Null, 9999, 10);
 	}
@@ -562,11 +564,6 @@ disabled rule("DBG: Toggle")
 	actions
 	{
 		Global.DBG = True;
-		"Copy-pastable snippet below this entry"
-		Abort;
-		If(Global.DBG == True);
-			Small Message(All Players(All Teams), Custom String(""));
-		End;
 	}
 }
 
