@@ -31,6 +31,8 @@ Changelog:
     - Hammond: increase grapple knockback, dont create icicle too close, decrease cooldowns.
     - Zarya: slightly increase HP.
     - Orisa: decrease HP.
+    - Roadhog: decrease HP.
+    - Widowmaker: decrease ability cooldowns.
 - Shorter / better UI messages.
 - Increase 1v1 time limit.
 
