@@ -144,9 +144,17 @@ rule("NOTES/TODO'S")
 
 	actions
 	{
-		"NOTE: The general Ultimate Generation setting multiplies with specific ones (combat/passive). So when you set passive generation to say 200% and general to 200%, your passive will result in 400%."
+		"INFO: The general Ultimate Generation setting multiplies with specific ones (combat/passive). So when you set passive generation to say 200% and general to 200%, your passive will result in 400%."
 		Abort;
-		"NOTE: \"IsGameInProgress = True\" condition evaluates to true only several seconds after round actually starts, prefer \"IsBetweenRounds != True\" for actions that need to happen with round start."
+		"INFO: \"IsGameInProgress = True\" condition evaluates to true only several seconds after round actually starts, prefer \"IsBetweenRounds != True\" for actions that need to happen with round start."
+		Abort;
+		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It iss not a noticable issue as of yet."
+		Abort;
+		"BUG: Ultimates wont start generating for a few seconds in the start of match. This is an issue for characters that don't start with ult ready."
+		Abort;
+		"BUG: [unconfirmed] D.Va doesn't always get an instant re-mech charge?"
+		Abort;
+		"BUG: Hammond icicle grapple occasionally fails, in some rounds stops working completely."
 		Abort;
 	}
 }
@@ -375,7 +383,6 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 
 	conditions
 	{
-		"NOTE: this rule might occasionally count dummy players created by faux abilities, although unlikely given it takes place at the very start of round"
 		Is Between Rounds != True;
 		Number Of Players(Team Of(Event Player)) < Number Of Players(Opposite Team Of(Team Of(Event Player)));
 	}
