@@ -150,6 +150,8 @@ rule("NOTES/TODO'S")
 		Abort;
 		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It iss not a noticable issue as of yet."
 		Abort;
+		"XXX: Host player becoming a spectator might be game breaking."
+		Abort;
 		"BUG: Ultimates wont start generating for a few seconds in the start of match. This is an issue for characters that don't start with ult ready."
 		Abort;
 		"BUG: [unconfirmed] D.Va doesn't always get an instant re-mech charge?"
