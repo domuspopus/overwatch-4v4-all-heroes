@@ -90,7 +90,7 @@ settings
 
 			Roadhog
 			{
-				Health: 75%
+				Health: 65%
 				Spawn With Ultimate Ready: Off
 			}
 
@@ -98,6 +98,12 @@ settings
 			{
 				Spawn With Ultimate Ready: Off
 				Ultimate Duration: 65%
+			}
+
+			Widowmaker
+			{
+				Grappling Hook Cooldown Time: 10%
+				Venom Mine Cooldown Time: 5%
 			}
 
 			Winston
