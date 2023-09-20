@@ -150,8 +150,6 @@ rule("NOTES/TODO'S")
 		Abort;
 		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It iss not a noticable issue as of yet."
 		Abort;
-		"XXX: Host player becoming a spectator might be game breaking."
-		Abort;
 		"BUG: Ultimates wont start generating for a few seconds in the start of match. This is an issue for characters that don't start with ult ready."
 		Abort;
 		"BUG: [unconfirmed] D.Va doesn't always get an instant re-mech charge?"
@@ -327,52 +325,26 @@ rule("Base: Prevent premature game completion")
 {
 	event
 	{
-		Ongoing - Each Player;
-		All;
-		All;
+		Ongoing - Global;
 	}
 
 	conditions
 	{
 		Global.DBG != True;
-		Number Of Players(Opposite Team Of(Team Of(Event Player))) == 0;
-		Event Player == Host Player;
+		Is Waiting For Players != True;
+		(Number Of Players(Team 1) == 0 || Number Of Players(Team 2) == 0) == True;
 	}
 
 	actions
 	{
-		If(Number Of Players(Team Of(Event Player)) == 1);
-			Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
-			Start Forcing Dummy Bot Name(Players In Slot(0, Opposite Team Of(Team Of(Event Player))), Custom String("spot holder"));
-			Set Status(Players In Slot(0, Opposite Team Of(Team Of(Event Player))), Null, Unkillable, 9999);
-			Start Forcing Player Position(Players In Slot(0, Opposite Team Of(Team Of(Event Player))), Position Of(Players In Slot(0,
-				Opposite Team Of(Team Of(Event Player)))), False);
+		Global.Temp = First Of(All Players(All Teams));
+		If(Number Of Players(Team Of(Global.Temp)) == 1);
+			"Skip victory screen on default victory when all but one players leave"
+			Restart Match;
 		Else;
-			Move Player to Team(Players In Slot(0, Team Of(Event Player)), Opposite Team Of(Team Of(Event Player)), -1);
+			Move Player to Team(Global.Temp, Opposite Team Of(Team Of(Global.Temp)), -1);
 			Declare Round Draw;
 		End;
-	}
-}
-
-rule("Base: Prevent premature game completion (cleanup)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		Slot 0;
-	}
-
-	conditions
-	{
-		Global.DBG != True;
-		Number Of Players(All Teams) > 2;
-		Is Dummy Bot(Event Player) == True;
-	}
-
-	actions
-	{
-		Destroy Dummy Bot(Team Of(Event Player), 0);
 	}
 }
 
