@@ -557,7 +557,6 @@ rule("DBG: Persistent dummy bots")
 	actions
 	{
 		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Ana), Opposite Team Of(Team Of(Event Player)), 1, Vector(0, 0, 0), Vector(0, 0, 0));
 	}
 }
 
