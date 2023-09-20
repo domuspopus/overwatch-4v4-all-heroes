@@ -23,6 +23,7 @@ Changelog:
 - Fix D.Va having instant ult on re-mech (constant D.Va explosions).
 - Re-enable HP/Damage auto-ballancing for 2+ players teams.
 - Nerf HP/Damage auto-ballancing (decrease damage multiplier).
+- Prevent premature game completion (e.g. entire one team leaving).
 - Character ballance changes:
     - Soldier: start with some % of ult instead of full, decrease ult duration.
     - Mercy: decrease HP, increase resurrection cooldown.
@@ -32,7 +33,6 @@ Changelog:
     - Orisa: decrease HP.
 - Shorter / better UI messages.
 - Increase 1v1 time limit.
-- Various fixes.
 
 ### 1.2
 
