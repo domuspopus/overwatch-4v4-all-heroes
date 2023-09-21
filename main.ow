@@ -139,6 +139,10 @@ variables
 		11: Temp
 		24: DBGBotShooting
 		25: DBG
+
+	player:
+		0: HammondGrappleIsOn
+		10: Temp
 }
 
 rule("NOTES/TODO'S")
@@ -159,8 +163,6 @@ rule("NOTES/TODO'S")
 		"BUG: Ultimates wont start generating for a few seconds in the start of match (need \"Is Game In Progress = True\"). This is an issue for characters that don't start with ult ready."
 		Abort;
 		"BUG: [unconfirmed] D.Va doesn't always get an instant re-mech charge?"
-		Abort;
-		"BUG: Hammond icicle grapple occasionally fails, in some rounds stops working completely."
 		Abort;
 	}
 }
@@ -189,7 +191,7 @@ rule("Base: Set global variables")
 		"Tips"
 		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can self-ultimate"), Null, Left, 1, Null,
 			Color(White), Null, Visible To and String, Default Visibility);
-		Create HUD Text(Players On Hero(Hero(Wrecking Ball), All Teams), Null, Custom String("TIP: Try to grapple air/sky"), Null, Left, 1,
+		Create HUD Text(Players On Hero(Hero(Wrecking Ball), All Teams), Null, Custom String("TIP: Try to grapple anyway"), Null, Left, 1,
 			Null, Color(White), Null, Visible To and String, Default Visibility);
 		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 1,
 			Null, Color(White), Null, Visible To and String, Default Visibility);
@@ -417,7 +419,7 @@ rule("Hero: Ana (self ult)")
 	}
 }
 
-rule("Hero: Hammond (icicle grapple)")
+rule("Hero: Hammond (icicle grapple - icicle spawning)")
 {
 	event
 	{
@@ -428,10 +430,8 @@ rule("Hero: Hammond (icicle grapple)")
 
 	conditions
 	{
-		"XXX: if eventually this ability proves to be too unreliable, consider creating icicle on \"crouch\" instead of on the fly"
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
-		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
-		Y Component Of(Position Of(Event Player)) > -0.500;
+		Event Player.HammondGrappleIsOn == False;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
@@ -440,19 +440,66 @@ rule("Hero: Hammond (icicle grapple)")
 	actions
 	{
 		"Position of where a fake icicle should be created (what hammond is looking at)."
-		Global.Temp = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(Event Player)
-			* 13, All Players(All Teams), Event Player, True);
-		Abort If(Distance Between(Eye Position(Event Player), Global.Temp) < 13);
-		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Global.Temp - Vector(0, 0.300, 0), Vector(0, 0, 0));
+		Event Player.Temp = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
+			Event Player) * 13, All Players(All Teams), Event Player, True);
+		If(Y Component Of(Event Player.Temp) < 0.700);
+			Event Player.Temp = Vector(X Component Of(Event Player.Temp), 0.700, Z Component Of(Event Player.Temp));
+		End;
+		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Event Player.Temp - Vector(0, 0.300, 0), Vector(0, 0, 0));
 		Start Forcing Dummy Bot Name(Players In Slot(11, Team Of(Event Player)), Custom String("Icicle"));
 		Start Forcing Player Position(Players In Slot(11, Team Of(Event Player)), Position Of(Players In Slot(11, Team Of(Event Player))),
 			True);
 		Set Invisible(Players In Slot(11, Team Of(Event Player)), All);
 		Wait(0.065, Ignore Condition);
 		Press Button(Players In Slot(11, Team Of(Event Player)), Button(Ability 1));
-		Wait Until((Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds && Is Button Held(Event Player, Button(
-			Secondary Fire))) != True, 5);
+		Wait(1, Ignore Condition);
+		Wait Until(!Is Button Held(Event Player, Button(Secondary Fire)), 3);
 		Destroy Dummy Bot(Team Of(Event Player), 11);
+	}
+}
+
+rule("Hero: Hammond (icicle grapple - when grapple disabled)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Wrecking Ball;
+	}
+
+	conditions
+	{
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 20 || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> 20 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == False;
+	}
+
+	actions
+	{
+		Event Player.HammondGrappleIsOn = False;
+		Set Secondary Fire Enabled(Event Player, False);
+	}
+}
+
+rule("Hero: Hammond (icicle grapple - when grapple enabled)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Wrecking Ball;
+	}
+
+	conditions
+	{
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 20 || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> 20 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == True;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Event Player.HammondGrappleIsOn = True;
+		Set Secondary Fire Enabled(Event Player, True);
 	}
 }
 
