@@ -21,6 +21,10 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 
 ### Changelog:
 
+#### 1.4 (in-development)
+
+- Rework Hammond icicle grapple for a more consistent and reliable mechanic.
+
 #### 1.3
 
 - Allow Junkrat to ult in mid-air.
