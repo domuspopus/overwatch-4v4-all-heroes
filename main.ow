@@ -156,7 +156,7 @@ rule("NOTES/TODO'S")
 		Abort;
 		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It iss not a noticable issue as of yet."
 		Abort;
-		"BUG: Ultimates wont start generating for a few seconds in the start of match. This is an issue for characters that don't start with ult ready."
+		"BUG: Ultimates wont start generating for a few seconds in the start of match (need Is \"Game In Progress = True\"). This is an issue for characters that don't start with ult ready."
 		Abort;
 		"BUG: [unconfirmed] D.Va doesn't always get an instant re-mech charge?"
 		Abort;
@@ -212,7 +212,8 @@ rule("Base: Skip hero select")
 	{
 		"Allow time to select in debug mode"
 		If(Global.DBG == True);
-			Wait(5, Ignore Condition);
+			Set Match Time(5);
+			Abort;
 		End;
 		Set Match Time(0);
 	}
@@ -506,7 +507,7 @@ rule("Hero: Soldier 76 (start with some ult%)")
 
 	actions
 	{
-		Set Ultimate Charge(Event Player, 75);
+		Set Ultimate Charge(Event Player, 85);
 	}
 }
 
