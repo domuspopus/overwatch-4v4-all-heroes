@@ -62,7 +62,7 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 #### 1.0 (changes compared to original script)
 
 - Initial version.
-- Decrease some tank HP (Winston/Orisa/Zarya/Hammond/Roadhog).
+- Decrease some tanks HP (Winston/Orisa/Zarya/Hammond/Roadhog).
 - Mildly changed ultimate generation values, cleaned up remnants of original "4v4 Nanoblade" in that regard. 
 - Roadhog and Moira spawn with no ult ready initially (but can build it).
 - Increase Winston damage.
