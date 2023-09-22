@@ -142,7 +142,8 @@ variables
 
 	player:
 		0: HammondGrappleIsOn
-		10: Temp
+		1: HUDTextID1
+		2: HammondIciclePos
 }
 
 rule("NOTES/TODO'S")
@@ -167,7 +168,7 @@ rule("NOTES/TODO'S")
 	}
 }
 
-rule("Base: Set global variables")
+rule("Base: Set global variables and show UI tips")
 {
 	event
 	{
@@ -191,8 +192,6 @@ rule("Base: Set global variables")
 		"Tips"
 		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can self-ultimate"), Null, Left, 1, Null,
 			Color(White), Null, Visible To and String, Default Visibility);
-		Create HUD Text(Players On Hero(Hero(Wrecking Ball), All Teams), Null, Custom String("TIP: Try to grapple anyway"), Null, Left, 1,
-			Null, Color(White), Null, Visible To and String, Default Visibility);
 		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 1,
 			Null, Color(White), Null, Visible To and String, Default Visibility);
 	}
@@ -263,6 +262,7 @@ rule("Base: Prevent heroes flying away")
 		(Y Component Of(Position Of(Event Player)) > Global.MapBoundryVertical || Absolute Value(X Component Of(Position Of(Event Player)))
 			> Global.MapBoundryHorizontal || Absolute Value(Z Component Of(Position Of(Event Player))) > Global.MapBoundryHorizontal)
 			== True;
+		Is Dummy Bot(Event Player) == False;
 	}
 
 	actions
@@ -435,17 +435,20 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
+		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
 	}
 
 	actions
 	{
 		"Position of where a fake icicle should be created (what hammond is looking at)."
-		Event Player.Temp = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
+		Event Player.HammondIciclePos = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
 			Event Player) * 13, All Players(All Teams), Event Player, True);
-		If(Y Component Of(Event Player.Temp) < 0.700);
-			Event Player.Temp = Vector(X Component Of(Event Player.Temp), 0.700, Z Component Of(Event Player.Temp));
+		"Prevent underground icicle"
+		If(Y Component Of(Event Player.HammondIciclePos) < 0.700);
+			Event Player.HammondIciclePos = Vector(X Component Of(Event Player.HammondIciclePos), 0.700, Z Component Of(
+				Event Player.HammondIciclePos));
 		End;
-		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Event Player.Temp - Vector(0, 0.300, 0), Vector(0, 0, 0));
+		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Event Player.HammondIciclePos - Vector(0, 0.300, 0), Vector(0, 0, 0));
 		Start Forcing Dummy Bot Name(Players In Slot(11, Team Of(Event Player)), Custom String("Icicle"));
 		Start Forcing Player Position(Players In Slot(11, Team Of(Event Player)), Position Of(Players In Slot(11, Team Of(Event Player))),
 			True);
@@ -469,14 +472,18 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 
 	conditions
 	{
-		(Absolute Value(X Component Of(Position Of(Event Player))) > 20 || Absolute Value(Z Component Of(Position Of(Event Player)))
-			> 20 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == False;
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == False;
 	}
 
 	actions
 	{
 		Event Player.HammondGrappleIsOn = False;
-		Set Secondary Fire Enabled(Event Player, False);
+		Disallow Button(Event Player, Button(Secondary Fire));
+		Destroy HUD Text(Event Player.HUDTextID1);
+		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky"), Null, Left, 1, Null, Color(White), Null,
+			Visible To and String, Default Visibility);
+		Event Player.HUDTextID1 = Last Text ID;
 	}
 }
 
@@ -491,15 +498,33 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 
 	conditions
 	{
-		(Absolute Value(X Component Of(Position Of(Event Player))) > 20 || Absolute Value(Z Component Of(Position Of(Event Player)))
-			> 20 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == True;
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == True;
 	}
 
 	actions
 	{
-		Wait(0.250, Ignore Condition);
-		Event Player.HammondGrappleIsOn = True;
-		Set Secondary Fire Enabled(Event Player, True);
+		"If icicle was created"
+		If(Entity Exists(Players In Slot(11, Team Of(Event Player))));
+			Start Facing(Event Player, Direction Towards(Eye Position(Event Player), Event Player.HammondIciclePos), 10000, To World,
+				Direction and Turn Rate);
+			"Allow some time for focus to snap onto icicle"
+			Wait(0.170, Ignore Condition);
+			Event Player.HammondGrappleIsOn = True;
+			Allow Button(Event Player, Button(Secondary Fire));
+			"Resetting ability triggers grapple to fire again when held"
+			Set Secondary Fire Enabled(Event Player, False);
+			Set Secondary Fire Enabled(Event Player, True);
+			Stop Facing(Event Player);
+		"If simply outside of island range"
+		Else;
+			Event Player.HammondGrappleIsOn = True;
+			Allow Button(Event Player, Button(Secondary Fire));
+		End;
+		Destroy HUD Text(Event Player.HUDTextID1);
+		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky (NOT NOW)"), Null, Left, 1, Null, Color(Gray),
+			Null, Visible To and String, Default Visibility);
+		Event Player.HUDTextID1 = Last Text ID;
 	}
 }
 
