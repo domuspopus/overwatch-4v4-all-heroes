@@ -129,22 +129,23 @@ settings
 variables
 {
 	global:
-		0: TeamSizesDifference
-		1: PowerupHPPercent
-		2: PowerupDamagePercent
-		3: PowerupMessageSent
-		4: MapBoundryVertical
-		5: MapBoundryHorizontal
-		6: IsRoundActive
-		10: IteratorIndex1
+        0: IsRoundActive
+        1: IsRoundStart
+        2: TextIDS
+        3: Powerup_HPPercent
+        4: Powerup_DamagePercent
+        5: Powerup_PlayersNumAdvantage
+        6: MapBoundry_Vertical
+        7: MapBoundry_Horizontal
+        8: TimeLimit1v1_Countdown
 		11: Temp
 		24: DBGBotShooting
 		25: DBG
 
 	player:
-		0: HammondGrappleIsOn
-		1: HUDTextID1
-		2: HammondIciclePos
+		0: TextIDS
+		1: Hammond_GrappleIsOn
+		2: Hammond_IciclePos
 }
 
 rule("NOTES/TODO'S")
@@ -181,22 +182,29 @@ rule("Base: Set global variables and show UI tips")
 	actions
 	{
 		"Auto-ballancing variables. Bumps percentage of HP / damage of each player in smaller team."
-		Global.PowerupHPPercent = 20;
-		Global.PowerupDamagePercent = 30;
+		Global.Powerup_HPPercent = 20;
+		Global.Powerup_DamagePercent = 30;
 		"Map boundaries"
-		Global.MapBoundryVertical = 25;
-		Global.MapBoundryHorizontal = 45;
+		Global.MapBoundry_Vertical = 25;
+		Global.MapBoundry_Horizontal = 45;
 		"Misc"
 		Disable Built-In Game Mode Announcer;
-		"HUD spacing"
-		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
-			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
-			Default Visibility);
+		Global.TimeLimit1v1_Countdown = -1;
 		"Tips"
 		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can self-ultimate"), Null, Left, 1, Null,
 			Color(White), Null, Visible To and String, Default Visibility);
 		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 1,
 			Null, Color(White), Null, Visible To and String, Default Visibility);
+		"HUD spacing"
+		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
+			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
+			Default Visibility);
+		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
+			"{0} {1}", Custom String(""), Custom String("")), Top, 0, Color(White), Color(White), Color(White), Visible To and String,
+			Default Visibility);
+		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
+			"{0} {1}", Custom String(""), Custom String("")), Top, 0, Color(White), Color(White), Color(White), Visible To and String,
+			Default Visibility);
 	}
 }
 
@@ -217,12 +225,17 @@ rule("Base: Skip hero select, initiate round start variables")
 		"Allow time to select in debug mode"
 		If(Global.DBG == True);
 			Set Match Time(5);
-			Abort;
+			Wait(5, Ignore Condition);
 		End;
+		"This skips the selection"
 		Set Match Time(0);
 		"Allow time for game to select hero for player and initiate round"
 		Wait(0.250, Ignore Condition);
 		Global.IsRoundActive = True;
+		Global.IsRoundStart = True;
+		Log To Inspector(Custom String(">>> round #{0} start", Match Round));
+		Wait(0.250, Ignore Condition);
+		Global.IsRoundStart = False;
 	}
 }
 
@@ -235,20 +248,23 @@ rule("Base: Round end (cleanup)")
 
 	conditions
 	{
-		(Team Score(Team 1) > 0 || Team Score(Team 2) > 0) == True;
+		(Team Score(Team 1) > 0 || Team Score(Team 2) > 0 || Is Between Rounds) == True;
 	}
 
 	actions
 	{
+		Log To Inspector(Custom String(">>> round end"));
 		Set Team Score(All Teams, 0);
 		Global.IsRoundActive = False;
-		Global.PowerupMessageSent = False;
+		Global.Powerup_PlayersNumAdvantage = 0;
+		Global.TimeLimit1v1_Countdown = -1;
 		Stop All Healing Modifications;
 		Stop All Damage Over Time(All Players(All Teams));
 		Stop Forcing Player Position(All Players(All Teams));
 		Set Damage Dealt(All Players(All Teams), 100);
 		Set Max Health(All Players(All Teams), 100);
 		Allow Button(All Players(All Teams), Button(Secondary Fire));
+		Destroy HUD Text(Global.TextIDS[0]);
 	}
 }
 
@@ -272,7 +288,7 @@ rule("Base: Round end (cleanup - per player)")
 		If(Is Dummy Bot(Event Player) && Slot Of(Event Player) > 3);
 			Destroy Dummy Bot(Team Of(Event Player), Slot Of(Event Player));
 		End;
-		Destroy HUD Text(Event Player.HUDTextID1);
+		Destroy HUD Text(Event Player.TextIDS[0]);
 	}
 }
 
@@ -287,8 +303,8 @@ rule("Base: Prevent heroes flying away")
 
 	conditions
 	{
-		(Y Component Of(Position Of(Event Player)) > Global.MapBoundryVertical || Absolute Value(X Component Of(Position Of(Event Player)))
-			> Global.MapBoundryHorizontal || Absolute Value(Z Component Of(Position Of(Event Player))) > Global.MapBoundryHorizontal)
+		(Y Component Of(Position Of(Event Player)) > Global.MapBoundry_Vertical || Absolute Value(X Component Of(Position Of(Event Player)))
+			> Global.MapBoundry_Horizontal || Absolute Value(Z Component Of(Position Of(Event Player))) > Global.MapBoundry_Horizontal)
 			== True;
 		Is Dummy Bot(Event Player) == False;
 	}
@@ -296,7 +312,7 @@ rule("Base: Prevent heroes flying away")
 	actions
 	{
 		Small Message(Event Player, Custom String("Don't stray too far"));
-		If(Y Component Of(Position Of(Event Player)) > Global.MapBoundryVertical);
+		If(Y Component Of(Position Of(Event Player)) > Global.MapBoundry_Vertical);
 			Set Status(Event Player, Null, Frozen, 2);
 		Else;
 			"If character lives long enough for the freeze to expire during horizontal escape - they can fly away anyway so we just kill them (with longer freeze) to prevent it."
@@ -330,7 +346,7 @@ rule("Base: Ballance team sizes at round end")
 	}
 }
 
-rule("Base: Prevent overly long 1v1s")
+rule("Base: Prevent overly long 1v1s (if players waiting)")
 {
 	event
 	{
@@ -343,19 +359,28 @@ rule("Base: Prevent overly long 1v1s")
 		Global.IsRoundActive == True;
 		Number Of Living Players(Team 1) == 1;
 		Number Of Living Players(Team 2) == 1;
+		Number Of Players(All Teams) > 2;
+		"Ignore if round is already near end"
+		Match Time > 35;
 	}
 
 	actions
 	{
-		If(Number Of Dead Players(All Teams) > 0);
-			"Harsher limit when there are players waiting"
-			Wait(40, Abort When False);
-		Else;
-			Wait(120, Abort When False);
+		Abort If(Global.TimeLimit1v1_Countdown > -1);
+		Log To Inspector(Custom String("1v1 time limit countdown start"));
+		"This line is just to remove default countdown UI"
+		Set Match Time(120);
+		Wait Until(!Global.IsRoundActive, 10);
+		Create HUD Text(All Players(All Teams), Null, Custom String("Round ends in: {0} seconds", Global.TimeLimit1v1_Countdown), Null, Top,
+			1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+		Global.TextIDS[0] = Last Text ID;
+		For Global Variable(TimeLimit1v1_Countdown, 25, 0, -1);
+			Wait Until(!Global.IsRoundActive, 1);
 		End;
-		Small Message(All Players(All Teams), Custom String("1v1 time limit: applying damage over time"));
-		Start Healing Modification(All Players(All Teams), All Players(All Teams), 0, None);
-		Start Damage Over Time(All Players(All Teams), Null, 9999, 10);
+		Destroy HUD Text(Global.TextIDS[0]);
+		Abort If(!Global.IsRoundActive);
+		Log To Inspector(Custom String("1v1 time limit reached"));
+		Declare Round Draw;
 	}
 }
 
@@ -397,19 +422,21 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 
 	conditions
 	{
-		Global.IsRoundActive == True;
+		Global.IsRoundStart == True;
 		Number Of Players(Team Of(Event Player)) < Number Of Players(Opposite Team Of(Team Of(Event Player)));
 	}
 
 	actions
 	{
-		Global.TeamSizesDifference = Number Of Players(Opposite Team Of(Team Of(Event Player))) - Number Of Players(Team Of(Event Player));
-		Set Max Health(Event Player, 100 + Global.PowerupHPPercent * Global.TeamSizesDifference);
-		Set Damage Dealt(Event Player, 100 + Global.PowerupDamagePercent * Global.TeamSizesDifference);
-		If(!Global.PowerupMessageSent);
-			Global.PowerupMessageSent = True;
-			Wait(1, Ignore Condition);
-			Small Message(All Players(All Teams), Custom String("{0} powered up!", Team Of(Event Player)));
+		Abort If(Global.Powerup_PlayersNumAdvantage > 0);
+		Global.Powerup_PlayersNumAdvantage = Number Of Players(Opposite Team Of(Team Of(Event Player))) - Number Of Players(Team Of(
+			Event Player));
+		Set Max Health(All Players(Team Of(Event Player)), 100 + Global.Powerup_HPPercent * Global.Powerup_PlayersNumAdvantage);
+		Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.Powerup_DamagePercent * Global.Powerup_PlayersNumAdvantage);
+		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
+			Event Player));
+		Wait(1, Ignore Condition);
+		Small Message(All Players(All Teams), Custom String("{0} powered up!", Team Of(Event Player)));
 	}
 }
 
@@ -460,7 +487,7 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 	conditions
 	{
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
-		Event Player.HammondGrappleIsOn == False;
+		Event Player.Hammond_GrappleIsOn == False;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
@@ -470,14 +497,14 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 	actions
 	{
 		"Position of where a fake icicle should be created (what hammond is looking at)."
-		Event Player.HammondIciclePos = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
+		Event Player.Hammond_IciclePos = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
 			Event Player) * 13, All Players(All Teams), Event Player, True);
 		"Prevent underground icicle"
-		If(Y Component Of(Event Player.HammondIciclePos) < 0.700);
-			Event Player.HammondIciclePos = Vector(X Component Of(Event Player.HammondIciclePos), 0.700, Z Component Of(
-				Event Player.HammondIciclePos));
+		If(Y Component Of(Event Player.Hammond_IciclePos) < 0.700);
+			Event Player.Hammond_IciclePos = Vector(X Component Of(Event Player.Hammond_IciclePos), 0.700, Z Component Of(
+				Event Player.Hammond_IciclePos));
 		End;
-		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Event Player.HammondIciclePos - Vector(0, 0.300, 0), Vector(0, 0, 0));
+		Create Dummy Bot(Hero(Mei), Team Of(Event Player), 11, Event Player.Hammond_IciclePos - Vector(0, 0.300, 0), Vector(0, 0, 0));
 		Start Forcing Dummy Bot Name(Players In Slot(11, Team Of(Event Player)), Custom String("Icicle"));
 		Start Forcing Player Position(Players In Slot(11, Team Of(Event Player)), Position Of(Players In Slot(11, Team Of(Event Player))),
 			True);
@@ -508,12 +535,12 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 
 	actions
 	{
-		Event Player.HammondGrappleIsOn = False;
+		Event Player.Hammond_GrappleIsOn = False;
 		Disallow Button(Event Player, Button(Secondary Fire));
-		Destroy HUD Text(Event Player.HUDTextID1);
+		Destroy HUD Text(Event Player.TextIDS[0]);
 		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky"), Null, Left, 1, Null, Color(White), Null,
 			Visible To and String, Default Visibility);
-		Event Player.HUDTextID1 = Last Text ID;
+		Event Player.TextIDS[0] = Last Text ID;
 	}
 }
 
@@ -537,11 +564,11 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 	{
 		"If icicle was created"
 		If(Entity Exists(Players In Slot(11, Team Of(Event Player))));
-			Start Facing(Event Player, Direction Towards(Eye Position(Event Player), Event Player.HammondIciclePos), 10000, To World,
+			Start Facing(Event Player, Direction Towards(Eye Position(Event Player), Event Player.Hammond_IciclePos), 10000, To World,
 				Direction and Turn Rate);
 			"Allow some time for focus to snap onto icicle"
 			Wait(0.170, Ignore Condition);
-			Event Player.HammondGrappleIsOn = True;
+			Event Player.Hammond_GrappleIsOn = True;
 			Allow Button(Event Player, Button(Secondary Fire));
 			"Resetting ability triggers grapple to fire again when held"
 			Set Secondary Fire Enabled(Event Player, False);
@@ -549,13 +576,13 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 			Stop Facing(Event Player);
 		"If simply outside of island range"
 		Else;
-			Event Player.HammondGrappleIsOn = True;
+			Event Player.Hammond_GrappleIsOn = True;
 			Allow Button(Event Player, Button(Secondary Fire));
 		End;
-		Destroy HUD Text(Event Player.HUDTextID1);
+		Destroy HUD Text(Event Player.TextIDS[0]);
 		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky (NOT NOW)"), Null, Left, 1, Null, Color(Gray),
 			Null, Visible To and String, Default Visibility);
-		Event Player.HUDTextID1 = Last Text ID;
+		Event Player.TextIDS[0] = Last Text ID;
 	}
 }
 
@@ -666,6 +693,12 @@ rule("DBG: Persistent dummy bots")
 	actions
 	{
 		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 1, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 2, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 3, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zarya), Team Of(Event Player), 1, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zarya), Team Of(Event Player), 2, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zarya), Team Of(Event Player), 3, Vector(0, 0, 0), Vector(0, 0, 0));
 	}
 }
 
