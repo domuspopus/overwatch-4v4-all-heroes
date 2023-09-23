@@ -135,6 +135,7 @@ variables
 		3: PowerupMessageSent
 		4: MapBoundryVertical
 		5: MapBoundryHorizontal
+		6: IsRoundActive
 		10: IteratorIndex1
 		11: Temp
 		24: DBGBotShooting
@@ -157,7 +158,9 @@ rule("NOTES/TODO'S")
 	{
 		"INFO: The general Ultimate Generation setting multiplies with specific ones (combat/passive). So when you set passive generation to say 200% and general to 200%, your passive will result in 400%."
 		Abort;
-		"INFO: \"IsGameInProgress = True\" condition evaluates to true only several seconds after round actually starts, prefer \"IsBetweenRounds != True\" for actions that need to happen with round start."
+		"INFO: Avoid default IsGameInProgress as it turns true only several seconds after round actually starts, prefer Global.IsRoundActive."
+		Abort;
+		"NOTE: Avoid default IsBetweenRounds as it turns false far too early in the start of the round, sometimes even when player is still indicated to have previous round hero."
 		Abort;
 		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It is not a noticable issue as of yet."
 		Abort;
@@ -197,7 +200,7 @@ rule("Base: Set global variables and show UI tips")
 	}
 }
 
-rule("Base: Skip hero select")
+rule("Base: Skip hero select, initiate round start variables")
 {
 	event
 	{
@@ -217,10 +220,13 @@ rule("Base: Skip hero select")
 			Abort;
 		End;
 		Set Match Time(0);
+		"Allow time for game to select hero for player and initiate round"
+		Wait(0.250, Ignore Condition);
+		Global.IsRoundActive = True;
 	}
 }
 
-rule("Base: Round end triggers and cleanup")
+rule("Base: Round end (cleanup)")
 {
 	event
 	{
@@ -235,16 +241,38 @@ rule("Base: Round end triggers and cleanup")
 	actions
 	{
 		Set Team Score(All Teams, 0);
-		For Global Variable(IteratorIndex1, 4, 12, 1);
-			Destroy Dummy Bot(Team 1, Global.IteratorIndex1);
-			Destroy Dummy Bot(Team 2, Global.IteratorIndex1);
-		End;
+		Global.IsRoundActive = False;
 		Global.PowerupMessageSent = False;
 		Stop All Healing Modifications;
 		Stop All Damage Over Time(All Players(All Teams));
 		Stop Forcing Player Position(All Players(All Teams));
 		Set Damage Dealt(All Players(All Teams), 100);
 		Set Max Health(All Players(All Teams), 100);
+		Allow Button(All Players(All Teams), Button(Secondary Fire));
+	}
+}
+
+rule("Base: Round end (cleanup - per player)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.IsRoundActive != True;
+	}
+
+	actions
+	{
+		"Destroy bots in slots 4-11, these are used for temporary dummy bots for faux abilities etc."
+		If(Is Dummy Bot(Event Player) && Slot Of(Event Player) > 3);
+			Destroy Dummy Bot(Team Of(Event Player), Slot Of(Event Player));
+		End;
+		Destroy HUD Text(Event Player.HUDTextID1);
 	}
 }
 
@@ -286,7 +314,8 @@ rule("Base: Ballance team sizes at round end")
 
 	conditions
 	{
-		Is Game In Progress != True;
+		Global.IsRoundActive != True;
+		Absolute Value(Number Of Players(Team 1) - Number Of Players(Team 2)) > 1;
 	}
 
 	actions
@@ -294,9 +323,9 @@ rule("Base: Ballance team sizes at round end")
 		"NOTE: in case of teams being 1:4 players it will take 2 rounds to ballance"
 		Global.Temp = Number Of Players(Team 1) - Number Of Players(Team 2);
 		If(Global.Temp > 1);
-			Move Player to Team(Players In Slot(0, Team 1), Team 2, -1);
+			Move Player to Team(Last Of(All Players(Team 1)), Team 2, -1);
 		Else If(Global.Temp < -1);
-			Move Player to Team(Players In Slot(0, Team 2), Team 1, -1);
+			Move Player to Team(Last Of(All Players(Team 2)), Team 1, -1);
 		End;
 	}
 }
@@ -311,7 +340,7 @@ rule("Base: Prevent overly long 1v1s")
 	conditions
 	{
 		Global.DBG != True;
-		Is Game In Progress == True;
+		Global.IsRoundActive == True;
 		Number Of Living Players(Team 1) == 1;
 		Number Of Living Players(Team 2) == 1;
 	}
@@ -368,7 +397,7 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 
 	conditions
 	{
-		Is Between Rounds != True;
+		Global.IsRoundActive == True;
 		Number Of Players(Team Of(Event Player)) < Number Of Players(Opposite Team Of(Team Of(Event Player)));
 	}
 
@@ -398,7 +427,7 @@ rule("Hero: Ana (self ult)")
 		Is Button Held(Event Player, Button(Ultimate)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
 		Is Dummy Bot(Event Player) == False;
-		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
 	}
@@ -414,7 +443,7 @@ rule("Hero: Ana (self ult)")
 			Event Player), 1000, To World, Direction and Turn Rate);
 		Wait(0.400, Ignore Condition);
 		Press Button(Players In Slot(10, Team Of(Event Player)), Button(Ultimate));
-		Wait Until((Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) != True, 9);
+		Wait Until((Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) != True, 9);
 		Destroy Dummy Bot(Team Of(Event Player), 10);
 	}
 }
@@ -432,7 +461,7 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 	{
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
 		Event Player.HammondGrappleIsOn == False;
-		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
@@ -474,6 +503,7 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 	{
 		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
 			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == False;
+		Global.IsRoundActive == True;
 	}
 
 	actions
@@ -500,6 +530,7 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 	{
 		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
 			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == True;
+		Global.IsRoundActive == True;
 	}
 
 	actions
@@ -541,7 +572,7 @@ rule("Hero: Junkrat (mid-air ult)")
 	{
 		Is Button Held(Event Player, Button(Ultimate)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
-		(Is Alive(Event Player) && Entity Exists(Event Player) && !Is Between Rounds) == True;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
 	}
@@ -574,7 +605,7 @@ rule("Hero: Soldier 76 (start with some ult%)")
 
 	conditions
 	{
-		Is Between Rounds != True;
+		Global.IsRoundActive == True;
 	}
 
 	actions
@@ -594,13 +625,12 @@ rule("Hero: D.Va (start with an ult)")
 
 	conditions
 	{
-		"NOTE: We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
-		Is Between Rounds != True;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 	}
 
 	actions
 	{
-		Wait(0.250, Ignore Condition);
+		"NOTE: We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
 		Set Ultimate Charge(Event Player, 100);
 	}
 }
@@ -675,7 +705,7 @@ rule("DBG: Persistent bot aim and shoot")
 	{
 		Slot Of(Event Player) == 0;
 		Is Dummy Bot(Event Player) == True;
-		Is Game In Progress == True;
+		Global.IsRoundActive == True;
 		Global.DBGBotShooting == True;
 	}
 
