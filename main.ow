@@ -129,15 +129,15 @@ settings
 variables
 {
 	global:
-        0: IsRoundActive
-        1: IsRoundStart
-        2: TextIDS
-        3: Powerup_HPPercent
-        4: Powerup_DamagePercent
-        5: Powerup_PlayersNumAdvantage
-        6: MapBoundry_Vertical
-        7: MapBoundry_Horizontal
-        8: TimeLimit1v1_Countdown
+		0: IsRoundActive
+		1: IsRoundStart
+		2: TextIDS
+		3: Powerup_HPPercent
+		4: Powerup_DamagePercent
+		5: Powerup_PlayersNumAdvantage
+		6: MapBoundry_Vertical
+		7: MapBoundry_Horizontal
+		8: TimeLimit1v1_Countdown
 		11: Temp
 		24: DBGBotShooting
 		25: DBG
@@ -162,6 +162,8 @@ rule("NOTES/TODO'S")
 		"INFO: Avoid default IsGameInProgress as it turns true only several seconds after round actually starts, prefer Global.IsRoundActive."
 		Abort;
 		"NOTE: Avoid default IsBetweenRounds as it turns false far too early in the start of the round, sometimes even when player is still indicated to have previous round hero."
+		Abort;
+		"NOTE: \"Temp\" variable (array of) is used for short lived, disposable varibales."
 		Abort;
 		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It is not a noticable issue as of yet."
 		Abort;
@@ -303,9 +305,9 @@ rule("Base: Prevent heroes flying away")
 
 	conditions
 	{
-		(Y Component Of(Position Of(Event Player)) > Global.MapBoundry_Vertical || Absolute Value(X Component Of(Position Of(Event Player)))
-			> Global.MapBoundry_Horizontal || Absolute Value(Z Component Of(Position Of(Event Player))) > Global.MapBoundry_Horizontal)
-			== True;
+		(Y Component Of(Position Of(Event Player)) > Global.MapBoundry_Vertical || Absolute Value(X Component Of(Position Of(
+			Event Player))) > Global.MapBoundry_Horizontal || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> Global.MapBoundry_Horizontal) == True;
 		Is Dummy Bot(Event Player) == False;
 	}
 
@@ -337,10 +339,10 @@ rule("Base: Ballance team sizes at round end")
 	actions
 	{
 		"NOTE: in case of teams being 1:4 players it will take 2 rounds to ballance"
-		Global.Temp = Number Of Players(Team 1) - Number Of Players(Team 2);
-		If(Global.Temp > 1);
+		Global.Temp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
+		If(Global.Temp[0] > 1);
 			Move Player to Team(Last Of(All Players(Team 1)), Team 2, -1);
-		Else If(Global.Temp < -1);
+		Else If(Global.Temp[0] < -1);
 			Move Player to Team(Last Of(All Players(Team 2)), Team 1, -1);
 		End;
 	}
@@ -371,8 +373,8 @@ rule("Base: Prevent overly long 1v1s (if players waiting)")
 		"This line is just to remove default countdown UI"
 		Set Match Time(120);
 		Wait Until(!Global.IsRoundActive, 10);
-		Create HUD Text(All Players(All Teams), Null, Custom String("Round ends in: {0} seconds", Global.TimeLimit1v1_Countdown), Null, Top,
-			1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(All Players(All Teams), Null, Custom String("Round ends in: {0} seconds", Global.TimeLimit1v1_Countdown), Null,
+			Top, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Global.TextIDS[0] = Last Text ID;
 		For Global Variable(TimeLimit1v1_Countdown, 25, 0, -1);
 			Wait Until(!Global.IsRoundActive, 1);
@@ -400,12 +402,12 @@ rule("Base: Prevent premature game completion")
 
 	actions
 	{
-		Global.Temp = First Of(All Players(All Teams));
-		If(Number Of Players(Team Of(Global.Temp)) == 1);
+		Global.Temp[1] = First Of(All Players(All Teams));
+		If(Number Of Players(Team Of(Global.Temp[1])) == 1);
 			"Skip victory screen on default victory when all but one players leave"
 			Restart Match;
 		Else;
-			Move Player to Team(Global.Temp, Opposite Team Of(Team Of(Global.Temp)), -1);
+			Move Player to Team(Global.Temp[1], Opposite Team Of(Team Of(Global.Temp[1])), -1);
 			Declare Round Draw;
 		End;
 	}
@@ -497,8 +499,8 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 	actions
 	{
 		"Position of where a fake icicle should be created (what hammond is looking at)."
-		Event Player.Hammond_IciclePos = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
-			Event Player) * 13, All Players(All Teams), Event Player, True);
+		Event Player.Hammond_IciclePos = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player)
+			+ Facing Direction Of(Event Player) * 13, All Players(All Teams), Event Player, True);
 		"Prevent underground icicle"
 		If(Y Component Of(Event Player.Hammond_IciclePos) < 0.700);
 			Event Player.Hammond_IciclePos = Vector(X Component Of(Event Player.Hammond_IciclePos), 0.700, Z Component Of(
