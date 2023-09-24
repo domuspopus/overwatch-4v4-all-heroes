@@ -140,6 +140,7 @@ variables
 		8: TimeLimit1v1_Countdown
 		9: HUDTipColor
 		11: Temp
+		23: DBGMsg
 		24: DBGBotShooting
 		25: DBG
 
@@ -695,6 +696,8 @@ disabled rule("DBG: Toggle")
 	actions
 	{
 		Global.DBG = True;
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("{0}", Global.DBGMsg), Right, 0, Color(White), Color(White),
+			Color(White), Visible To and String, Default Visibility);
 	}
 }
 
