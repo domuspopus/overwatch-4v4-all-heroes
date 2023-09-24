@@ -406,14 +406,14 @@ rule("Base: Prevent premature game completion")
 
 	actions
 	{
-		Global.Temp[1] = First Of(All Players(All Teams));
-		If(Number Of Players(Team Of(Global.Temp[1])) == 1);
+		Global.Temp[1] = Last Of(All Players(All Teams));
+		If(Number Of Players(All Teams) == 1);
 			"Skip victory screen on default victory when all but one players leave"
 			Restart Match;
 		Else;
 			Log To Inspector(Custom String("immediately moving \"{0}\" to {1}", Global.Temp[1], Opposite Team Of(Team Of(Global.Temp[1]))));
+			"XXX: it might make sense to also end match by declaring draw but that somehow doesn't trigger IsBetweenRounds (in this case) and no cleanup happens which is an issue"
 			Move Player to Team(Global.Temp[1], Opposite Team Of(Team Of(Global.Temp[1])), -1);
-			Declare Round Draw;
 		End;
 	}
 }
