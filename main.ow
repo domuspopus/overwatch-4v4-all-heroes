@@ -263,12 +263,14 @@ rule("Base: Round end (cleanup)")
 		Global.Powerup_PlayersNumAdvantage = 0;
 		Global.TimeLimit1v1_Countdown = -1;
 		Stop All Healing Modifications;
+		Stop All Damage Modifications;
 		Stop All Damage Over Time(All Players(All Teams));
 		Stop Forcing Player Position(All Players(All Teams));
 		Set Damage Dealt(All Players(All Teams), 100);
 		Set Max Health(All Players(All Teams), 100);
 		Allow Button(All Players(All Teams), Button(Secondary Fire));
 		Destroy HUD Text(Global.TextIDS[0]);
+		Set Knockback Dealt(All Players(All Teams), 100);
 	}
 }
 
@@ -607,6 +609,32 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky (NOT NOW)"), Null, Left, 1, Null, Custom Color(
 			255, 255, 255, 60), Null, Visible To and String, Default Visibility);
 		Event Player.TextIDS[0] = Last Text ID;
+	}
+}
+
+rule("Hero: Hammond (piledriver buff)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Ability Cooldown(Event Player, Button(Crouch)) > 0;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
+	}
+
+	actions
+	{
+		Start Damage Modification(All Players(All Teams), Event Player, 200, Receivers Damagers and Damage Percent);
+		Set Knockback Dealt(Event Player, 115);
+		Wait Until(Vertical Speed Of(Event Player) == 0, 2);
+		Wait(0.250, Ignore Condition);
+		Stop All Damage Modifications;
+		Set Knockback Dealt(Event Player, 100);
 	}
 }
 
