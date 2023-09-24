@@ -138,6 +138,7 @@ variables
 		6: MapBoundry_Vertical
 		7: MapBoundry_Horizontal
 		8: TimeLimit1v1_Countdown
+		9: HUDTipColor
 		11: Temp
 		24: DBGBotShooting
 		25: DBG
@@ -194,9 +195,9 @@ rule("Base: Set global variables and show UI tips")
 		Global.TimeLimit1v1_Countdown = -1;
 		"Tips"
 		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can self-ultimate"), Null, Left, 1, Null,
-			Color(White), Null, Visible To and String, Default Visibility);
+			Global.HUDTipColor, Null, Visible To and Color, Default Visibility);
 		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 1,
-			Null, Color(White), Null, Visible To and String, Default Visibility);
+			Null, Global.HUDTipColor, Null, Visible To and Color, Default Visibility);
 		"HUD spacing"
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
 			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
@@ -413,6 +414,26 @@ rule("Base: Prevent premature game completion")
 	}
 }
 
+rule("Misc: HUD tip highlight")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		Global.HUDTipColor = Color(Yellow);
+		Wait(2, Ignore Condition);
+		Global.HUDTipColor = Color(White);
+	}
+}
+
 rule("HP/Damage Balance: Powerup players belonging to smaller team")
 {
 	event
@@ -540,8 +561,8 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 		Event Player.Hammond_GrappleIsOn = False;
 		Disallow Button(Event Player, Button(Secondary Fire));
 		Destroy HUD Text(Event Player.TextIDS[0]);
-		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky"), Null, Left, 1, Null, Color(White), Null,
-			Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky"), Null, Left, 1, Null, Global.HUDTipColor, Null,
+			Visible To and Color, Default Visibility);
 		Event Player.TextIDS[0] = Last Text ID;
 	}
 }
@@ -582,8 +603,8 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 			Allow Button(Event Player, Button(Secondary Fire));
 		End;
 		Destroy HUD Text(Event Player.TextIDS[0]);
-		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky (NOT NOW)"), Null, Left, 1, Null, Color(Gray),
-			Null, Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky (NOT NOW)"), Null, Left, 1, Null, Custom Color(
+			255, 255, 255, 60), Null, Visible To and String, Default Visibility);
 		Event Player.TextIDS[0] = Last Text ID;
 	}
 }
