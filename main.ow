@@ -171,8 +171,6 @@ rule("NOTES/TODO'S")
 		Abort;
 		"BUG: Ultimates wont start generating for a few seconds in the start of match (need \"Is Game In Progress = True\"). This is an issue for characters that don't start with ult ready."
 		Abort;
-		"BUG: [unconfirmed] D.Va doesn't always get an instant re-mech charge?"
-		Abort;
 	}
 }
 
@@ -345,8 +343,10 @@ rule("Base: Ballance team sizes at round end")
 		"NOTE: in case of teams being 1:4 players it will take 2 rounds to ballance"
 		Global.Temp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
 		If(Global.Temp[0] > 1);
+			Log To Inspector(Custom String("moving \"{0}\" to Team 2", Last Of(All Players(Team 1))));
 			Move Player to Team(Last Of(All Players(Team 1)), Team 2, -1);
 		Else If(Global.Temp[0] < -1);
+			Log To Inspector(Custom String("moving \"{0}\" to Team 1", Last Of(All Players(Team 2))));
 			Move Player to Team(Last Of(All Players(Team 2)), Team 1, -1);
 		End;
 	}
@@ -411,6 +411,7 @@ rule("Base: Prevent premature game completion")
 			"Skip victory screen on default victory when all but one players leave"
 			Restart Match;
 		Else;
+			Log To Inspector(Custom String("immediately moving \"{0}\" to {1}", Global.Temp[1], Opposite Team Of(Team Of(Global.Temp[1]))));
 			Move Player to Team(Global.Temp[1], Opposite Team Of(Team Of(Global.Temp[1])), -1);
 			Declare Round Draw;
 		End;
@@ -740,19 +741,20 @@ rule("DBG: Persistent dummy bots")
 
 	conditions
 	{
-		Event Player == Host Player;
 		Global.DBG == True;
+		Match Round == 1;
+		Event Player == Host Player;
 	}
 
 	actions
 	{
-		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 1, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 2, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 3, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Zarya), Team Of(Event Player), 1, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Zarya), Team Of(Event Player), 2, Vector(0, 0, 0), Vector(0, 0, 0));
-		disabled Create Dummy Bot(Hero(Zarya), Team Of(Event Player), 3, Vector(0, 0, 0), Vector(0, 0, 0));
+		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 1, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 2, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 3, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zarya), Team Of(Host Player), 1, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zarya), Team Of(Host Player), 2, Vector(0, 0, 0), Vector(0, 0, 0));
+		disabled Create Dummy Bot(Hero(Zarya), Team Of(Host Player), 3, Vector(0, 0, 0), Vector(0, 0, 0));
 	}
 }
 
