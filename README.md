@@ -24,6 +24,9 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 #### 1.4 (in-development)
 
 - Rework Hammond icicle grapple for a more consistent and reliable mechanic.
+- Buff Hammond piledriver damage and knockback.
+- 1v1 time limit improvements, HUD indication for it.
+- Various fixes.
 
 #### 1.3
 
