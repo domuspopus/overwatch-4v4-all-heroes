@@ -2,7 +2,7 @@ settings
 {
 	main
 	{
-		Description: "All new OW2 heroes.\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Ballance changes.\n- Anti-winston-trolling.\n\nAll changes and info at:\nhttps://github.com/domuspopus/overwatch-4v4-all-heroes"
+		Description: "All new OW2 heroes.\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Ballance changes.\n- Anti-winston-trolling (limited airspace).\n\nAll changes and info at:\nhttps://github.com/domuspopus/overwatch-4v4-all-heroes"
 		Mode Name: "4v4 All Heroes (John edit v1.4dev)"
 	}
 
