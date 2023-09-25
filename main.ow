@@ -202,6 +202,9 @@ rule("Base: Set global variables and show UI tips")
 			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
 			Default Visibility);
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
+			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
+			Default Visibility);
+		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
 			"{0} {1}", Custom String(""), Custom String("")), Top, 0, Color(White), Color(White), Color(White), Visible To and String,
 			Default Visibility);
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
@@ -442,7 +445,7 @@ rule("Misc: HUD tip highlight")
 
 	actions
 	{
-		Global.HUDTipColor = Color(Yellow);
+		Global.HUDTipColor = Color(Orange);
 		Wait(2, Ignore Condition);
 		Global.HUDTipColor = Color(White);
 	}
