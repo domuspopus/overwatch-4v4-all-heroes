@@ -367,7 +367,7 @@ rule("Base: Prevent overly long 1v1s (if players waiting)")
 		Number Of Living Players(Team 2) == 1;
 		Number Of Players(All Teams) > 2;
 		"Ignore if round is already near end"
-		Match Time > 35;
+		Match Time > 40;
 	}
 
 	actions
@@ -376,11 +376,18 @@ rule("Base: Prevent overly long 1v1s (if players waiting)")
 		Log To Inspector(Custom String("1v1 time limit countdown start"));
 		"This line is just to remove default countdown UI"
 		Set Match Time(120);
-		Wait Until(!Global.IsRoundActive, 10);
-		Create HUD Text(All Players(All Teams), Null, Custom String("Round ends in: {0} seconds", Global.TimeLimit1v1_Countdown), Null,
-			Top, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+		"XXX: this is quite unsightly"
+		Wait Until(!Global.IsRoundActive || Count Of(Filtered Array(All Living Players(All Teams), !Is Dummy Bot(Current Array Element)))
+			> 2, 10);
+		If(Count Of(Filtered Array(All Living Players(All Teams), !Is Dummy Bot(Current Array Element))) > 2);
+			Log To Inspector(Custom String("1v1 time limit prevented"));
+			Abort;
+		End;
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("Round ends in: {0} seconds", Global.TimeLimit1v1_Countdown),
+			Top, 1, Color(White), Color(White), Global.TimeLimit1v1_Countdown > 5 ? Color(White) : Custom Color(250, 55, 65, 255),
+			String and Color, Default Visibility);
 		Global.TextIDS[0] = Last Text ID;
-		For Global Variable(TimeLimit1v1_Countdown, 25, 0, -1);
+		For Global Variable(TimeLimit1v1_Countdown, 30, 0, -1);
 			Wait Until(!Global.IsRoundActive, 1);
 		End;
 		Destroy HUD Text(Global.TextIDS[0]);
