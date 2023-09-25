@@ -334,12 +334,15 @@ rule("Base: Ballance team sizes at round end")
 
 	conditions
 	{
+		Global.DBG != True;
 		Global.IsRoundActive != True;
 		Absolute Value(Number Of Players(Team 1) - Number Of Players(Team 2)) > 1;
 	}
 
 	actions
 	{
+		"Wait before all utility bots are destroyed"
+		Wait Until(!Count Of(Filtered Array(All Players(All Teams), Is Dummy Bot(Current Array Element))), 1);
 		"NOTE: in case of teams being 1:4 players it will take 2 rounds to ballance"
 		Global.Temp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
 		If(Global.Temp[0] > 1);
