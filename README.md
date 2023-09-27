@@ -2,16 +2,15 @@ Reballanced and improved Overwatch **4v4 All Heroes** mode.
 
 CODE: 48CYD
 
-Differences from the [original script](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow) which is often used in Overwatch 2:
+Main differences from the [original script](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow) which is often used in Overwatch 2:
 
 - All new Overwatch 2 heroes are included.
 - Ana can nano herself if no target is selected.
 - Hammond can grapple onto thin air.
 - Junkrat can ult mid-air.
 - D.Va does not have never-ending nukes.
-- Several tanks have reduced HP.
-- Moira and Roadhog start without an ultimate ready.
 - Heroes wont fly too far away from map.
+- Several overly tanky characters have reduced HP.
 
 ![preview](preview.jpg)
 
@@ -21,7 +20,11 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 
 ### Changelog:
 
-#### 1.4 (in-development)
+#### 1.5 (in-development)
+
+- ...
+
+#### 1.4
 
 - Rework Hammond icicle grapple for a more consistent and reliable mechanic.
 - Buff Hammond piledriver damage and knockback.
