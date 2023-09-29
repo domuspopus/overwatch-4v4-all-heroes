@@ -216,26 +216,30 @@ rule("Base: Set global variables and show UI tips")
 			Global.Temp[2] += 1;
 		End;
 		"Show hero specific tips"
-		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Ana), Button(Ultimate)))));
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Ana), Button(
+			Ultimate)))));
 		If(Global.Temp[2]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Ana) ? Local Player : Null, Null,
 				Global.Temp[2], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
-		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Junkrat), Button(Ultimate)))));
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Junkrat),
+			Button(Ultimate)))));
 		If(Global.Temp[2]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
 				Null, Global.Temp[2], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
-		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Wrecking Ball), Button(Secondary Fire)))));
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(
+			Wrecking Ball), Button(Secondary Fire)))));
 		If(Global.Temp[2]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} (NOT NOW)", Global.Temp[2]), Null,
-				Left, 2, Null, Custom Color(255, 255, 255, 50), Null, Visible To and Color, Visible Never);
+				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} (NOT NOW)", Global.Temp[2]), Null, Left, 2,
+				Null, Custom Color(255, 255, 255, 50), Null, Visible To and Color, Visible Never);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
 				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} (HOLD)         ", Global.Temp[2]), Null,
 				Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
-		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Wrecking Ball), Button(Crouch)))));
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(
+			Wrecking Ball), Button(Crouch)))));
 		If(Global.Temp[2]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
 				? Local Player : Null, Null, Custom String("{0}                        ", Global.Temp[2]), Null, Left, 3, Null,
