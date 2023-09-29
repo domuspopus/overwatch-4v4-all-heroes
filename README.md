@@ -1,8 +1,7 @@
-Reballanced and improved Overwatch **4v4 All Heroes** mode.
-
+Reballanced and improved Overwatch **4v4 All Heroes** mode. Alias **J-edit**.  
 CODE: 48CYD
 
-Main differences from the [original script](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow) which is often used in Overwatch 2:
+Main differences from the [older script](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow) which is often used in Overwatch custom games:
 
 - All new Overwatch 2 heroes are included.
 - Ana can nano herself if no target is selected.
@@ -10,15 +9,19 @@ Main differences from the [original script](https://github.com/domuspopus/overwa
 - Junkrat can ult mid-air.
 - D.Va does not have never-ending nukes.
 - Heroes wont fly too far away from map.
-- Several overly tanky characters have reduced HP.
+- Overly tanky characters have reduced HP.
 
-![preview](preview.jpg)
+![preview](preview.png)
 
-### Configuration:
+### Mode description
 
-Anything that isn't a simple setting (e.g. HP of a character) can be turned off by simply disabling workshop rule associated with it. All rules have descriptive names. For instance to disable Ana self ult ability, find a rule named "Hero: Ana (self ult)", tick the checkbox on the side of it and toggle the rule off using the button atop the interface. 
+Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked randomly and start with ultimates ready or a high ultimate charge. Ability cooldowns are largely reduced. Perfectly playable as 1v1, 1v2, 2v2, etc. In case of team size imballance, the smaller team will have buffed HP and damage.
 
-### Changelog:
+### Configuration
+
+Anything that isn't a simple setting (e.g. HP of a character) can be turned off by disabling workshop rule associated with it. All rules have descriptive names. For instance to disable Ana self ult ability, find a rule named "Hero: Ana (self ult)", tick the checkbox on the side of it and toggle the rule off using the button atop the interface.
+
+### Changelog
 
 #### 1.5 (in-development)
 
