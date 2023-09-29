@@ -1,18 +1,18 @@
 Reballanced and improved Overwatch **4v4 All Heroes** mode (alias **J-edit**, code 48CYD).
 
-![preview](preview.png)
+---
 
 Main differences from the [older script](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow) which is often used in Overwatch custom games:
 
 - All new Overwatch 2 heroes are included.
 - Ana can nano herself if no target is selected.
-- Hammond can grapple onto thin air.
-- Junkrat can ult mid-air.
+- Hammond can [grapple onto thin air](preview-ball-grapple.gif).
+- Junkrat can [ult mid-air](preview-junk-ult.gif).
 - D.Va does not have never-ending nukes.
 - Heroes wont fly too far away from map.
 - Overly tanky characters have reduced HP.
 
-<img width=200 src="preview-ball-grapple.gif"> <img width=200 src="preview-junk-ult.gif">
+![preview](preview.png)
 
 ### Mode description
 
