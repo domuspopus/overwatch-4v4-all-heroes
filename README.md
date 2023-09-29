@@ -1,5 +1,6 @@
-Reballanced and improved Overwatch **4v4 All Heroes** mode. Alias **J-edit**.  
-CODE: 48CYD
+Reballanced and improved Overwatch **4v4 All Heroes** mode (alias **J-edit**, code 48CYD).
+
+![preview](preview.png)
 
 Main differences from the [older script](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow) which is often used in Overwatch custom games:
 
@@ -11,11 +12,11 @@ Main differences from the [older script](https://github.com/domuspopus/overwatch
 - Heroes wont fly too far away from map.
 - Overly tanky characters have reduced HP.
 
-![preview](preview.png)
+<img width=200 src="preview-ball-grapple.gif"> <img width=200 src="preview-junk-ult.gif">
 
 ### Mode description
 
-Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked randomly and start with ultimates ready or a high ultimate charge. Ability cooldowns are largely reduced. Perfectly playable as 1v1, 1v2, 2v2, etc. In case of team size imballance, the smaller team will have buffed HP and damage.
+Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked randomly and start with an ultimates ready or a high ultimate charge. Ability cooldowns are largely reduced. Perfectly playable as 1v1, 1v2, 2v2, etc. In case of team size imballance, the smaller team will have buffed HP and damage.
 
 ### Configuration
 
