@@ -139,6 +139,7 @@ variables
 		7: MapBoundry_Horizontal
 		8: TimeLimit1v1_Countdown
 		9: HUDTipColor
+		10: Tips
 		11: Temp
 		22: DBGAllowHeroSelect
 		23: DBGMsg
@@ -168,6 +169,8 @@ rule("NOTES/TODO'S")
 		Abort;
 		"NOTE: \"Temp\" variable (array of) is used for short lived, disposable varibales."
 		Abort;
+		"NOTE: Both \"TextIDS\" variables are currently unused."
+		Abort;
 		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It is not a noticable issue as of yet."
 		Abort;
 		"BUG: Ultimates wont start generating for a few seconds in the start of match (need \"Is Game In Progress = True\"). This is an issue for characters that don't start with ult ready."
@@ -193,23 +196,62 @@ rule("Base: Set global variables and show UI tips")
 		"Misc"
 		Disable Built-In Game Mode Announcer;
 		Global.TimeLimit1v1_Countdown = -1;
-		"Tips"
-		Create HUD Text(Players On Hero(Hero(Ana), All Teams), Null, Custom String("TIP: You can self-ultimate"), Null, Left, 1, Null,
-			Global.HUDTipColor, Null, Visible To and Color, Default Visibility);
-		Create HUD Text(Players On Hero(Hero(Junkrat), All Teams), Null, Custom String("TIP: You can ultimate mid-air"), Null, Left, 1,
-			Null, Global.HUDTipColor, Null, Visible To and Color, Default Visibility);
+		"Global tips"
+		Create HUD Text(!Global.IsRoundActive || Is Dead(Local Player) ? Local Player : Null, Null, Null, Custom String("Hero tips"), Left,
+			1, Null, Null, Color(Lime Green), Visible To, Visible Always);
+		Global.Tips = Empty Array;
+		Modify Global Variable(Tips, Append To Array, Custom String("{0} {1} Can self-ultimate     ", Hero Icon String(Hero(Ana)),
+			Ability Icon String(Hero(Ana), Button(Ultimate))));
+		Modify Global Variable(Tips, Append To Array, Custom String("{0} {1} Can ultimate mid-air", Hero Icon String(Hero(Junkrat)),
+			Ability Icon String(Hero(Junkrat), Button(Ultimate))));
+		Modify Global Variable(Tips, Append To Array, Custom String("{0} {1} Can grapple air / sky", Hero Icon String(Hero(Wrecking Ball)),
+			Ability Icon String(Hero(Wrecking Ball), Button(Secondary Fire))));
+		Modify Global Variable(Tips, Append To Array, Custom String("{0} {1} Stronger piledriver ", Hero Icon String(Hero(Wrecking Ball)),
+			Ability Icon String(Hero(Wrecking Ball), Button(Crouch))));
+		Global.Temp[2] = 0;
+		While(Global.Temp[2] < Count Of(Global.Tips));
+			Create HUD Text(!Global.IsRoundActive || Is Dead(Local Player) ? Local Player : Null, Null, Global.Tips[Global.Temp[2]], Null,
+				Left, 2, Null, Color(White), Null, Visible To, Visible Always);
+			Global.Temp[2] += 1;
+		End;
+		"Show hero specific tips"
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Ana), Button(Ultimate)))));
+		If(Global.Temp[2]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Ana) ? Local Player : Null, Null,
+				Global.Temp[2], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Junkrat), Button(Ultimate)))));
+		If(Global.Temp[2]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
+				Null, Global.Temp[2], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Wrecking Ball), Button(Secondary Fire)))));
+		If(Global.Temp[2]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
+				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} (NOT NOW)", Global.Temp[2]), Null,
+				Left, 2, Null, Custom Color(255, 255, 255, 50), Null, Visible To and Color, Visible Never);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
+				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} (HOLD)         ", Global.Temp[2]), Null,
+				Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
+		Global.Temp[2] = First Of(Filtered Array(Global.Tips, String Contains(Current Array Element, Ability Icon String(Hero(Wrecking Ball), Button(Crouch)))));
+		If(Global.Temp[2]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
+				? Local Player : Null, Null, Custom String("{0}                        ", Global.Temp[2]), Null, Left, 3, Null,
+				Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
 		"HUD spacing"
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
-			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
+			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To,
 			Default Visibility);
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
-			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To and String,
+			"{0} {1}", Custom String(""), Custom String("")), Left, 0, Color(White), Color(White), Color(White), Visible To,
 			Default Visibility);
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
-			"{0} {1}", Custom String(""), Custom String("")), Top, 0, Color(White), Color(White), Color(White), Visible To and String,
+			"{0} {1}", Custom String(""), Custom String("")), Top, 0, Color(White), Color(White), Color(White), Visible To,
 			Default Visibility);
 		Create HUD Text(All Players(All Teams), Null, Custom String("{0} {1}", Custom String(""), Custom String("")), Custom String(
-			"{0} {1}", Custom String(""), Custom String("")), Top, 0, Color(White), Color(White), Color(White), Visible To and String,
+			"{0} {1}", Custom String(""), Custom String("")), Top, 0, Color(White), Color(White), Color(White), Visible To,
 			Default Visibility);
 	}
 }
@@ -582,10 +624,6 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 	{
 		Event Player.Hammond_GrappleIsOn = False;
 		Disallow Button(Event Player, Button(Secondary Fire));
-		Destroy HUD Text(Event Player.TextIDS[0]);
-		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky"), Null, Left, 1, Null, Global.HUDTipColor, Null,
-			Visible To and Color, Default Visibility);
-		Event Player.TextIDS[0] = Last Text ID;
 	}
 }
 
@@ -624,10 +662,6 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 			Event Player.Hammond_GrappleIsOn = True;
 			Allow Button(Event Player, Button(Secondary Fire));
 		End;
-		Destroy HUD Text(Event Player.TextIDS[0]);
-		Create HUD Text(Event Player, Null, Custom String("TIP: Try to grapple air / sky (NOT NOW)"), Null, Left, 1, Null, Custom Color(
-			255, 255, 255, 60), Null, Visible To and String, Default Visibility);
-		Event Player.TextIDS[0] = Last Text ID;
 	}
 }
 
