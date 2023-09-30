@@ -425,8 +425,9 @@ rule("Base: Prevent overly long 1v1s (if players waiting)")
 	{
 		Global.DBG != True;
 		Global.IsRoundActive == True;
-		Number Of Living Players(Team 1) == 1;
-		Number Of Living Players(Team 2) == 1;
+		"Simply checking \"Number Of Living Players(Team X)\" is not enough because player who just joined and waits for round end will count towards the living"
+		Count Of(Filtered Array(All Players(Team 1), Has Spawned(Current Array Element) && Is Alive(Current Array Element))) == 1;
+		Count Of(Filtered Array(All Players(Team 2), Has Spawned(Current Array Element) && Is Alive(Current Array Element))) == 1;
 		Number Of Players(All Teams) > 2;
 		"Ignore if round is already near end"
 		Match Time > 40;
@@ -446,7 +447,7 @@ rule("Base: Prevent overly long 1v1s (if players waiting)")
 			Abort;
 		End;
 		Create HUD Text(All Players(All Teams), Null, Null, Custom String("Round ends in: {0} seconds", Global.TimeLimit1v1_Countdown),
-			Top, 1, Color(White), Color(White), Global.TimeLimit1v1_Countdown > 5 ? Color(White) : Custom Color(250, 55, 65, 255),
+			Top, 1, Color(White), Color(White), Global.TimeLimit1v1_Countdown > 10 ? Color(White) : Custom Color(250, 55, 65, 255),
 			String and Color, Default Visibility);
 		Global.TextIDS[0] = Last Text ID;
 		For Global Variable(TimeLimit1v1_Countdown, 30, 0, -1);
