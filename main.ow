@@ -197,6 +197,9 @@ rule("Base: Set global variables and show UI tips")
 		"Misc"
 		Disable Built-In Game Mode Announcer;
 		Global.TimeLimit1v1_Countdown = -1;
+		"Show server load stats to lobby creator, dont transfer it to other host if original one leaves"
+		Create HUD Text(Host Player, Null, Custom String("Server load: avg {0}% peak {1}%", Server Load Average, Server Load Peak), Null,
+			Right, 0, Null, Custom Color(255, 255, 255, 30), Null, String, Visible Never);
 		"Global tips"
 		Create HUD Text(!Global.IsRoundActive || Is Dead(Local Player) ? Local Player : Null, Null, Null, Custom String("Hero tips"), Left,
 			1, Null, Null, Color(Lime Green), Visible To, Visible Always);
