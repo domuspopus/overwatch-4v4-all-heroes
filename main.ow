@@ -151,6 +151,7 @@ variables
 		0: TextIDS
 		1: Hammond_GrappleIsOn
 		2: Hammond_IciclePos
+		3: ServerLoadVisible
 }
 
 rule("NOTES/TODO'S")
@@ -197,14 +198,14 @@ rule("Base: Set global variables and show UI tips")
 		"Misc"
 		Disable Built-In Game Mode Announcer;
 		Global.TimeLimit1v1_Countdown = -1;
-		"Show server load stats to lobby creator, dont transfer it to other host if original one leaves"
-		Create HUD Text(Host Player, Null, Custom String("Server load: avg {0}% peak {1}%", Server Load Average, Server Load Peak), Null,
-			Right, 0, Null, Custom Color(255, 255, 255, 30), Null, String, Visible Never);
-		"Global tips"
-		Create HUD Text(!Global.IsRoundActive || Is Dead(Local Player) ? Local Player : Null, Null, Null, Custom String("Hero tips"), Left,
-			1, Null, Null, Color(Lime Green), Visible To, Visible Always);
+		Create HUD Text(True ? Local Player.ServerLoadVisible : Null, Null, Custom String("Server load {0}% avg {1}% peak",
+			Server Load Average, Server Load Peak), Null, Right, -1, Null, Server Load Average < 70 ? Custom Color(255, 255, 255, 50)
+			: Custom Color(255, 0, 0, 120), Null, Visible To String and Color, Visible Always);
+		"Global tips (NOTE: avoid using local player for general tips that everyone should see between rounds)"
+		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
+			Custom String("Hero tips"), Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
 		Global.Tips = Empty Array;
-		Modify Global Variable(Tips, Append To Array, Custom String("{0} {1} Can self-ultimate     ", Hero Icon String(Hero(Ana)),
+		Modify Global Variable(Tips, Append To Array, Custom String("{0} {1} Can self-ultimate      ", Hero Icon String(Hero(Ana)),
 			Ability Icon String(Hero(Ana), Button(Ultimate))));
 		Modify Global Variable(Tips, Append To Array, Custom String("{0} {1} Can ultimate mid-air", Hero Icon String(Hero(Junkrat)),
 			Ability Icon String(Hero(Junkrat), Button(Ultimate))));
@@ -214,8 +215,8 @@ rule("Base: Set global variables and show UI tips")
 			Ability Icon String(Hero(Wrecking Ball), Button(Crouch))));
 		Global.Temp[2] = 0;
 		While(Global.Temp[2] < Count Of(Global.Tips));
-			Create HUD Text(!Global.IsRoundActive || Is Dead(Local Player) ? Local Player : Null, Null, Global.Tips[Global.Temp[2]], Null,
-				Left, 2, Null, Color(White), Null, Visible To, Visible Always);
+			Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null,
+				Global.Tips[Global.Temp[2]], Null, Left, 2, Null, Color(White), Null, Visible To, Visible Always);
 			Global.Temp[2] += 1;
 		End;
 		"Show hero specific tips"
@@ -284,8 +285,8 @@ rule("Base: Skip hero select, initiate round start variables")
 		End;
 		"Allow time to select in debug mode"
 		If(Global.DBGAllowHeroSelect);
-			Set Match Time(5);
-			Wait(5, Ignore Condition);
+			Set Match Time(Global.DBGAllowHeroSelect);
+			Wait(Global.DBGAllowHeroSelect, Ignore Condition);
 		End;
 		"This skips the selection"
 		Set Match Time(0);
@@ -787,7 +788,7 @@ disabled rule("DBG: Main toggle")
 	actions
 	{
 		Global.DBG = True;
-		Create HUD Text(All Players(All Teams), Null, Null, Custom String("{0}", Global.DBGMsg), Right, 0, Color(White), Color(White),
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("DBG {0}", Global.DBGMsg), Right, 0, Color(White), Color(White),
 			Color(White), Visible To and String, Default Visibility);
 	}
 }
@@ -801,7 +802,28 @@ disabled rule("DBG: Enable hero select")
 
 	actions
 	{
-		Global.DBGAllowHeroSelect = True;
+		Global.DBGAllowHeroSelect = 8;
+	}
+}
+
+rule("DBG: Server load view toggler")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Interact)) == True;
+		Is Button Held(Event Player, Button(Reload)) == True;
+	}
+
+	actions
+	{
+		Event Player.ServerLoadVisible = !Event Player.ServerLoadVisible;
 	}
 }
 
