@@ -27,6 +27,7 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 
 #### 1.5 (in-development)
 
+- Improve character tips and make all of them show on death and between rounds.
 - Character ballance changes:
     - Soldier: bump starting ult charge %, decrease ult duration.
     - ...
