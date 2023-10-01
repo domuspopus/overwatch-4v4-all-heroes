@@ -50,6 +50,7 @@ settings
 
 			Cassidy
 			{
+				Spawn With Ultimate Ready: Off
 				Ultimate Generation - Combat Deadeye: 200%
 				Ultimate Generation - Passive Deadeye: 10%
 			}
@@ -98,7 +99,7 @@ settings
 			Soldier: 76
 			{
 				Spawn With Ultimate Ready: Off
-				Ultimate Duration: 65%
+				Ultimate Duration: 40%
 			}
 
 			Widowmaker
@@ -510,6 +511,33 @@ rule("Misc: HUD tip highlight")
 	}
 }
 
+rule("Bugfix: Pre-game ult generation")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		"For the first ~3 seconds of the round ultimates to not generate so we have to calc it manually for some heroes during this"
+		Global.IsRoundActive == True;
+		Is Game In Progress == False;
+	}
+
+	actions
+	{
+		If(Hero Of(Event Player) == Hero(Soldier: 76));
+			"Soldiers normal rounds do ~18 damage, we take this much for a +1% to charge"
+			Set Ultimate Charge(Event Player, Ultimate Charge Percent(Event Player) + Round To Integer(Event Damage / 20, Up));
+		Else If(Hero Of(Event Player) == Hero(Cassidy));
+			Set Ultimate Charge(Event Player, 100);
+		End;
+	}
+}
+
 rule("HP/Damage Balance: Powerup players belonging to smaller team")
 {
 	event
@@ -753,7 +781,8 @@ rule("Hero: Soldier 76 (start with some ult%)")
 
 	actions
 	{
-		Set Ultimate Charge(Event Player, 85);
+		"Value is tweaked with respect to \"Bugfix: pre-game ult generation\""
+		Set Ultimate Charge(Event Player, 93);
 	}
 }
 
@@ -775,6 +804,26 @@ rule("Hero: D.Va (start with an ult)")
 	{
 		"NOTE: We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
 		Set Ultimate Charge(Event Player, 100);
+	}
+}
+
+rule("Hero: McCree (start with some ult%)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Cassidy;
+	}
+
+	conditions
+	{
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		Set Ultimate Charge(Event Player, 99);
 	}
 }
 
