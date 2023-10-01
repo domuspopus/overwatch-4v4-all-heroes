@@ -27,7 +27,12 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 
 #### 1.5 (in-development)
 
-- ...
+- Character ballance changes:
+    - Soldier: bump starting ult charge %, decrease ult duration.
+    - ...
+- Allow for ultimate generation during start of the round (via custom workaround).
+    - This is due to a limitation of Elimination mode, first ~3 seconds of a round disallow ultimate generation.
+- Various fixes.
 
 #### 1.4
 
