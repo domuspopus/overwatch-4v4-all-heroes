@@ -11,6 +11,7 @@ Main differences from the [older script](https://github.com/domuspopus/overwatch
 - D.Va does not have never-ending nukes.
 - Heroes wont fly too far away from map.
 - Overly tanky characters have reduced HP.
+- Team sizes ballancing between rounds.
 
 ![preview](preview.png)
 
