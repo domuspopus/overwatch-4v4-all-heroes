@@ -765,27 +765,6 @@ rule("Hero: Junkrat (mid-air ult)")
 	}
 }
 
-rule("Hero: Soldier 76 (start with some ult%)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		Soldier: 76;
-	}
-
-	conditions
-	{
-		Global.IsRoundActive == True;
-	}
-
-	actions
-	{
-		"Value is tweaked with respect to \"Bugfix: pre-game ult generation\""
-		Set Ultimate Charge(Event Player, 93);
-	}
-}
-
 rule("Hero: D.Va (start with an ult)")
 {
 	event
@@ -804,6 +783,27 @@ rule("Hero: D.Va (start with an ult)")
 	{
 		"NOTE: We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
 		Set Ultimate Charge(Event Player, 100);
+	}
+}
+
+rule("Hero: Soldier 76 (start with some ult%)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		"Value is tweaked with respect to \"Bugfix: pre-game ult generation\""
+		Set Ultimate Charge(Event Player, 93);
 	}
 }
 
