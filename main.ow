@@ -159,6 +159,8 @@ variables
 		1: Hammond_GrappleIsOn
 		2: Hammond_IciclePos
 		3: ServerLoadVisible
+		4: ChaserVar1
+		5: Temp
 }
 
 rule("NOTES/TODO'S")
@@ -177,8 +179,6 @@ rule("NOTES/TODO'S")
 		"NOTE: Avoid default IsBetweenRounds as it turns false far too early in the start of the round, sometimes even when player is still indicated to have previous round hero."
 		Abort;
 		"NOTE: \"Temp\" variable (array of) is used for short lived, disposable varibales."
-		Abort;
-		"NOTE: Both \"TextIDS\" variables are currently unused."
 		Abort;
 		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It is not a noticable issue as of yet."
 		Abort;
@@ -335,6 +335,8 @@ rule("Base: Round end (cleanup)")
 		Allow Button(All Players(All Teams), Button(Secondary Fire));
 		Destroy HUD Text(Global.TextIDS[0]);
 		Set Knockback Dealt(All Players(All Teams), 100);
+		Destroy All In-World Text;
+		Destroy All Progress Bar In-World Text;
 	}
 }
 
@@ -359,6 +361,7 @@ rule("Base: Round end (cleanup - per player)")
 			Destroy Dummy Bot(Team Of(Event Player), Slot Of(Event Player));
 		End;
 		Destroy HUD Text(Event Player.TextIDS[0]);
+		Stop Chasing Player Variable(Event Player, ChaserVar1);
 	}
 }
 
@@ -830,6 +833,65 @@ rule("Hero: McCree (start with some ult%)")
 	actions
 	{
 		Set Ultimate Charge(Event Player, 98);
+	}
+}
+
+rule("Hero: Lifeweaver (ult duration)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Lifeweaver;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		Event Player.ChaserVar1 = 100;
+		Event Player.Temp[0] = Eye Position(Event Player);
+		Event Player.Temp[1] = Eye Position(Event Player) + Facing Direction Of(Event Player) * 40;
+		"Wait for tree to spawn"
+		Wait(0.250, Ignore Condition);
+		"Cast ray from recorded eye position to recorded position these eyes were looking at, find a tree hit by the ray, shift found position upwards by 1 and away from eyes by 2 to center into tree trunk"
+		Event Player.Temp[1] = Ray Cast Hit Position(Event Player.Temp[0], Event Player.Temp[1], Null, Null, True) + Facing Direction Of(
+			Event Player) * Vector(2, 0, 2) + Vector(0, 1, 0);
+		disabled Create Effect(All Players(All Teams), Sphere, Color(Red), Event Player.Temp[1], 1, None);
+		Create Progress Bar In-World Text(All Players(Team Of(Event Player)), Event Player.ChaserVar1, Null, Event Player.Temp[1], 0.750,
+			Do Not Clip, Custom Color(255, 235, 130, 255), Null, Values, Default Visibility);
+		Event Player.TextIDS[0] = Last Text ID;
+		Chase Player Variable Over Time(Event Player, ChaserVar1, 0, 7, None);
+		Wait Until(Event Player.ChaserVar1 == 0, 15);
+		Press Button(Event Player, Button(Ultimate));
+		Destroy Progress Bar In-World Text(Event Player.TextIDS[0]);
+	}
+}
+
+rule("Hero: Lifeweaver (ult duration - cleanup)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Lifeweaver;
+	}
+
+	conditions
+	{
+		"XXX: normally there seems to be no way to reliably detect tree being destroyed, as a hacky workaround we just check if weaver starts building ult again, meaning there is no tree active"
+		Ultimate Charge Percent(Event Player) > 0;
+		Event Player.ChaserVar1 != 0;
+	}
+
+	actions
+	{
+		Stop Chasing Player Variable(Event Player, ChaserVar1);
+		Destroy Progress Bar In-World Text(Event Player.TextIDS[0]);
 	}
 }
 
