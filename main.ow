@@ -603,6 +603,7 @@ rule("Hero: Ana (self ult)")
 		Set Invisible(Players In Slot(10, Team Of(Event Player)), All);
 		Start Forcing Dummy Bot Name(Players In Slot(10, Team Of(Event Player)), Custom String("Ana Apparition"));
 		Start Forcing Player Position(Players In Slot(10, Team Of(Event Player)), Position Of(Event Player) + Vector(0, 5, 1), False);
+		Set Status(Players In Slot(10, Team Of(Event Player)), Null, Phased Out, 9999);
 		Start Facing(Players In Slot(10, Team Of(Event Player)), Direction Towards(Players In Slot(10, Team Of(Event Player)),
 			Event Player), 1000, To World, Direction and Turn Rate);
 		Wait(0.400, Ignore Condition);
