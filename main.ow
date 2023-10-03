@@ -116,6 +116,7 @@ settings
 
 			Winston
 			{
+				Barrier Projector Cooldown Time: 35%
 				Damage Dealt: 140%
 				Health: 75%
 			}
@@ -892,6 +893,39 @@ rule("Hero: Lifeweaver (ult duration - cleanup)")
 	{
 		Stop Chasing Player Variable(Event Player, ChaserVar1);
 		Destroy Progress Bar In-World Text(Event Player.TextIDS[0]);
+	}
+}
+
+rule("Hero: Winstor (limit barrier HP)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Winston;
+	}
+
+	conditions
+	{
+		Is Using Ability 2(Event Player) == True;
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		Event Player.Temp[2] = Position Of(Event Player);
+		"Atop the edge of shield border"
+		Event Player.Temp[3] = Position Of(Event Player) + Vector(0, 5.400, 0);
+		"We create a dummy bot in the opposite team for it to own the projectile. Granting ownership to null or arbitrary opposite team member has side effects and incosistencies."
+		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Event Player)), 7, Vector(0, -2, 0), Vector(0, 0, 0));
+		Start Forcing Dummy Bot Name(Players In Slot(7, Opposite Team Of(Team Of(Event Player))), Custom String("Apparition"));
+		Set Invisible(Players In Slot(7, Opposite Team Of(Team Of(Event Player))), All);
+		Wait(0.100, Ignore Condition);
+		Create Projectile(Orb Projectile, Players In Slot(7, Opposite Team Of(Team Of(Event Player))), Event Player.Temp[3],
+			Direction Towards(Event Player.Temp[3], Event Player.Temp[2]), To World, Damage, Team Of(Event Player), 340, 0, 0,
+			Bad Explosion, Explosion Sound, 0, 0.100, 0.200, 0, 0, 0);
+		Wait(0.200, Ignore Condition);
+		Destroy Dummy Bot(Opposite Team Of(Team Of(Event Player)), 7);
 	}
 }
 
