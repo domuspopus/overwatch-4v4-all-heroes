@@ -28,6 +28,7 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 #### 1.5 (in-development)
 
 - Improve character tips and make all of them show on death and between rounds.
+- Allow Echo to be affected by some faux abilities and effects (e.g. Ana self-ult, Hammond icicle grapple) when she is duplicating.
 - Allow for ultimate generation during start of the round (via custom workaround).
     - This is due to a limitation of Elimination mode, first ~3 seconds of a round disallow ultimate generation.
     - Currently only important for McCree and Soldier.
