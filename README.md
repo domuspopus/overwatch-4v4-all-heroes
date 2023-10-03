@@ -38,7 +38,7 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
     - Soldier: increase starting ult charge %, decrease ult duration.
     - Zarya: slightly increase HP.
     - Lifeweaver: decrease petal plate HP, decrease Tree of Life HP and halve its duration.
-    - Winston: increase shield cooldown, decrease shiled HP.
+    - Winston: increase shield cooldown, decrease shield HP.
     - McCree: require he lands at least 2 shots to build 100% ult charge.
     - Rein: increase passive ult generation rate.
     - Hammons: slightly increase piledriver damage.
