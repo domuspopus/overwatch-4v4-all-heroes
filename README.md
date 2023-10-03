@@ -19,6 +19,8 @@ Main differences from the [older script](https://github.com/domuspopus/overwatch
 
 Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked randomly and start with an ultimates ready or a high ultimate charge. Ability cooldowns are largely reduced. Perfectly playable as 1v1, 1v2, 2v2, etc. In case of team size imballance, the smaller team will have buffed HP and damage.
 
+Mode [workshop.codes](https://workshop.codes/48CYD) page.
+
 ### Configuration
 
 Anything that isn't a simple setting (e.g. HP of a character) can be turned off by disabling workshop rule associated with it. All rules have descriptive names. For instance to disable Ana self ult ability, find a rule named "Hero: Ana (self ult)", tick the checkbox on the side of it and toggle the rule off using the button atop the interface.
