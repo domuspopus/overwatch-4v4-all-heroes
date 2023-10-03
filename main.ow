@@ -162,6 +162,8 @@ variables
 		3: ServerLoadVisible
 		4: ChaserVar1
 		5: Temp
+		6: Echo_JustDuplicated
+		7: Echo_DupeUlted
 }
 
 rule("NOTES/TODO'S")
@@ -363,6 +365,7 @@ rule("Base: Round end (cleanup - per player)")
 		End;
 		Destroy HUD Text(Event Player.TextIDS[0]);
 		Stop Chasing Player Variable(Event Player, ChaserVar1);
+		Event Player.Echo_JustDuplicated = Null;
 	}
 }
 
@@ -583,7 +586,7 @@ rule("Hero: Ana (self ult)")
 	{
 		Ongoing - Each Player;
 		All;
-		Ana;
+		All;
 	}
 
 	conditions
@@ -594,6 +597,7 @@ rule("Hero: Ana (self ult)")
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
+		(Hero Of(Event Player) == Hero(Ana) || Hero Being Duplicated(Event Player) == Hero(Ana)) == True;
 	}
 
 	actions
@@ -608,6 +612,8 @@ rule("Hero: Ana (self ult)")
 			Event Player), 1000, To World, Direction and Turn Rate);
 		Wait(0.400, Ignore Condition);
 		Press Button(Players In Slot(10, Team Of(Event Player)), Button(Ultimate));
+		"Support line for when Echo ults as Ana"
+		Event Player.Echo_DupeUlted = True;
 		Wait Until((Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) != True, 9);
 		Destroy Dummy Bot(Team Of(Event Player), 10);
 	}
@@ -619,7 +625,7 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 	{
 		Ongoing - Each Player;
 		All;
-		Wrecking Ball;
+		All;
 	}
 
 	conditions
@@ -630,6 +636,7 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
+		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 	}
 
 	actions
@@ -661,13 +668,14 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 	{
 		Ongoing - Each Player;
 		All;
-		Wrecking Ball;
+		All;
 	}
 
 	conditions
 	{
 		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
 			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == False;
+		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Global.IsRoundActive == True;
 	}
 
@@ -684,13 +692,14 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 	{
 		Ongoing - Each Player;
 		All;
-		Wrecking Ball;
+		All;
 	}
 
 	conditions
 	{
 		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
 			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == True;
+		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Global.IsRoundActive == True;
 	}
 
@@ -729,6 +738,7 @@ rule("Hero: Hammond (piledriver buff)")
 	{
 		Ability Cooldown(Event Player, Button(Crouch)) > 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
+		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 	}
 
 	actions
@@ -747,12 +757,13 @@ rule("Hero: Junkrat (mid-air ult)")
 	{
 		Ongoing - Each Player;
 		All;
-		Junkrat;
+		All;
 	}
 
 	conditions
 	{
 		Is Button Held(Event Player, Button(Ultimate)) == True;
+		(Hero Of(Event Player) == Hero(Junkrat) || Hero Being Duplicated(Event Player) == Hero(Junkrat)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
@@ -903,13 +914,14 @@ rule("Hero: Winstor (limit barrier HP)")
 	{
 		Ongoing - Each Player;
 		All;
-		Winston;
+		All;
 	}
 
 	conditions
 	{
 		Is Using Ability 2(Event Player) == True;
 		Global.IsRoundActive == True;
+		(Hero Of(Event Player) == Hero(Winston) || Hero Being Duplicated(Event Player) == Hero(Winston)) == True;
 	}
 
 	actions
@@ -927,6 +939,55 @@ rule("Hero: Winstor (limit barrier HP)")
 			Bad Explosion, Explosion Sound, 0, 0.100, 0.200, 0, 0, 0);
 		Wait(0.200, Ignore Condition);
 		Destroy Dummy Bot(Opposite Team Of(Team Of(Event Player)), 7);
+	}
+}
+
+rule("Hero: Echo (support others faux abilities)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Echo;
+	}
+
+	conditions
+	{
+		"Most of the support is added via hero specific rule conditions, this is currently just setup for later cleanup"
+		Is Duplicating(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Echo_JustDuplicated = Hero Being Duplicated(Event Player);
+		Event Player.Echo_DupeUlted = Null;
+		Wait Until(Is Using Ultimate(Event Player) && Is Duplicating(Event Player), 9999);
+		Event Player.Echo_DupeUlted = True;
+	}
+}
+
+rule("Hero: Echo (support others faux abilities - cleanup)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Echo;
+	}
+
+	conditions
+	{
+		Is Duplicating(Event Player) != True;
+		Event Player.Echo_JustDuplicated != Null;
+	}
+
+	actions
+	{
+		Allow Button(Event Player, Button(Secondary Fire));
+		If(Event Player.Echo_JustDuplicated == Hero(Ana) && Event Player.Echo_DupeUlted);
+			Destroy Dummy Bot(Team Of(Event Player), 10);
+		End;
+		Event Player.Echo_JustDuplicated = Null;
 	}
 }
 
