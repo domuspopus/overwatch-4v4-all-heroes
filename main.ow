@@ -547,7 +547,7 @@ rule("Misc: Cleanup utility dummies")
 	}
 }
 
-rule("Bugfix: Pre-game ult generation")
+rule("Misc: Pre-game ult generation")
 {
 	event
 	{
