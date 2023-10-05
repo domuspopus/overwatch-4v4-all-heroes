@@ -105,7 +105,7 @@ settings
 			Soldier: 76
 			{
 				Spawn With Ultimate Ready: Off
-				Ultimate Duration: 40%
+				Ultimate Duration: 50%
 			}
 
 			Widowmaker
@@ -117,7 +117,7 @@ settings
 			Winston
 			{
 				Barrier Projector Cooldown Time: 35%
-				Damage Dealt: 140%
+				Damage Dealt: 130%
 				Health: 75%
 			}
 
@@ -129,7 +129,7 @@ settings
 
 			Zarya
 			{
-				Health: 67%
+				Health: 65%
 			}
 		}
 	}
@@ -848,7 +848,7 @@ rule("Hero: Soldier 76 (start with some ult%)")
 	actions
 	{
 		"Value is tweaked with respect to \"Bugfix: pre-game ult generation\""
-		Set Ultimate Charge(Event Player, 94);
+		Set Ultimate Charge(Event Player, 95);
 	}
 }
 
