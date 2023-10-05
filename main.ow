@@ -524,6 +524,29 @@ rule("Misc: HUD tip highlight")
 	}
 }
 
+rule("Misc: Cleanup utility dummies")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		"Although very rare, it is possible for a utility dummy (e.g. icicle grapple mei dummy) to not be deleted during game if the rule handling her is aborted (e.g. player leaving)"
+		Is Dummy Bot(Event Player) == True;
+		Slot Of(Event Player) > 3;
+	}
+
+	actions
+	{
+		Wait(10, Ignore Condition);
+		Destroy Dummy Bot(Team Of(Event Player), Slot Of(Event Player));
+	}
+}
+
 rule("Bugfix: Pre-game ult generation")
 {
 	event
