@@ -150,6 +150,7 @@ variables
 		9: HUDTipColor
 		10: Tips
 		11: Temp
+		13: RealPlayers
 		22: DBGAllowHeroSelect
 		23: DBGMsg
 		24: DBGBotShooting
@@ -164,6 +165,11 @@ variables
 		5: Temp
 		6: Echo_JustDuplicated
 		7: Echo_DupeUlted
+}
+
+subroutines
+{
+	0: FindRealPlayers
 }
 
 rule("NOTES/TODO'S")
@@ -183,7 +189,7 @@ rule("NOTES/TODO'S")
 		Abort;
 		"NOTE: \"Temp\" variable (array of) is used for short lived, disposable varibales."
 		Abort;
-		"XXX: Some functionality such as hp/damage ballancer or 1v1 time limit might occasionally take into account dummy players created by faux abilities. It is not a noticable issue as of yet."
+		"NOTE: Be accutely aware of the fact that dummy bots count towards playerbase data, so whichever rules use \"Number Of Players\", \"All Players\", etc. habe to filter out bots or ensure it's not an issue."
 		Abort;
 		"BUG: Ultimates wont start generating for a few seconds in the start of match (need \"Is Game In Progress = True\"). This is an issue for characters that don't start with ult ready."
 		Abort;
@@ -490,7 +496,8 @@ rule("Base: Prevent premature game completion and skip victory screen")
 
 	actions
 	{
-		If(Number Of Players(All Teams) == 1);
+		Call Subroutine(FindRealPlayers);
+		If(Count Of(Global.RealPlayers[0]) == 1);
 			Small Message(All Players(All Teams), Custom String("Everyone left - restarting..."));
 			Wait(1.500, Ignore Condition);
 			"Skip victory screen on default victory when all but one players leave"
@@ -600,6 +607,32 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 			Event Player));
 		Wait(1, Ignore Condition);
 		Small Message(All Players(All Teams), Custom String("{0} powered up!", Team Of(Event Player)));
+	}
+}
+
+rule("Sub: Find all real players")
+{
+	event
+	{
+		Subroutine;
+		FindRealPlayers;
+	}
+
+	actions
+	{
+		"Subroutine result is written into Global.RealPlayers as array of: [0:All Real Players, ..."
+		Global.RealPlayers[0] = Filtered Array(All Players(All Teams), !(Is Dummy Bot(Current Array Element) && Slot Of(
+			Current Array Element) > 3));
+		"... 2:All Real Players Team1, ..."
+		Global.RealPlayers[1] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) == Team 1);
+		"... 2:All Real Players Team2, ..."
+		Global.RealPlayers[2] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) == Team 2);
+		"... 3:All Real Players Team of Event Player, ..."
+		Global.RealPlayers[3] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) == Team Of(Event Player));
+		"... 4:All Real Players Not Team of Event Player]"
+		Global.RealPlayers[4] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) != Team Of(Event Player));
+		"NOTE: For debugging purposes we treat dummies in player slots (0-3) as real players."
+		Abort;
 	}
 }
 
