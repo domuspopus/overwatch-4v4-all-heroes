@@ -146,6 +146,7 @@ variables
 		5: Powerup_PlayersNumAdvantage
 		6: MapBoundry_Vertical
 		7: MapBoundry_Horizontal
+		8: ServerLoadVisibleTo
 		9: TimeLimit1v1_Triggers
 		10: HUDTipColor
 		11: Texts
@@ -221,6 +222,7 @@ rule("Base: Set global variables")
 		Global.MapBoundry_Horizontal = 45;
 		"Misc"
 		Disable Built-In Game Mode Announcer;
+		Global.ServerLoadVisibleTo = Empty Array;
 	}
 }
 
@@ -471,9 +473,10 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 	actions
 	{
 		"Global tips and HUDs"
-		Create HUD Text(True ? Local Player.ServerLoadVisible : Null, Null, Custom String("{2} {0}% avg {1}% peak", Server Load Average,
-			Server Load Peak, Global.Texts[5]), Null, Right, -1, Null, Server Load Average < 70 ? Custom Color(255, 255, 255, 50)
-			: Custom Color(255, 0, 0, 120), Null, Visible To String and Color, Visible Always);
+		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
+			Custom String("{2} {0}% avg {1}% peak", Server Load Average, Server Load Peak, Global.Texts[5]), Null, Right, -1, Null,
+			Server Load Average < 70 ? Custom Color(255, 255, 255, 50) : Custom Color(255, 0, 0, 120), Null, Visible To String and Color,
+			Visible Always);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
@@ -1177,7 +1180,10 @@ rule("DBG: Server load view toggler")
 
 	actions
 	{
-		Event Player.ServerLoadVisible = !Event Player.ServerLoadVisible;
+		If(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Event Player)));
+			Global.ServerLoadVisibleTo = Remove From Array(Global.ServerLoadVisibleTo, Custom String("{0}", Event Player));
+		Else;
+			Global.ServerLoadVisibleTo = Append To Array(Global.ServerLoadVisibleTo, Custom String("{0}", Event Player));
 	}
 }
 
