@@ -192,6 +192,10 @@ rule("NOTES/TODO'S")
 		Abort;
 		"NOTE: Be accutely aware of the fact that dummy bots count towards playerbase data, so whichever rules use \"Number Of Players\", \"All Players\", etc. habe to filter out bots or ensure it's not an issue."
 		Abort;
+		"NOTE: Match time is not editable in Elimination, using \"Set Match Time\" or Pause / Unpause simply resets it."
+		Abort;
+		"NOTE: There can only be one instance of a unique *global* rule running at a time (same rule wont execute if conditions went false->true while it is still running), so there typically is no need to worry about reentrancy."
+		Abort;
 		"BUG: Ultimates wont start generating for a few seconds in the start of match (need \"Is Game In Progress = True\"). This is an issue for characters that don't start with ult ready."
 		Abort;
 	}
