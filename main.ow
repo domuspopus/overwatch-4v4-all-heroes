@@ -479,8 +479,7 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 		"Global tips and HUDs"
 		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
 			Custom String("{2} {0}% avg {1}% peak", Server Load Average, Server Load Peak, Global.Texts[5]), Null, Right, -1, Null,
-			Server Load Average < 70 ? Custom Color(255, 255, 255, 50) : Custom Color(255, 0, 0, 120), Null, Visible To String and Color,
-			Visible Always);
+			Custom Color(255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
