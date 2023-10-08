@@ -146,11 +146,12 @@ variables
 		5: Powerup_PlayersNumAdvantage
 		6: MapBoundry_Vertical
 		7: MapBoundry_Horizontal
-		8: TimeLimit1v1_Countdown
-		9: HUDTipColor
-		10: Tips
-		11: Temp
+		9: TimeLimit1v1_Triggers
+		10: HUDTipColor
+		11: Tips
+		12: Temp
 		13: RealPlayers
+		14: RealAlivePlayers
 		22: DBGAllowHeroSelect
 		23: DBGMsg
 		24: DBGBotShooting
@@ -213,7 +214,6 @@ rule("Base: Set global variables and show UI tips")
 		Global.MapBoundry_Horizontal = 45;
 		"Misc"
 		Disable Built-In Game Mode Announcer;
-		Global.TimeLimit1v1_Countdown = -1;
 		Create HUD Text(True ? Local Player.ServerLoadVisible : Null, Null, Custom String("Server load {0}% avg {1}% peak",
 			Server Load Average, Server Load Peak), Null, Right, -1, Null, Server Load Average < 70 ? Custom Color(255, 255, 255, 50)
 			: Custom Color(255, 0, 0, 120), Null, Visible To String and Color, Visible Always);
@@ -334,7 +334,6 @@ rule("Base: Round end (cleanup)")
 		Set Team Score(All Teams, 0);
 		Global.IsRoundActive = False;
 		Global.Powerup_PlayersNumAdvantage = 0;
-		Global.TimeLimit1v1_Countdown = -1;
 		Stop All Healing Modifications;
 		Stop All Damage Modifications;
 		Stop All Damage Over Time(All Players(All Teams));
@@ -434,52 +433,6 @@ rule("Base: Ballance team sizes at round end")
 	}
 }
 
-rule("Base: Prevent overly long 1v1s (if players waiting)")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-
-	conditions
-	{
-		Global.DBG != True;
-		Global.IsRoundActive == True;
-		"Simply checking \"Number Of Living Players(Team X)\" is not enough because player who just joined and waits for round end will count towards the living"
-		Count Of(Filtered Array(All Players(Team 1), Has Spawned(Current Array Element) && Is Alive(Current Array Element))) == 1;
-		Count Of(Filtered Array(All Players(Team 2), Has Spawned(Current Array Element) && Is Alive(Current Array Element))) == 1;
-		Number Of Players(All Teams) > 2;
-		"Ignore if round is already near end"
-		Match Time > 40;
-	}
-
-	actions
-	{
-		Abort If(Global.TimeLimit1v1_Countdown > -1);
-		Log To Inspector(Custom String("1v1 time limit countdown start"));
-		"This line is just to remove default countdown UI"
-		Set Match Time(120);
-		"XXX: this is quite unsightly"
-		Wait Until(!Global.IsRoundActive || Count Of(Filtered Array(All Living Players(All Teams), !Is Dummy Bot(Current Array Element)))
-			> 2, 10);
-		If(Count Of(Filtered Array(All Living Players(All Teams), !Is Dummy Bot(Current Array Element))) > 2);
-			Log To Inspector(Custom String("1v1 time limit prevented"));
-			Abort;
-		End;
-		Create HUD Text(All Players(All Teams), Null, Null, Custom String("Round ends in: {0} seconds", Global.TimeLimit1v1_Countdown),
-			Top, 1, Color(White), Color(White), Global.TimeLimit1v1_Countdown > 10 ? Color(White) : Custom Color(250, 55, 65, 255),
-			String and Color, Default Visibility);
-		Global.TextIDS[0] = Last Text ID;
-		For Global Variable(TimeLimit1v1_Countdown, 30, 0, -1);
-			Wait Until(!Global.IsRoundActive, 1);
-		End;
-		Destroy HUD Text(Global.TextIDS[0]);
-		Abort If(!Global.IsRoundActive);
-		Log To Inspector(Custom String("1v1 time limit reached"));
-		Declare Round Draw;
-	}
-}
-
 rule("Base: Prevent premature game completion and skip victory screen")
 {
 	event
@@ -497,7 +450,7 @@ rule("Base: Prevent premature game completion and skip victory screen")
 	actions
 	{
 		Call Subroutine(FindRealPlayers);
-		If(Count Of(Global.RealPlayers[0]) == 1);
+		If(Count Of(Global.RealPlayers) == 1);
 			Small Message(All Players(All Teams), Custom String("Everyone left - restarting..."));
 			Wait(1.500, Ignore Condition);
 			"Skip victory screen on default victory when all but one players leave"
@@ -610,6 +563,83 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 	}
 }
 
+rule("1v1 Time Limit: Prevent long 1v1s when others waiting")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		"The code of this entire \"1v1 Time Limit\" ruleset might feel overengineered, several reasons for it: dummy bots polluting player counts, match time being partially immutable in Elimination, not spawned players being counted as alive"
+		Global.TimeLimit1v1_Triggers[3] == True;
+	}
+
+	actions
+	{
+		Abort If(Count Of(Global.RealAlivePlayers) != 2);
+		Abort If(Count Of(Global.RealPlayers) - Count Of(Global.RealAlivePlayers) == 0);
+		Global.Temp[3] = 40;
+		"Dont bother with countdown if match near ending (XXX: match time is 0 for a few seconds at the start of round)"
+		Abort If(Match Time <= Global.Temp[3] && Match Time != 0);
+		Log To Inspector(Custom String("1v1 time limit countdown start"));
+		While(Global.Temp[3]);
+			Abort If(!Global.IsRoundActive);
+			"First 10 seconds we just count down silently and allow to cancel if someone is revived"
+			If(Global.Temp[3] > 30);
+				Abort If(Count Of(Global.RealPlayers) - Count Of(Global.RealAlivePlayers) == 0);
+			End;
+			If(Global.Temp[3] == 30);
+				"This line is just to hide default countdown UI"
+				Set Match Time(120);
+				Create HUD Text(All Players(All Teams), Null, Null, Custom String("Round ends in: {0} seconds", Global.Temp[3]), Top, 1, Color(
+					White), Color(White), Global.Temp[3] > 10 ? Color(White) : Custom Color(250, 55, 65, 255), String and Color,
+					Default Visibility);
+				Global.TextIDS[0] = Last Text ID;
+			End;
+			Wait Until(!Global.IsRoundActive, 1);
+			Global.Temp[3] -= 1;
+		End;
+		Destroy HUD Text(Global.TextIDS[0]);
+		Abort If(!Global.IsRoundActive);
+		Log To Inspector(Custom String("1v1 time limit reached"));
+		Abort If(Global.DBG);
+		Declare Round Draw;
+	}
+}
+
+rule("1v1 Time Limit: Prevent long 1v1s when others waiting (tracking and triggers)")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		"This entire rule needs to be separate from main rule. Even when merged which is logically seems easily doable it then stops detecting triggers inequalities *sometimes*."
+		Global.IsRoundActive == True;
+		(Global.TimeLimit1v1_Triggers[0] != Number Of Living Players(All Teams) || Global.TimeLimit1v1_Triggers[1] != Number Of Players(
+			Team 1) || Global.TimeLimit1v1_Triggers[2] != Number Of Players(Team 2)) == True;
+	}
+
+	actions
+	{
+		"This trigger sets the main rule in motion, we reset it here to toggle on in a moment"
+		Global.TimeLimit1v1_Triggers[3] = False;
+		"Wait to ensure triggers update on next frame and not the same one as when change was detected (otherwise rule can get stuck in \"true\" state forever)"
+		Wait(0.250, Ignore Condition);
+		"These triggers track alive and total players so when anything like that changes we catch it in this rule"
+		Global.TimeLimit1v1_Triggers[0] = Number Of Living Players(All Teams);
+		Global.TimeLimit1v1_Triggers[1] = Number Of Players(Team 1);
+		Global.TimeLimit1v1_Triggers[2] = Number Of Players(Team 2);
+		Call Subroutine(FindRealPlayers);
+		Abort If(!Global.IsRoundActive);
+		Global.TimeLimit1v1_Triggers[3] = True;
+	}
+}
+
 rule("Sub: Find all real players")
 {
 	event
@@ -620,19 +650,12 @@ rule("Sub: Find all real players")
 
 	actions
 	{
-		"Subroutine result is written into Global.RealPlayers as array of: [0:All Real Players, ..."
-		Global.RealPlayers[0] = Filtered Array(All Players(All Teams), !(Is Dummy Bot(Current Array Element) && Slot Of(
-			Current Array Element) > 3));
-		"... 2:All Real Players Team1, ..."
-		Global.RealPlayers[1] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) == Team 1);
-		"... 2:All Real Players Team2, ..."
-		Global.RealPlayers[2] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) == Team 2);
-		"... 3:All Real Players Team of Event Player, ..."
-		Global.RealPlayers[3] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) == Team Of(Event Player));
-		"... 4:All Real Players Not Team of Event Player]"
-		Global.RealPlayers[4] = Filtered Array(Global.RealPlayers[0], Team Of(Current Array Element) != Team Of(Event Player));
-		"NOTE: For debugging purposes we treat dummies in player slots (0-3) as real players."
-		Abort;
+		"NOTE: For debugging purposes we treat dummies in player slots (0-3) as real players"
+		Global.RealPlayers = Filtered Array(All Players(All Teams), !(Is Dummy Bot(Current Array Element) && Slot Of(Current Array Element)
+			> 3));
+		"This also excludes not spawned players. Joined but not spawned players count as alive which is usually undesirable."
+		Global.RealAlivePlayers = Filtered Array(Global.RealPlayers, Is Alive(Current Array Element) && Has Spawned(
+			Current Array Element));
 	}
 }
 
