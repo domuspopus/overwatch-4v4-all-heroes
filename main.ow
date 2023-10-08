@@ -748,10 +748,10 @@ rule("Hero: Ana (self ult)")
 		Is Button Held(Event Player, Button(Ultimate)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
 		Is Dummy Bot(Event Player) == False;
+		(Hero Of(Event Player) == Hero(Ana) || Hero Being Duplicated(Event Player) == Hero(Ana)) == True;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
-		(Hero Of(Event Player) == Hero(Ana) || Hero Being Duplicated(Event Player) == Hero(Ana)) == True;
 	}
 
 	actions
@@ -784,13 +784,13 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 
 	conditions
 	{
+		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
 		Event Player.Hammond_GrappleIsOn == False;
+		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
 			Event Player, Stunned)) == False;
-		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
-		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 	}
 
 	actions
@@ -827,10 +827,10 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 
 	conditions
 	{
-		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
-			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == False;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Global.IsRoundActive == True;
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == False;
 	}
 
 	actions
@@ -851,10 +851,10 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 
 	conditions
 	{
-		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
-			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == True;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Global.IsRoundActive == True;
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> 19.700 || Entity Exists(Players In Slot(11, Team Of(Event Player)))) == True;
 	}
 
 	actions
@@ -1236,10 +1236,10 @@ rule("DBG: Persistent bot shooting toggler")
 
 	conditions
 	{
+		Global.DBG == True;
 		Is Button Held(Event Player, Button(Crouch)) == True;
 		Is Button Held(Event Player, Button(Interact)) == True;
 		Event Player == Host Player;
-		Global.DBG == True;
 	}
 
 	actions
@@ -1259,10 +1259,10 @@ rule("DBG: Persistent bot aim and shoot")
 
 	conditions
 	{
+		Global.DBGBotShooting == True;
 		Slot Of(Event Player) == 0;
 		Is Dummy Bot(Event Player) == True;
 		Global.IsRoundActive == True;
-		Global.DBGBotShooting == True;
 	}
 
 	actions
@@ -1288,9 +1288,9 @@ rule("DBG: Melee actions (for dev drafts)")
 
 	conditions
 	{
+		Global.DBG == True;
 		Event Player == Host Player;
 		Is Button Held(Event Player, Button(Melee)) == True;
-		Global.DBG == True;
 	}
 
 	actions
