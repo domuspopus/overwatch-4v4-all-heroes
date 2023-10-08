@@ -143,17 +143,19 @@ variables
 		2: TextIDS
 		3: Powerup_HPPercent
 		4: Powerup_DamagePercent
-		5: Powerup_PlayersNumAdvantage
-		6: MapBoundry_Vertical
-		7: MapBoundry_Horizontal
-		8: ServerLoadVisibleTo
-		9: TimeLimit1v1_Triggers
-		10: HUDTipColor
-		11: Texts
-		12: Temp
-		13: RealPlayers
-		14: RealAlivePlayers
-		15: TempArray
+		5: Powerup_HPPercent_Solo
+		6: Powerup_DamagePercent_Solo
+		7: Powerup_PlayersNumAdvantage
+		8: MapBoundry_Vertical
+		9: MapBoundry_Horizontal
+		10: ServerLoadVisibleTo
+		11: TimeLimit1v1_Triggers
+		12: HUDTipColor
+		13: Texts
+		14: Temp
+		15: RealPlayers
+		16: RealAlivePlayers
+		17: TempArray
 		22: DBGAllowHeroSelect
 		23: DBGMsg
 		24: DBGBotShooting
@@ -163,11 +165,10 @@ variables
 		0: TextIDS
 		1: Hammond_GrappleIsOn
 		2: Hammond_IciclePos
-		3: ServerLoadVisible
-		4: ChaserVar1
-		5: Temp
-		6: Echo_JustDuplicated
-		7: Echo_DupeUlted
+		3: ChaserVar1
+		4: Temp
+		5: Echo_JustDuplicated
+		6: Echo_DupeUlted
 }
 
 subroutines
@@ -217,6 +218,9 @@ rule("Base: Set global variables")
 		"Auto-ballancing variables. Bumps percentage of HP / damage of each player in smaller team."
 		Global.Powerup_HPPercent = 20;
 		Global.Powerup_DamagePercent = 30;
+		"Same as above but these will apply if team only has 1 player"
+		Global.Powerup_HPPercent_Solo = 25;
+		Global.Powerup_DamagePercent_Solo = 40;
 		"Map boundaries"
 		Global.MapBoundry_Vertical = 25;
 		Global.MapBoundry_Horizontal = 45;
@@ -616,11 +620,17 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 
 	actions
 	{
+		"This ensures rule is only called for one player in smaller team (since it will apply to everyone anyway)"
 		Abort If(Global.Powerup_PlayersNumAdvantage > 0);
 		Global.Powerup_PlayersNumAdvantage = Number Of Players(Opposite Team Of(Team Of(Event Player))) - Number Of Players(Team Of(
 			Event Player));
 		Set Max Health(All Players(Team Of(Event Player)), 100 + Global.Powerup_HPPercent * Global.Powerup_PlayersNumAdvantage);
 		Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.Powerup_DamagePercent * Global.Powerup_PlayersNumAdvantage);
+		"Solo team override"
+		If(Number Of Players(Team Of(Event Player)) == 1);
+			Set Max Health(All Players(Team Of(Event Player)), 100 + Global.Powerup_HPPercent_Solo * Global.Powerup_PlayersNumAdvantage);
+			Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.Powerup_DamagePercent_Solo * Global.Powerup_PlayersNumAdvantage);
+		End;
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
 			Event Player));
 		Wait(1, Ignore Condition);
