@@ -346,7 +346,8 @@ rule("Base: Prevent heroes flying away")
 
 	actions
 	{
-		Small Message(Event Player, Global.Texts[6]);
+		Small Message(Event Player, Custom String(" {0} {1} {2}", Global.Texts[6], Icon String(Warning), Ability Icon String(Hero(Mercy),
+			Button(Ability 1))));
 		If(Y Component Of(Position Of(Event Player)) > Global.MapBoundry_Vertical);
 			Set Status(Event Player, Null, Frozen, 2);
 		Else;
