@@ -156,6 +156,7 @@ variables
 		15: RealPlayers
 		16: RealAlivePlayers
 		17: TempArray
+		18: Powerup_EmpoweredTeam
 		22: DBGAllowHeroSelect
 		23: DBGMsg
 		24: DBGBotShooting
@@ -283,6 +284,7 @@ rule("Base: Round end (cleanup)")
 		Set Team Score(All Teams, 0);
 		Global.IsRoundActive = False;
 		Global.Powerup_PlayersNumAdvantage = 0;
+		Global.Powerup_EmpoweredTeam = Null;
 		Stop All Healing Modifications;
 		Stop All Damage Modifications;
 		Stop All Damage Over Time(All Players(All Teams));
@@ -429,7 +431,7 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		Global.Texts[2] = Custom String("Can grapple air / sky");
 		Global.Texts[3] = Custom String("Stronger piledriver ");
 		Global.Texts[4] = Custom String("Hero tips");
-		Global.Texts[5] = Custom String("Server load");
+		Global.Texts[5] = Null;
 		Global.Texts[6] = Custom String("Don't stray too far");
 		Global.Texts[7] = Custom String("(HOLD)         ");
 		Global.Texts[8] = Custom String("(NOT NOW)");
@@ -478,8 +480,9 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 	{
 		"Global tips and HUDs"
 		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
-			Custom String("{2} {0}% avg {1}% peak", Server Load Average, Server Load Peak, Global.Texts[5]), Null, Right, -1, Null,
-			Custom Color(255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
+			Custom String("{0}, {1}", Custom String("{0} {1}% avg {2}% peak", String("Server Load"), Server Load Average,
+			Server Load Peak), Custom String("{0}++", Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : String("None"))), Null,
+			Right, -1, Null, Custom Color(255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
@@ -630,6 +633,7 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 			Set Max Health(All Players(Team Of(Event Player)), 100 + Global.Powerup_HPPercent_Solo * Global.Powerup_PlayersNumAdvantage);
 			Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.Powerup_DamagePercent_Solo * Global.Powerup_PlayersNumAdvantage);
 		End;
+		Global.Powerup_EmpoweredTeam = Team Of(Event Player);
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
 			Event Player));
 		Wait(1, Ignore Condition);
