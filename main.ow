@@ -198,7 +198,9 @@ rule("NOTES/TODO'S")
 		Abort;
 		"NOTE: Match time is not editable in Elimination, using \"Set Match Time\" or Pause / Unpause simply resets it."
 		Abort;
-		"NOTE: There can only be one instance of a unique *global* rule running at a time (same rule wont execute if conditions went false->true while it is still running), so there typically is no need to worry about reentrancy."
+		"NOTE: There can only be one instance of a unique *global* rule running at a time (same rule wont execute if conditions went false->true while it is still running), so there typically is no need to worry about reentrancy. Also applies to event rules but uni"
+		Abort;
+		"NOTE: *All* HUDs of a dead player is replaced with HUD of teammate he is spectating through. However HUD shown to local player will NOT be visible to dead team spectators."
 		Abort;
 		"XXX: Tips text alignment is done via ad-hoc padding, if languages are added it would be better to rework."
 		Abort;
