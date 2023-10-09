@@ -157,6 +157,7 @@ variables
 		16: RealAlivePlayers
 		17: TempArray
 		18: Powerup_EmpoweredTeam
+		21: DBGRoundNum
 		22: DBGAllowHeroSelect
 		23: DBGMsg
 		24: DBGBotShooting
@@ -230,6 +231,7 @@ rule("Base: Set global variables")
 		"Misc"
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
+		Global.DBGRoundNum = 1;
 	}
 }
 
@@ -287,6 +289,7 @@ rule("Base: Round end (cleanup)")
 		Global.IsRoundActive = False;
 		Global.Powerup_PlayersNumAdvantage = 0;
 		Global.Powerup_EmpoweredTeam = Null;
+		Global.DBGRoundNum += 1;
 		Stop All Healing Modifications;
 		Stop All Damage Modifications;
 		Stop All Damage Over Time(All Players(All Teams));
@@ -483,9 +486,10 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 	{
 		"Global tips and HUDs"
 		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
-			Custom String("{0}, {1}", Custom String("{0} {1}% avg {2}% peak", String("Server Load"), Server Load Average,
-			Server Load Peak), Custom String("{0}++", Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : String("None"))), Null,
-			Right, -1, Null, Custom Color(255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
+			Custom String("{0}, {1}, {2}", Custom String("{0} {1}% avg {2}% peak", String("Server Load"), Server Load Average,
+			Server Load Peak), Custom String("{0}/{1}", Match Round, Global.DBGRoundNum), Custom String("{0}++",
+			Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : String("None"))), Null, Right, -1, Null, Custom Color(255, 255,
+			255, 80), Null, Visible To String and Color, Visible Always);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
