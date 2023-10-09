@@ -451,7 +451,6 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		"es-ES"
 		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Práctica de combate"));
 			disabled Global.Texts[4] = Custom String("Hero tips (in spanish)");
-			disabled Global.Texts[5] = Custom String("Server load (in spanish)");
 		"es-MX"
 		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Campo de pruebas"));
 		"fr-FR"
