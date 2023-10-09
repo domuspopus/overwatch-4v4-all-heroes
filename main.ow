@@ -277,7 +277,7 @@ rule("Base: Round end (cleanup)")
 
 	conditions
 	{
-		(Team Score(Team 1) > 0 || Team Score(Team 2) > 0 || Is Between Rounds) == True;
+		Is Between Rounds == True;
 	}
 
 	actions
