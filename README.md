@@ -27,22 +27,24 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 
 ### Changelog
 
-#### 1.5 (in-development)
+#### 1.5
 
-- Improve character tips and make all of them show on death and between rounds.
+- Increase HP/Damage auto-ballancing for a team of 1.
 - Allow Echo to be affected by some faux abilities and effects (e.g. Ana self-ult, Hammond icicle grapple) when she is duplicating.
+- Improve character tips and make all of them show on death and between rounds.
 - Allow for ultimate generation during start of the round (via custom workaround).
     - This is due to a limitation of Elimination mode, first ~3 seconds of a round disallow ultimate generation.
     - Currently only important for McCree and Soldier.
 - Character ballance changes:
     - Soldier: increase starting ult charge %, decrease ult duration.
-    - Zarya: slightly increase HP.
+    - Zarya: increase HP.
     - Lifeweaver: decrease petal plate HP, decrease Tree of Life HP and halve its duration.
     - Winston: increase shield cooldown, decrease shield HP.
-    - McCree: require him to land at least 2 shots to build 100% ult charge.
+    - McCree: require him to land a couple shots to build 100% ult charge.
     - Rein: increase passive ult generation rate.
     - Hammons: slightly increase piledriver damage.
 - Include daytime version of the map.
+- Add server load debug view (interact + reload).
 - Various fixes.
 
 #### 1.4
