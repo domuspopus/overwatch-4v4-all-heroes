@@ -42,7 +42,7 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
     - Winston: increase shield cooldown, decrease shield HP.
     - McCree: require him to land a couple shots to build 100% ult charge.
     - Rein: increase passive ult generation rate.
-    - Hammons: slightly increase piledriver damage.
+    - Hammond: slightly increase piledriver damage.
 - Include daytime version of the map.
 - Add server load debug view (interact + reload).
 - Various fixes.
