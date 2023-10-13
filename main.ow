@@ -220,11 +220,11 @@ rule("Base: Set global variables")
 	actions
 	{
 		"Auto-ballancing variables. Bumps percentage of HP / damage of each player in smaller team."
-		Global.Powerup_HPPercent = 20;
+		Global.Powerup_HPPercent = 25;
 		Global.Powerup_DamagePercent = 30;
 		"Same as above but these will apply if team only has 1 player"
-		Global.Powerup_HPPercent_Solo = 25;
-		Global.Powerup_DamagePercent_Solo = 40;
+		Global.Powerup_HPPercent_Solo = 30;
+		Global.Powerup_DamagePercent_Solo = 50;
 		"Map boundaries"
 		Global.MapBoundry_Vertical = 25;
 		Global.MapBoundry_Horizontal = 45;
