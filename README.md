@@ -27,9 +27,16 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 
 ### Changelog
 
+#### 1.6 (in-development)
+
+- ...
+- Buff HP/Damage auto-ballancing (increase all multipliers).
+- Character ballance changes:
+    - Orisa: increase HP.
+
 #### 1.5
 
-- Increase HP/Damage auto-ballancing for a team of 1.
+- Buff HP/Damage auto-ballancing for a team of 1.
 - Allow Echo to be affected by some faux abilities and effects (e.g. Ana self-ult, Hammond icicle grapple) when she is duplicating.
 - Improve character tips and make all of them show on death and between rounds.
 - Allow for ultimate generation during start of the round (via custom workaround).
