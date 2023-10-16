@@ -825,8 +825,7 @@ rule("Hero: Ana (self ult)")
 		Is Dummy Bot(Event Player) == False;
 		(Hero Of(Event Player) == Hero(Ana) || Hero Being Duplicated(Event Player) == Hero(Ana)) == True;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
-		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
-			Event Player, Stunned)) == False;
+		(Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(Event Player, Stunned)) == False;
 	}
 
 	actions
@@ -864,8 +863,7 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 		Event Player.Hammond_GrappleIsOn == False;
 		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
-		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
-			Event Player, Stunned)) == False;
+		(Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(Event Player, Stunned)) == False;
 	}
 
 	actions
@@ -995,8 +993,7 @@ rule("Hero: Junkrat (mid-air ult)")
 		(Hero Of(Event Player) == Hero(Junkrat) || Hero Being Duplicated(Event Player) == Hero(Junkrat)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
-		(Has Status(Event Player, Hacked) || Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(
-			Event Player, Stunned)) == False;
+		(Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(Event Player, Stunned)) == False;
 	}
 
 	actions
