@@ -789,7 +789,7 @@ rule("Lobby Balance: Randomize which team new players joins")
 		Call Subroutine(FindRealPlayers);
 		Global.LobbyBalance_LastSeenPlayers = Global.RealPlayers;
 		"By default new players will be slotted into Team 1, we introduce a 50% chance for them to be moved to Team 2 if teams were equal before they arrived."
-		disabled Abort If(Random Integer(0, 1));
+		Abort If(Random Integer(0, 1));
 		"If Team 2 is larger or equal size, no need to move"
 		Global.Temp[4] = Count Of(Filtered Array(Global.RealPlayers, Team Of(Current Array Element) == Team 1));
 		Global.Temp[5] = Count Of(Filtered Array(Global.RealPlayers, Team Of(Current Array Element) == Team 2));
