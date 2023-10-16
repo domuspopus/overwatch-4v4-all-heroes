@@ -2,7 +2,7 @@ settings
 {
 	main
 	{
-		Description: "All new OW2 heroes. Code: 48CYD\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Ballance changes.\n- Anti-winston-trolling (limited airspace).\n\nVer:1.6dev. All changes and info at:\ngithub.com/domuspopus/overwatch-4v4-all-heroes"
+		Description: "All new OW2 heroes. Code: 48CYD\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Balance changes.\n- Anti-winston-trolling (limited airspace).\n\nVer:1.6dev. All changes and info at:\ngithub.com/domuspopus/overwatch-4v4-all-heroes"
 		Mode Name: "4v4 All Heroes (J-edit)"
 	}
 
@@ -219,7 +219,7 @@ rule("Base: Set global variables")
 
 	actions
 	{
-		"Auto-ballancing variables. Bumps percentage of HP / damage of each player in smaller team."
+		"Auto-balancing variables. Bumps percentage of HP / damage of each player in smaller team."
 		Global.Powerup_HPPercent = 25;
 		Global.Powerup_DamagePercent = 30;
 		"Same as above but these will apply if team only has 1 player"
@@ -360,7 +360,7 @@ rule("Base: Prevent heroes flying away")
 	}
 }
 
-rule("Base: Ballance team sizes at round end")
+rule("Base: Balance team sizes at round end")
 {
 	event
 	{
@@ -378,7 +378,7 @@ rule("Base: Ballance team sizes at round end")
 	{
 		"Wait before all utility bots are destroyed"
 		Wait Until(!Count Of(Filtered Array(All Players(All Teams), Is Dummy Bot(Current Array Element))), 1);
-		"NOTE: In case of teams being 1:4 players it will take 2 rounds to ballance"
+		"NOTE: In case of teams being 1:4 players it will take 2 rounds to balance"
 		Global.Temp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
 		If(Global.Temp[0] > 1);
 			Log To Inspector(Custom String("moving \"{0}\" to Team 2", Last Of(All Players(Team 1))));
