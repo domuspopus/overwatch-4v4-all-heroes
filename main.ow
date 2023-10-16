@@ -262,6 +262,7 @@ rule("Base: Skip hero select, initiate round start variables")
 			Set Match Time(Global.DBGAllowHeroSelect);
 			Wait(Global.DBGAllowHeroSelect, Ignore Condition);
 		End;
+		Global.Powerup_EmpoweredTeam = Null;
 		"This skips the selection"
 		Set Match Time(0);
 		"Allow time for game to select hero for player and initiate round"
@@ -292,7 +293,6 @@ rule("Base: Round end (cleanup)")
 		Set Team Score(All Teams, 0);
 		Global.IsRoundActive = False;
 		Global.Powerup_PlayersNumAdvantage = 0;
-		Global.Powerup_EmpoweredTeam = Null;
 		Global.DBGRoundNum += 1;
 		Stop All Healing Modifications;
 		Stop All Damage Modifications;
@@ -1267,7 +1267,7 @@ rule("DBG: Persistent dummy bots")
 	conditions
 	{
 		Global.DBG == True;
-		Match Round == 1;
+		Total Time Elapsed < 3;
 		Event Player == Host Player;
 	}
 
