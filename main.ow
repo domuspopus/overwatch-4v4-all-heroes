@@ -161,6 +161,7 @@ variables
 		20: LobbyBalance_WinStreak
 		21: LobbyBalance_WinStreakID
 		22: LobbyBalance_VictorTeam
+		23: Powerup_HUDText
 		45: DBGMovedPlayersNum
 		46: DBGRoundNum
 		47: DBGAllowHeroSelect
@@ -402,7 +403,7 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		Global.Texts[2] = Custom String("Can grapple air / sky");
 		Global.Texts[3] = Custom String("Stronger piledriver ");
 		Global.Texts[4] = Custom String("Hero tips");
-		Global.Texts[5] = Null;
+		Global.Texts[5] = Custom String("HP");
 		Global.Texts[6] = Custom String("Don't stray too far");
 		Global.Texts[7] = Custom String("(HOLD)         ");
 		Global.Texts[8] = Custom String("(NOT NOW)");
@@ -454,6 +455,8 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 			Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : String("None")), Custom String("R{0}/{1}, {2}", Match Round,
 			Global.DBGRoundNum, Custom String("Pm{0}, Sk{1}", Global.DBGMovedPlayersNum, Global.LobbyBalance_WinStreak))), Null, Right, -1,
 			Null, Custom Color(255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
+		Create HUD Text(Team Of(Local Player) == Global.Powerup_EmpoweredTeam ? Local Player : Null, Null, Null, Global.Powerup_HUDText,
+			Left, 10, Null, Null, Color(Lime Green), Visible To and String, Visible Never);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
@@ -604,10 +607,14 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 			Event Player));
 		Set Max Health(All Players(Team Of(Event Player)), 100 + Global.POWERUP_HPPERCENT * Global.Powerup_PlayersNumAdvantage);
 		Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.POWERUP_DAMAGEPERCENT * Global.Powerup_PlayersNumAdvantage);
+		Global.Powerup_HUDText = Custom String("\n+{0}% {1} {2}", Global.POWERUP_HPPERCENT, Global.Texts[5], Custom String("+{0}% {1}",
+			Global.POWERUP_DAMAGEPERCENT, String("Damage")));
 		"Solo team override"
 		If(Number Of Players(Team Of(Event Player)) == 1);
 			Set Max Health(All Players(Team Of(Event Player)), 100 + Global.POWERUP_HPPERCENT_SOLO * Global.Powerup_PlayersNumAdvantage);
 			Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.POWERUP_DAMAGEPERCENT_SOLO * Global.Powerup_PlayersNumAdvantage);
+			Global.Powerup_HUDText = Custom String("\n+{0}% {1} {2}", Global.POWERUP_HPPERCENT_SOLO, Global.Texts[5], Custom String(
+				"+{0}% {1}", Global.POWERUP_DAMAGEPERCENT_SOLO, String("Damage")));
 		End;
 		Global.Powerup_EmpoweredTeam = Team Of(Event Player);
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
