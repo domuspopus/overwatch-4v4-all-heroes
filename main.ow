@@ -974,10 +974,12 @@ rule("Hero: Hammond (piledriver buff)")
 	actions
 	{
 		Start Damage Modification(All Players(All Teams), Event Player, 210, Receivers Damagers and Damage Percent);
+		Event Player.Temp[4] = Last Damage Modification ID;
 		Set Knockback Dealt(Event Player, 115);
 		Wait Until(Vertical Speed Of(Event Player) == 0, 2);
 		Wait(0.250, Ignore Condition);
-		Stop All Damage Modifications;
+		Set Knockback Dealt(Event Player, 100);
+		Stop Damage Modification(Event Player.Temp[4]);
 	}
 }
 
