@@ -11,7 +11,7 @@ Main differences from the [older script](https://github.com/domuspopus/overwatch
 - D.Va does not have never-ending nukes.
 - Heroes wont fly too far away from map.
 - Overly tanky characters have reduced HP.
-- Team sizes balancing between rounds.
+- Lobby balancing and shuffling between rounds.
 
 ![preview](preview.png)
 
@@ -29,10 +29,17 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 
 #### 1.6 (in-development)
 
-- ...
+- Add advanced lobby balancing.
+    - Make each mechanic a toggleable workshop setting.
+    - Put new players into random team (default always prefers first team when sizes are equal).
+    - Swap random players when one team wins N rounds in a row.
+        - If teams are of the same size - swap sides of 2 random opposing players.
+        - If winning team is larger - move 1 random player from larger to smaller team.
+        - If winning team is smaller - do nothing.
 - Buff HP/Damage auto-balancing (increase all multipliers).
 - Character balance changes:
     - Orisa: increase HP.
+- Mild fixes.
 
 #### 1.5
 
