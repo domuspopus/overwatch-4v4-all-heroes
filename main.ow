@@ -157,6 +157,8 @@ variables
 		16: RealAlivePlayers
 		17: TempArray
 		18: Powerup_EmpoweredTeam
+		19: LobbyBalance_LastSeenPlayers
+		20: DBGMovedPlayersNum
 		21: DBGRoundNum
 		22: DBGAllowHeroSelect
 		23: DBGMsg
@@ -232,6 +234,8 @@ rule("Base: Set global variables")
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
 		Global.DBGRoundNum = 1;
+		Wait Until(Host Player, 3);
+		Global.LobbyBalance_LastSeenPlayers = Array(Host Player);
 	}
 }
 
@@ -360,36 +364,6 @@ rule("Base: Prevent heroes flying away")
 	}
 }
 
-rule("Base: Balance team sizes at round end")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-
-	conditions
-	{
-		Global.DBG != True;
-		Global.IsRoundActive != True;
-		Absolute Value(Number Of Players(Team 1) - Number Of Players(Team 2)) > 1;
-	}
-
-	actions
-	{
-		"Wait before all utility bots are destroyed"
-		Wait Until(!Count Of(Filtered Array(All Players(All Teams), Is Dummy Bot(Current Array Element))), 1);
-		"NOTE: In case of teams being 1:4 players it will take 2 rounds to balance"
-		Global.Temp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
-		If(Global.Temp[0] > 1);
-			Log To Inspector(Custom String("moving \"{0}\" to Team 2", Last Of(All Players(Team 1))));
-			Move Player to Team(Last Of(All Players(Team 1)), Team 2, -1);
-		Else If(Global.Temp[0] < -1);
-			Log To Inspector(Custom String("moving \"{0}\" to Team 1", Last Of(All Players(Team 2))));
-			Move Player to Team(Last Of(All Players(Team 2)), Team 1, -1);
-		End;
-	}
-}
-
 rule("Base: Prevent premature game completion and skip victory screen")
 {
 	event
@@ -416,6 +390,7 @@ rule("Base: Prevent premature game completion and skip victory screen")
 			Global.Temp[1] = Last Of(All Players(All Teams));
 			Log To Inspector(Custom String("immediately moving \"{0}\" to {1}", Global.Temp[1], Opposite Team Of(Team Of(Global.Temp[1]))));
 			"XXX: it might make sense to also end match by declaring draw but that somehow doesn't trigger IsBetweenRounds (in this case) and no cleanup happens which is an issue"
+			Global.DBGMovedPlayersNum += 1;
 			Move Player to Team(Global.Temp[1], Opposite Team Of(Team Of(Global.Temp[1])), -1);
 		End;
 	}
@@ -486,9 +461,9 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 		"Global tips and HUDs"
 		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
 			Custom String("{0}, {1}, {2}", Custom String("{0} {1}% avg {2}% peak", String("Server Load"), Server Load Average,
-			Server Load Peak), Custom String("{0}/{1}", Match Round, Global.DBGRoundNum), Custom String("{0}++",
-			Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : String("None"))), Null, Right, -1, Null, Custom Color(255, 255,
-			255, 80), Null, Visible To String and Color, Visible Always);
+			Server Load Peak), Custom String("{0}++", Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : String("None")),
+			Custom String("{0}/{1}/{2}", Match Round, Global.DBGRoundNum, Global.DBGMovedPlayersNum)), Null, Right, -1, Null, Custom Color(
+			255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
@@ -721,6 +696,80 @@ rule("1v1 Time Limit: Prevent long 1v1s when others waiting (tracking and trigge
 		Call Subroutine(FindRealPlayers);
 		Abort If(!Global.IsRoundActive);
 		Global.TimeLimit1v1_Triggers[3] = True;
+	}
+}
+
+rule("Lobby Balance: Minimize team size difference and shuffle players when one team dominates")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.DBG != True;
+		Global.IsRoundActive != True;
+	}
+
+	actions
+	{
+		"Wait before all utility bots are destroyed"
+		Wait Until(!Count Of(Filtered Array(All Players(All Teams), Is Dummy Bot(Current Array Element) && Slot Of(Current Array Element)
+			> 3)), 2);
+		">>> STEP 1: Ensure minimal size difference <<<"
+		If(Workshop Setting Toggle(Custom String("Lobby Ballance"), Custom String("Balance team sizes at round end"), True, 0));
+			Global.Temp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
+			"NOTE: In case of teams being 1:4 players it will take 2 rounds to balance"
+			If(Global.Temp[0] > 1);
+				Log To Inspector(Custom String("moving \"{0}\" to Team 2", Last Of(All Players(Team 1))));
+				Global.DBGMovedPlayersNum += 1;
+				Move Player to Team(Last Of(All Players(Team 1)), Team 2, -1);
+			Else If(Global.Temp[0] < -1);
+				Log To Inspector(Custom String("moving \"{0}\" to Team 1", Last Of(All Players(Team 2))));
+				Global.DBGMovedPlayersNum += 1;
+				Move Player to Team(Last Of(All Players(Team 2)), Team 1, -1);
+			End;
+		End;
+		">>> STEP 2: ... Swap players when one team dominates  ... <<<"
+		disabled Global.Temp[6] = Workshop Setting Integer(Custom String("Lobby Ballance"), Custom String("Swap random players when one team wins this many rounds in a row (0 to disable)"), 3, 0, 10, 1);
+		disabled Abort If(!Global.Temp[6]);
+	}
+}
+
+rule("Lobby Balance: Randomize which team new players joins")
+{
+	event
+	{
+		Player Joined Match;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == False;
+		"Ensure our tracker variable is initialized"
+		Count Of(Global.LobbyBalance_LastSeenPlayers) > 0;
+	}
+
+	actions
+	{
+		Abort If(!Workshop Setting Toggle(Custom String("Lobby Ballance"), Custom String(
+			"Put new players in random team (when teams are of equal size)"), True, 2));
+		"Dont do anything if player was simply moved to Team 1 by unrelated action"
+		Abort If(Array Contains(Global.LobbyBalance_LastSeenPlayers, Event Player));
+		Call Subroutine(FindRealPlayers);
+		Global.LobbyBalance_LastSeenPlayers = Global.RealPlayers;
+		"By default new players will be slotted into Team 1, we introduce a 50% chance for them to be moved to Team 2 if teams were equal before they arrived."
+		disabled Abort If(Random Integer(0, 1));
+		"If Team 2 is larger or equal size, no need to move"
+		Global.Temp[4] = Count Of(Filtered Array(Global.RealPlayers, Team Of(Current Array Element) == Team 1));
+		Global.Temp[5] = Count Of(Filtered Array(Global.RealPlayers, Team Of(Current Array Element) == Team 2));
+		Abort If(Global.Temp[5] >= Global.Temp[4]);
+		Log To Inspector(Custom String("randomly moving new player \"{0}\" to Team 2", Event Player));
+		Global.DBGMovedPlayersNum += 1;
+		Move Player to Team(Event Player, Team 2, -1);
 	}
 }
 
