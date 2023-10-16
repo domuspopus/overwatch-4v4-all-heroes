@@ -718,7 +718,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		Wait Until(!Count Of(Filtered Array(All Players(All Teams), Is Dummy Bot(Current Array Element) && Slot Of(Current Array Element)
 			> 3)), 2);
 		">>> STEP 1: Ensure minimal size difference <<<"
-		If(Workshop Setting Toggle(Custom String("Lobby Ballance"), Custom String("Balance team sizes at round end"), True, 0));
+		If(Workshop Setting Toggle(Custom String("Lobby Balance"), Custom String("Balance team sizes at round end"), True, 0));
 			Global.Temp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
 			"NOTE: In case of teams being 1:4 players it will take 2 rounds to balance"
 			If(Global.Temp[0] > 1);
@@ -731,8 +731,8 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 				Move Player to Team(Last Of(All Players(Team 2)), Team 1, -1);
 			End;
 		End;
-		">>> STEP 2: ... Swap players when one team dominates  ... <<<"
-		disabled Global.Temp[6] = Workshop Setting Integer(Custom String("Lobby Ballance"), Custom String("Swap random players when one team wins this many rounds in a row (0 to disable)"), 3, 0, 10, 1);
+		">>> STEP 2: Swap players when one team dominates <<<"
+		disabled Global.Temp[6] = Workshop Setting Integer(Custom String("Lobby Balance"), Custom String("(TODO) Swap random players when one team wins this many rounds in a row (0 to disable)"), 3, 0, 10, 1);
 		disabled Abort If(!Global.Temp[6]);
 	}
 }
@@ -755,7 +755,7 @@ rule("Lobby Balance: Randomize which team new players joins")
 
 	actions
 	{
-		Abort If(!Workshop Setting Toggle(Custom String("Lobby Ballance"), Custom String(
+		Abort If(!Workshop Setting Toggle(Custom String("Lobby Balance"), Custom String(
 			"Put new players in random team (when teams are of equal size)"), True, 2));
 		"Dont do anything if player was simply moved to Team 1 by unrelated action"
 		Abort If(Array Contains(Global.LobbyBalance_LastSeenPlayers, Event Player));
