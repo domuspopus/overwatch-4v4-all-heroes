@@ -141,13 +141,13 @@ variables
 		0: IsRoundActive
 		1: IsRoundStart
 		2: TextIDS
-		3: Powerup_HPPercent
-		4: Powerup_DamagePercent
-		5: Powerup_HPPercent_Solo
-		6: Powerup_DamagePercent_Solo
+		3: POWERUP_HPPERCENT
+		4: POWERUP_DAMAGEPERCENT
+		5: POWERUP_HPPERCENT_SOLO
+		6: POWERUP_DAMAGEPERCENT_SOLO
 		7: Powerup_PlayersNumAdvantage
-		8: MapBoundry_Vertical
-		9: MapBoundry_Horizontal
+		8: MAPBOUNDRY_VERTICAL
+		9: MAPBOUNDRY_HORIZONTAL
 		10: ServerLoadVisibleTo
 		11: TimeLimit1v1_Triggers
 		12: HUDTipColor
@@ -222,14 +222,14 @@ rule("Base: Set global variables")
 	actions
 	{
 		"Auto-balancing variables. Bumps percentage of HP / damage of each player in smaller team."
-		Global.Powerup_HPPercent = 25;
-		Global.Powerup_DamagePercent = 30;
+		Global.POWERUP_HPPERCENT = 25;
+		Global.POWERUP_DAMAGEPERCENT = 30;
 		"Same as above but these will apply if team only has 1 player"
-		Global.Powerup_HPPercent_Solo = 30;
-		Global.Powerup_DamagePercent_Solo = 50;
+		Global.POWERUP_HPPERCENT_SOLO = 30;
+		Global.POWERUP_DAMAGEPERCENT_SOLO = 50;
 		"Map boundaries"
-		Global.MapBoundry_Vertical = 25;
-		Global.MapBoundry_Horizontal = 45;
+		Global.MAPBOUNDRY_VERTICAL = 25;
+		Global.MAPBOUNDRY_HORIZONTAL = 45;
 		"Misc"
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
@@ -345,9 +345,9 @@ rule("Base: Prevent heroes flying away")
 
 	conditions
 	{
-		(Y Component Of(Position Of(Event Player)) > Global.MapBoundry_Vertical || Absolute Value(X Component Of(Position Of(
-			Event Player))) > Global.MapBoundry_Horizontal || Absolute Value(Z Component Of(Position Of(Event Player)))
-			> Global.MapBoundry_Horizontal) == True;
+		(Y Component Of(Position Of(Event Player)) > Global.MAPBOUNDRY_VERTICAL || Absolute Value(X Component Of(Position Of(
+			Event Player))) > Global.MAPBOUNDRY_HORIZONTAL || Absolute Value(Z Component Of(Position Of(Event Player)))
+			> Global.MAPBOUNDRY_HORIZONTAL) == True;
 		Is Dummy Bot(Event Player) == False;
 	}
 
@@ -355,7 +355,7 @@ rule("Base: Prevent heroes flying away")
 	{
 		Small Message(Event Player, Custom String(" {0} {1} {2}", Global.Texts[6], Icon String(Warning), Ability Icon String(Hero(Mercy),
 			Button(Ability 1))));
-		If(Y Component Of(Position Of(Event Player)) > Global.MapBoundry_Vertical);
+		If(Y Component Of(Position Of(Event Player)) > Global.MAPBOUNDRY_VERTICAL);
 			Set Status(Event Player, Null, Frozen, 2);
 		Else;
 			"If character lives long enough for the freeze to expire during horizontal escape - they can fly away anyway so we just kill them (with longer freeze) to prevent it."
@@ -484,18 +484,22 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 		"Compile HUDs of all hero tips into big list visible between rounds"
 		Global.Temp[2] = 0;
 		While(Global.Temp[2] < Count Of(Global.TempArray));
-			Skip If(!Global.TempArray[Global.Temp[2]], 1);
+			If(!Global.TempArray[Global.Temp[2]]);
+				Continue;
+			End;
 			Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null,
 				Global.TempArray[Global.Temp[2]], Null, Left, 2, Null, Color(White), Null, Visible To, Visible Always);
 			Global.Temp[2] += 1;
 		End;
 		"Tips visible to specific heroes"
-		Skip If(!Global.TempArray[0], 1);
-		Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Ana) ? Local Player : Null, Null,
-			Global.TempArray[0], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
-		Skip If(!Global.TempArray[1], 1);
-		Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
-			Null, Global.TempArray[1], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		If(Global.TempArray[0]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Ana) ? Local Player : Null, Null,
+				Global.TempArray[0], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
+		If(Global.TempArray[1]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
+				Null, Global.TempArray[1], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
 		If(Global.TempArray[2]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
 				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.TempArray[2],
@@ -504,10 +508,11 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.TempArray[2],
 				Global.Texts[7]), Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
-		Skip If(!Global.TempArray[3], 1);
-		Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-			? Local Player : Null, Null, Custom String("{0}{1}", Global.TempArray[3], Global.Texts[12]), Null, Left, 3, Null,
-			Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		If(Global.TempArray[3]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
+				? Local Player : Null, Null, Custom String("{0}{1}", Global.TempArray[3], Global.Texts[12]), Null, Left, 3, Null,
+				Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
 		"HUD top spacing"
 		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n"), Left, 0, Null, Null, Color(White), Visible To,
 			Default Visibility);
@@ -607,12 +612,12 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 		Abort If(Global.Powerup_PlayersNumAdvantage > 0);
 		Global.Powerup_PlayersNumAdvantage = Number Of Players(Opposite Team Of(Team Of(Event Player))) - Number Of Players(Team Of(
 			Event Player));
-		Set Max Health(All Players(Team Of(Event Player)), 100 + Global.Powerup_HPPercent * Global.Powerup_PlayersNumAdvantage);
-		Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.Powerup_DamagePercent * Global.Powerup_PlayersNumAdvantage);
+		Set Max Health(All Players(Team Of(Event Player)), 100 + Global.POWERUP_HPPERCENT * Global.Powerup_PlayersNumAdvantage);
+		Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.POWERUP_DAMAGEPERCENT * Global.Powerup_PlayersNumAdvantage);
 		"Solo team override"
 		If(Number Of Players(Team Of(Event Player)) == 1);
-			Set Max Health(All Players(Team Of(Event Player)), 100 + Global.Powerup_HPPercent_Solo * Global.Powerup_PlayersNumAdvantage);
-			Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.Powerup_DamagePercent_Solo * Global.Powerup_PlayersNumAdvantage);
+			Set Max Health(All Players(Team Of(Event Player)), 100 + Global.POWERUP_HPPERCENT_SOLO * Global.Powerup_PlayersNumAdvantage);
+			Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.POWERUP_DAMAGEPERCENT_SOLO * Global.Powerup_PlayersNumAdvantage);
 		End;
 		Global.Powerup_EmpoweredTeam = Team Of(Event Player);
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
@@ -732,7 +737,8 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 			End;
 		End;
 		">>> STEP 2: Swap players when one team dominates <<<"
-		disabled Global.Temp[6] = Workshop Setting Integer(Custom String("Lobby Balance"), Custom String("(TODO) Swap random players when one team wins this many rounds in a row (0 to disable)"), 3, 0, 10, 1);
+		disabled Global.Temp[6] = Workshop Setting Integer(Custom String("Lobby Balance"), Custom String(
+			"(TODO) Swap random players when one team wins this many rounds in a row (0 to disable)"), 3, 0, 10, 1);
 		disabled Abort If(!Global.Temp[6]);
 	}
 }
