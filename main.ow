@@ -337,6 +337,7 @@ rule("Base: Prevent heroes flying away")
 
 	conditions
 	{
+		Is Alive(Event Player) == True;
 		(Y Component Of(Position Of(Event Player)) > Global.MAPBOUNDRY_VERTICAL || Absolute Value(X Component Of(Position Of(
 			Event Player))) > Global.MAPBOUNDRY_HORIZONTAL || Absolute Value(Z Component Of(Position Of(Event Player)))
 			> Global.MAPBOUNDRY_HORIZONTAL) == True;
@@ -347,12 +348,9 @@ rule("Base: Prevent heroes flying away")
 	{
 		Small Message(Event Player, Custom String(" {0} {1} {2}", Global.Texts[6], Icon String(Warning), Ability Icon String(Hero(Mercy),
 			Button(Ability 1))));
-		If(Y Component Of(Position Of(Event Player)) > Global.MAPBOUNDRY_VERTICAL);
-			Set Status(Event Player, Null, Frozen, 2);
-		Else;
-			"If character lives long enough for the freeze to expire during horizontal escape - they can fly away anyway so we just kill them (with longer freeze) to prevent it."
-			Set Status(Event Player, Null, Frozen, 5);
-		End;
+		Set Status(Event Player, Null, Frozen, 2);
+		Wait(1.900, Abort When False);
+		Loop If Condition Is True;
 	}
 }
 
