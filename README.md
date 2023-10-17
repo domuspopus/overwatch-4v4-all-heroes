@@ -37,6 +37,7 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
         - If winning team is larger - move 1 random player from larger to smaller team.
         - If winning team is smaller - do nothing.
 - Buff HP/Damage auto-balancing (increase all multipliers).
+- Add a HUD showing exact stats as to how much you are buffed by HP/Damage auto-balancing.
 - Character balance changes:
     - Orisa: increase HP.
 - Mild fixes.
