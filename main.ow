@@ -1058,6 +1058,8 @@ rule("Hero: Soldier 76 (start with some ult%)")
 	conditions
 	{
 		Global.IsRoundActive == True;
+		"This ensure this also triggers on resurrect"
+		Is Alive(Event Player) == True;
 	}
 
 	actions
@@ -1079,6 +1081,8 @@ rule("Hero: McCree (start with some ult%)")
 	conditions
 	{
 		Global.IsRoundActive == True;
+		"This ensure this also triggers on resurrect"
+		Is Alive(Event Player) == True;
 	}
 
 	actions
