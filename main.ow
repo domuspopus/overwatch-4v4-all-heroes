@@ -1362,9 +1362,8 @@ rule("DBG: Persistent bot aim and shoot")
 		Start Facing(Event Player, Direction From Angles(90, 3), 100, To Player, None);
 		While(True);
 			Wait(2, Ignore Condition);
-			If(Global.DBGBotShooting);
-				Press Button(Event Player, Button(Primary Fire));
-			End;
+			Press Button(Event Player, Button(Primary Fire));
+			Abort If(!Global.DBGBotShooting);
 		End;
 	}
 }
