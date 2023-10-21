@@ -1003,7 +1003,7 @@ rule("Hero: Hammond (piledriver buff)")
 	}
 }
 
-rule("Hero: Hammond (empowered piledriver)")
+disabled rule("Hero: Hammond (empowered piledriver)")
 {
 	event
 	{
