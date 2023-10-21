@@ -1276,7 +1276,7 @@ rule("Hero: Soldier 76 (start with some ult%)")
 
 	actions
 	{
-		"Value is tweaked with respect to \"Bugfix: pre-game ult generation\""
+		"Value is tweaked with respect to \"Pre-game ult generation\""
 		Set Ultimate Charge(Event Player, 95);
 	}
 }
