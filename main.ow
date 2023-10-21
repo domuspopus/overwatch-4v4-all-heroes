@@ -177,6 +177,9 @@ variables
 		4: Temp
 		5: Echo_JustDuplicated
 		6: Echo_DupeUlted
+		7: ChaserVar2
+		8: TempArray1
+		9: Hammond_PiledriverHarmFlag
 }
 
 subroutines
@@ -298,6 +301,9 @@ rule("Base: Round end (cleanup)")
 		Set Knockback Dealt(All Players(All Teams), 100);
 		Destroy All In-World Text;
 		Destroy All Progress Bar In-World Text;
+		Destroy All Effects;
+		Stop Scaling Player(All Players(All Teams));
+		Set Move Speed(All Players(All Teams), 100);
 	}
 }
 
@@ -323,7 +329,9 @@ rule("Base: Round end (cleanup - per player)")
 		End;
 		Destroy HUD Text(Event Player.TextIDS[0]);
 		Stop Chasing Player Variable(Event Player, ChaserVar1);
+		Stop Chasing Player Variable(Event Player, ChaserVar2);
 		Event Player.Echo_JustDuplicated = Null;
+		Event Player.Hammond_PiledriverHarmFlag = Null;
 	}
 }
 
@@ -402,6 +410,7 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		Global.Texts[1] = Custom String("Can ultimate mid-air");
 		Global.Texts[2] = Custom String("Can grapple air / sky");
 		Global.Texts[3] = Custom String("Stronger piledriver ");
+		disabled Global.Texts[3] = Custom String("Empowered piledriver");
 		Global.Texts[4] = Custom String("Hero tips");
 		Global.Texts[5] = Custom String("HP");
 		Global.Texts[6] = Custom String("Don't stray too far");
@@ -991,6 +1000,210 @@ rule("Hero: Hammond (piledriver buff)")
 		Wait(0.250, Ignore Condition);
 		Set Knockback Dealt(Event Player, 100);
 		Stop Damage Modification(Event Player.Temp[4]);
+	}
+}
+
+rule("Hero: Hammond (empowered piledriver)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Ability Cooldown(Event Player, Button(Crouch)) > 0;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
+		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
+	}
+
+	actions
+	{
+		">>>>>>>>>>>>>>>>>>>>>>>>> SETUP, CALC POWERUP <<<<<<<<<<<<<<<<<<<<<<<<<"
+		Event Player.ChaserVar1 = 1;
+		Event Player.ChaserVar2 = 1;
+		"Estimate as to where the ball shall land"
+		Event Player.Temp[8] = Vector(X Component Of(Position Of(Event Player)), 0, Z Component Of(Position Of(Event Player))) + Vector(
+			X Component Of(Facing Direction Of(Event Player)), 0, Z Component Of(Facing Direction Of(Event Player))) * 5;
+		"Current distance from landing"
+		Event Player.Temp[9] = Distance Between(Event Player.Temp[8], Position Of(Event Player));
+		"Distance from landing into radius multiplier (+1x size every 13 meters, maximum of 3x)"
+		Event Player.Temp[10] = 1 + Min(Event Player.Temp[9] / 13, 2);
+		"Static damage and knockback powerups of inner ring"
+		Start Damage Modification(All Players(All Teams), Event Player, 200, Receivers Damagers and Damage Percent);
+		Event Player.Temp[4] = Last Damage Modification ID;
+		Set Knockback Dealt(Event Player, 115);
+		Start Scaling Player(Event Player, Event Player.ChaserVar1, True);
+		">>>>>>>>>>>>>>>>>>>>>>>>> APPLY VISUAL EFFECTS <<<<<<<<<<<<<<<<<<<<<<<<<"
+		Create Effect(Event Player, Ring, Color(Gray), Event Player.Temp[8], 8, Position and Radius);
+		Event Player.Temp[6] = Last Created Entity;
+		Create Effect(Event Player, Ring, Color(White), Event Player.Temp[8], 8 * Event Player.ChaserVar2, Position and Radius);
+		Event Player.Temp[7] = Last Created Entity;
+		"Scale outer ring"
+		Chase Player Variable Over Time(Event Player, ChaserVar2, Event Player.Temp[10], 0.500, None);
+		"Wait untill the rollout animation completes"
+		Wait(0.100, Ignore Condition);
+		Wait Until(Speed Of In Direction(Event Player, Down) > 0, 1);
+		"Scale player (exaggerate final size slightly, devide distance by 150 meters for the animation speed)"
+		Chase Player Variable Over Time(Event Player, ChaserVar1, Event Player.Temp[10] * 1.3, Event Player.Temp[9] / 150, None);
+		Wait Until(Vertical Speed Of(Event Player) == 0, 1);
+		">>>>>>>>>>>>>>>>>>>>>>>>> LANDING, IMMEDIATE CLEANUP <<<<<<<<<<<<<<<<<<<<<<<<<"
+		Stop Chasing Player Variable(Event Player, ChaserVar1);
+		Stop Chasing Player Variable(Event Player, ChaserVar2);
+		Destroy Effect(Event Player.Temp[6]);
+		Destroy Effect(Event Player.Temp[7]);
+		"Scale player back down (better idea was to scale in two instant steps: half to original then to original, split by .1s waits, looks way better but too janky for hammond)"
+		Chase Player Variable Over Time(Event Player, ChaserVar1, 1, 0.130, None);
+		">>>>>>>>>>>>>>>>>>>>>>>>> FIND VICTIMS AND FLAG THEM TO BE HARMED <<<<<<<<<<<<<<<<<<<<<<<<<"
+		Call Subroutine(FindRealPlayers);
+		Event Player.TempArray1 = Filtered Array(Global.RealAlivePlayers, Team Of(Current Array Element) != Team Of(Event Player));
+		Event Player.Temp[11] = 0;
+		While(Event Player.Temp[11] < Count Of(Event Player.TempArray1));
+			Event Player.Temp[12] = Event Player.TempArray1[Event Player.Temp[11]];
+			Event Player.Temp[11] += 1;
+			Event Player.Temp[13] = Distance Between(Position Of(Event Player.Temp[12]), Event Player);
+			Skip If(
+				Event Player.Temp[13] < 8 * Event Player.Temp[10] &&
+				!Has Status(Event Player.Temp[12], Phased Out) && !Has Status(Event Player.Temp[12], Invincible)
+			, 1);
+			Continue;
+			Skip If(Event Player.Temp[12].Hammond_PiledriverHarmFlag != -1, 1);
+			Continue;
+			"Barrier detection (BUG: can be blind to barriers which  have an enemy stand in the middle of it and that enemy is also between victim and ball)"
+			Event Player.Temp[14] = Position Of(Event Player) + Vector(0, 1, 0);
+			Event Player.Temp[15] = Position Of(Event Player.Temp[12]) + Vector(0, 1, 0);
+			Event Player.Temp[16] = 0;
+			While(Event Player.Temp[16] < 3);
+				"Cast ray from attacker to victim"
+				Event Player.Temp[17] = Ray Cast Hit Player(Event Player.Temp[14], Event Player.Temp[15], Event Player.TempArray1, Null, True);
+
+				"We reached player"
+				If(Event Player.Temp[17] == Event Player.Temp[12]);
+					Event Player.Temp[12].Hammond_PiledriverHarmFlag = Event Player; 
+					Break;
+				"We reached non player obstacle"
+				Else If(!Event Player.Temp[17]);
+					Break;
+				End;
+
+				"We detected another player in the way, reverse cast the ray to find that player opposite side and move our ray origin there"
+				Event Player.Temp[18] = Ray Cast Hit Player(Event Player.Temp[15], Event Player.Temp[14], Event Player.Temp[17], Null, False);
+				Event Player.Temp[14] = Ray Cast Hit Position(Event Player.Temp[15], Event Player.Temp[14], Event Player.Temp[17], Null, False);
+				Event Player.Temp[14] += Normalize(Event Player.Temp[14]) * .01;
+
+				"If we hit non player obstacle on the way from target to back of collided player means that obstacle also protects victim"
+				If(!Event Player.Temp[18]);
+					Break;
+				End;
+
+				Event Player.Temp[16] += 1;
+			End;
+		End;
+		">>>>>>>>>>>>>>>>>>>>>>>>> FINAL CLEANUP <<<<<<<<<<<<<<<<<<<<<<<<<"
+		Skip(0);
+		"Short wait to ensure all damages taken place"
+		Wait(0.250, Ignore Condition);
+		Set Knockback Dealt(Event Player, 100);
+		Stop Damage Modification(Event Player.Temp[4]);
+		"Wait until we scaled the player back down"
+		Wait Until(Event Player.ChaserVar1 == 1, 1);
+		Stop Chasing Player Variable(Event Player, ChaserVar2);
+		Stop Scaling Player(Event Player);
+	}
+}
+
+disabled rule("Hero: Hammond (empowered piledriver - harm bonus victims)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Hammond_PiledriverHarmFlag != Null;
+		Event Player.Hammond_PiledriverHarmFlag != -1;
+	}
+
+	actions
+	{
+		Wait Until(Event Player.Hammond_PiledriverHarmFlag == -1, 0.100);
+		Abort If(Event Player.Hammond_PiledriverHarmFlag == -1);
+		Start Forcing Player Position(Event Player, Position Of(Event Player), False);
+		Wait(0.016, Ignore Condition);
+		Stop Forcing Player Position(Event Player);
+		Damage(Event Player, Event Player.Hammond_PiledriverHarmFlag, 20);
+		Play Effect(Event Player, Explosion Sound, Color(White), Event Player, 70);
+		Apply Impulse(Event Player, Up + 0.650 * Direction Towards(Position Of(Event Player), Event Player.Hammond_PiledriverHarmFlag),
+			Array Contains(All Tank Heroes, Hero Of(Event Player)) ? 11 : 13.500, To World, Cancel Contrary Motion);
+		Set Move Speed(Event Player, 20);
+		Wait(0.500, Ignore Condition);
+		Event Player.Temp[19] = 1;
+		While(Event Player.Temp[19] < 5);
+			If(Event Player.Temp[19] > 1);
+				Wait(0.100, Ignore Condition);
+			End;
+			Set Move Speed(Event Player, 20 + 20 * Event Player.Temp[19]);
+			Event Player.Temp[19] += 1;
+		End;
+		Event Player.Hammond_PiledriverHarmFlag = Null;
+	}
+}
+
+disabled rule("Hero: Hammond (empowered piledriver - prevent double damage)")
+{
+	event
+	{
+		Player Took Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Crouch);
+		Hero Of(Attacker) == Hero(Wrecking Ball);
+	}
+
+	actions
+	{
+		Event Player.Hammond_PiledriverHarmFlag = -1;
+		Wait(.3, Ignore Condition);
+		Event Player.Hammond_PiledriverHarmFlag = Null;
+	}
+}
+
+disabled rule("Hero: Hammond (empowered piledriver - hovering guide circle)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
+		Y Component Of(Position Of(Event Player)) > 2;
+		Ability Cooldown(Event Player, Button(Crouch)) == 0;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
+	}
+
+	actions
+	{
+		Create Effect(Event Player, Ring, Color(Gray), Update Every Frame(Vector(X Component Of(Position Of(Event Player)), 0,
+			Z Component Of(Position Of(Event Player))) + Vector(X Component Of(Facing Direction Of(Event Player)), 0, Z Component Of(
+			Facing Direction Of(Event Player))) * 5), 8, Position and Radius);
+		Event Player.Temp[5] = Last Created Entity;
+		Wait Until(Y Component Of(Position Of(Event Player)) <= 2 || Ability Cooldown(Event Player, Button(Crouch)) > 0 || !Is Alive(
+			Event Player) || !Entity Exists(Event Player) || !Global.IsRoundActive || (Hero Of(Event Player) == Hero(Wrecking Ball)
+			|| Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) != True, 9999);
+		Destroy Effect(Event Player.Temp[5]);
 	}
 }
 
