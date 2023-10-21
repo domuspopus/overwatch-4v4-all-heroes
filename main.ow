@@ -1081,7 +1081,7 @@ rule("Hero: Hammond (empowered piledriver)")
 
 				"We reached player"
 				If(Event Player.PTemp[17] == Event Player.PTemp[12]);
-					Event Player.PTemp[12].Hammond_PiledriverHarmFlag = Event Player; 
+					Event Player.PTemp[12].Hammond_PiledriverHarmFlag = Event Player;
 					Break;
 				"We reached non player obstacle"
 				Else If(!Event Player.PTemp[17]);
