@@ -893,7 +893,7 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 	{
 		"Position of where a fake icicle should be created (what hammond is looking at)."
 		Event Player.Hammond_IciclePos = Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player)
-			+ Facing Direction Of(Event Player) * 13, All Players(All Teams), Event Player, True);
+			+ Facing Direction Of(Event Player) * 13, Null, Null, True);
 		"Prevent underground icicle"
 		If(Y Component Of(Event Player.Hammond_IciclePos) < 0.700);
 			Event Player.Hammond_IciclePos = Vector(X Component Of(Event Player.Hammond_IciclePos), 0.700, Z Component Of(
