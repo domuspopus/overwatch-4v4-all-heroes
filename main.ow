@@ -1077,12 +1077,14 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 			"Barrier detection (BUG: can be blind to barriers which  have an enemy stand in the middle of it and that enemy is also between victim and ball)"
 			Event Player.PTemp[14] = Position Of(Event Player) + Vector(0, 1, 0);
 			Event Player.PTemp[15] = Position Of(Event Player.PTemp[12]) + Vector(0, 1, 0);
+			Event Player.PTemp[15] += Direction Towards(Position Of(Event Player), Event Player.PTemp[12]);
 			Event Player.PTemp[16] = 0;
 			While(Event Player.PTemp[16] < 3);
 				"Cast ray from attacker to victim"
 				Event Player.PTemp[17] = Ray Cast Hit Player(Event Player.PTemp[14], Event Player.PTemp[15], Event Player.PTempArray1, Null, True);
-				"We reached player"
-				If(Event Player.PTemp[17] == Event Player.PTemp[12]);
+				Event Player.PTemp[20] = Ray Cast Hit Position(Event Player.PTemp[14], Event Player.PTemp[15], Event Player.PTempArray1, Null, True);
+				"We reached player or his destination unobstructed"
+				If(Event Player.PTemp[17] == Event Player.PTemp[12] || Event Player.PTemp[15] == Event Player.PTemp[20]);
 					Event Player.PTemp[12].Hammond_PiledriverHarmFlag = Event Player;
 					Break;
 				"We reached non player obstacle"
