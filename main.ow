@@ -72,6 +72,11 @@ settings
 				Tree of Life Health: 50%
 			}
 
+			Mei
+			{
+				Health: 90%
+			}
+
 			Mercy
 			{
 				Health: 85%
@@ -88,7 +93,7 @@ settings
 
 			Orisa
 			{
-				Health: 62%
+				Health: 63%
 			}
 
 			Reinhardt
