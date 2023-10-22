@@ -40,6 +40,7 @@ Anything that isn't a simple setting (e.g. HP of a character) can be turned off 
 - Add a HUD showing exact stats as to how much you are buffed by HP/Damage auto-balancing.
 - Character balance changes:
     - Orisa: increase HP.
+    - Mei: decrease HP.
 - Various fixes.
 
 #### 1.5
