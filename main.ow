@@ -1084,7 +1084,8 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 			While(Event Player.PTemp[16] < 3);
 				"Cast ray from attacker to victim"
 				Event Player.PTemp[17] = Ray Cast Hit Player(Event Player.PTemp[14], Event Player.PTemp[15], Event Player.PTempArray1, Null, True);
-				Event Player.PTemp[20] = Ray Cast Hit Position(Event Player.PTemp[14], Event Player.PTemp[15], Event Player.PTempArray1, Null, True);
+				Event Player.PTemp[20] = Ray Cast Hit Position(Event Player.PTemp[14], Event Player.PTemp[15], Event Player.PTempArray1, Null,
+					True);
 				"We reached player or his destination unobstructed"
 				If(Event Player.PTemp[17] == Event Player.PTemp[12] || Event Player.PTemp[15] == Event Player.PTemp[20]);
 					Event Player.PTemp[12].Hammond_PiledriverHarmFlag = Event Player;
