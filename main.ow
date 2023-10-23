@@ -780,7 +780,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 	}
 }
 
-rule("Lobby Balance: Randomize which team new players joins")
+disabled rule("Lobby Balance: Randomize which team new players joins")
 {
 	event
 	{
@@ -799,7 +799,7 @@ rule("Lobby Balance: Randomize which team new players joins")
 	actions
 	{
 		Abort If(!Workshop Setting Toggle(Custom String("Lobby Balance"), Custom String(
-			"Put new players in random team (when teams are of equal size)"), True, 2));
+			"(INACTIVE!) Put new players in random team (when teams are of equal size)"), False, 2));
 		"Dont do anything if player was simply moved to Team 1 by unrelated action"
 		Abort If(Array Contains(Global.LobbyBalance_LastSeenPlayers, Event Player));
 		Call Subroutine(FindRealPlayers);
