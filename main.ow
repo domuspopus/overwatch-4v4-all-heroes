@@ -167,6 +167,10 @@ variables
 		21: LobbyBalance_WinStreakID
 		22: LobbyBalance_VictorTeam
 		23: Powerup_HUDText
+		24: FEATURE_ANA_SELF_ULT
+		25: FEATURE_JUNK_AIR_ULT
+		26: FEATURE_HAMMOND_ICICLE_GRAPPLE
+		27: FEATURE_HAMMOND_BUFF_PILEDRIVER
 		45: DBGMovedPlayersNum
 		46: DBGRoundNum
 		47: DBGAllowHeroSelect
@@ -224,6 +228,11 @@ rule("Base: Set global variables")
 		"Map boundaries"
 		Global.MAPBOUNDRY_VERTICAL = 25;
 		Global.MAPBOUNDRY_HORIZONTAL = 45;
+		"Features (can be disabled to deactivate and hide related HUD tips, not exposed as settings intentionally)"
+		Global.FEATURE_ANA_SELF_ULT = True;
+		Global.FEATURE_JUNK_AIR_ULT = True;
+		Global.FEATURE_HAMMOND_ICICLE_GRAPPLE = True;
+		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER = True;
 		"Misc"
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
@@ -475,40 +484,23 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
-		"NOTE: Disable any particular tip in the list below to hide it"
+		"Show hero specific tips and gather them into a list"
 		Global.GTempArray1 = Empty Array;
-		"tip: Ana self-ult"
-		Global.GTempArray1[0] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Ana)), Ability Icon String(Hero(Ana), Button(Ultimate)),
-			Global.Texts[0]);
-		"tip: Junk mid-air ult"
-		Global.GTempArray1[1] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Junkrat)), Ability Icon String(Hero(Junkrat), Button(
-			Ultimate)), Global.Texts[1]);
-		"tip: Hammond icicle grapple"
-		Global.GTempArray1[2] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
-			Wrecking Ball), Button(Secondary Fire)), Global.Texts[2]);
-		"tip: Hammond empowered piledriver"
-		Global.GTempArray1[3] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
-			Wrecking Ball), Button(Crouch)), Global.Texts[3]);
-		"Compile HUDs of all hero tips into big list visible between rounds"
-		Global.GTemp[2] = 0;
-		While(Global.GTemp[2] < Count Of(Global.GTempArray1));
-			If(!Global.GTempArray1[Global.GTemp[2]]);
-				Continue;
-			End;
-			Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null,
-				Global.GTempArray1[Global.GTemp[2]], Null, Left, 2, Null, Color(White), Null, Visible To, Visible Always);
-			Global.GTemp[2] += 1;
-		End;
-		"Tips visible to specific heroes"
-		If(Global.GTempArray1[0]);
+		If(Global.FEATURE_ANA_SELF_ULT);
+			Global.GTempArray1[0] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Ana)), Ability Icon String(Hero(Ana), Button(Ultimate)),
+				Global.Texts[0]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Ana) ? Local Player : Null, Null,
 				Global.GTempArray1[0], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
-		If(Global.GTempArray1[1]);
+		If(Global.FEATURE_JUNK_AIR_ULT);
+			Global.GTempArray1[1] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Junkrat)), Ability Icon String(Hero(Junkrat), Button(
+				Ultimate)), Global.Texts[1]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
 				Null, Global.GTempArray1[1], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
-		If(Global.GTempArray1[2]);
+		If(Global.FEATURE_HAMMOND_ICICLE_GRAPPLE);
+			Global.GTempArray1[2] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
+				Wrecking Ball), Button(Secondary Fire)), Global.Texts[2]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
 				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[2],
 				Global.Texts[8]), Null, Left, 2, Null, Custom Color(255, 255, 255, 50), Null, Visible To and Color, Visible Never);
@@ -516,10 +508,21 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[2],
 				Global.Texts[7]), Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
-		If(Global.GTempArray1[3]);
+		If(Global.FEATURE_HAMMOND_BUFF_PILEDRIVER);
+			Global.GTempArray1[3] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
+				Wrecking Ball), Button(Crouch)), Global.Texts[3]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
 				? Local Player : Null, Null, Custom String("{0}{1}", Global.GTempArray1[3], Global.Texts[12]), Null, Left, 3, Null,
 				Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+		End;
+		"Create HUDs of all hero tips as a big list visible between rounds"
+		Global.GTemp[2] = 0;
+		While(Global.GTemp[2] < Count Of(Global.GTempArray1));
+			If(Global.GTempArray1[Global.GTemp[2]]);
+				Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null,
+					Global.GTempArray1[Global.GTemp[2]], Null, Left, 2, Null, Color(White), Null, Visible To, Visible Always);
+			End;
+			Global.GTemp[2] += 1;
 		End;
 		"HUD top spacing"
 		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n"), Left, 0, Null, Null, Color(White), Visible To,
@@ -850,6 +853,7 @@ rule("Hero: Ana (self ult)")
 
 	conditions
 	{
+		Global.FEATURE_ANA_SELF_ULT == True;
 		Is Button Held(Event Player, Button(Ultimate)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
 		Is Dummy Bot(Event Player) == False;
@@ -888,6 +892,7 @@ rule("Hero: Hammond (icicle grapple - icicle spawning)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_ICICLE_GRAPPLE == True;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
 		Event Player.Hammond_GrappleIsOn == False;
@@ -930,6 +935,7 @@ rule("Hero: Hammond (icicle grapple - when grapple disabled)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_ICICLE_GRAPPLE == True;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Global.IsRoundActive == True;
 		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
@@ -954,6 +960,7 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_ICICLE_GRAPPLE == True;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Global.IsRoundActive == True;
 		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.700 || Absolute Value(Z Component Of(Position Of(Event Player)))
@@ -993,6 +1000,7 @@ rule("Hero: Hammond (piledriver buff)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		Ability Cooldown(Event Player, Button(Crouch)) > 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
@@ -1021,6 +1029,7 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		Ability Cooldown(Event Player, Button(Crouch)) > 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
@@ -1130,6 +1139,7 @@ disabled rule("Hero: Hammond (empowered piledriver - harm bonus victims)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		Event Player.Hammond_PiledriverHarmFlag != Null;
 		Event Player.Hammond_PiledriverHarmFlag != -1;
 	}
@@ -1170,6 +1180,7 @@ disabled rule("Hero: Hammond (empowered piledriver - prevent double damage)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		Event Ability == Button(Crouch);
 		Hero Of(Attacker) == Hero(Wrecking Ball);
 	}
@@ -1193,6 +1204,7 @@ disabled rule("Hero: Hammond (empowered piledriver - hovering guide circle)")
 
 	conditions
 	{
+		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		(Hero Of(Event Player) == Hero(Wrecking Ball) || Hero Being Duplicated(Event Player) == Hero(Wrecking Ball)) == True;
 		Y Component Of(Position Of(Event Player)) > 2;
 		Ability Cooldown(Event Player, Button(Crouch)) == 0;
@@ -1223,6 +1235,7 @@ rule("Hero: Junkrat (mid-air ult)")
 
 	conditions
 	{
+		Global.FEATURE_JUNK_AIR_ULT == True;
 		Is Button Held(Event Player, Button(Ultimate)) == True;
 		(Hero Of(Event Player) == Hero(Junkrat) || Hero Being Duplicated(Event Player) == Hero(Junkrat)) == True;
 		Ultimate Charge Percent(Event Player) == 100;
