@@ -257,6 +257,7 @@ rule("Base: Skip hero select, initiate round start variables")
 			Wait(Global.DBGAllowHeroSelect, Ignore Condition);
 		End;
 		Global.Powerup_EmpoweredTeam = Null;
+		Global.LobbyBalance_VictorTeam = -1;
 		"This skips the selection"
 		Set Match Time(0);
 		"Allow time for game to select hero for player and initiate round"
@@ -726,6 +727,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 	{
 		Global.DBG != True;
 		Global.IsRoundActive != True;
+		Global.LobbyBalance_VictorTeam != -1;
 	}
 
 	actions
