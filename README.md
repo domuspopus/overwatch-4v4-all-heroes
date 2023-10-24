@@ -36,6 +36,7 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
         - If teams are of the same size - swap sides of 2 random opposing players.
         - If winning team is larger - move 1 random player from larger to smaller team.
         - If winning team is smaller - do nothing.
+    - Pause/resume via Interact + Primary + Secondary Fire.
 - Buff HP/Damage auto-balancing (increase all multipliers).
 - Add a HUD showing exact stats as to how much you are buffed by HP/Damage auto-balancing.
 - Character balance changes:
