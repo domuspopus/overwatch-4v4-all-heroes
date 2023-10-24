@@ -786,7 +786,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		Global.GTemp[8] = Null;
 		If(Number Of Players(Global.LobbyBalance_VictorTeam) >= Number Of Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
 			Global.DBGMovedPlayersNum += 1;
-			Global.GTemp[7] = Random Value In Array(All Players(Team Of(Global.LobbyBalance_VictorTeam)));
+			Global.GTemp[7] = Random Value In Array(All Players(Global.LobbyBalance_VictorTeam));
 		End;
 		If(Number Of Players(Global.LobbyBalance_VictorTeam) == Number Of Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
 			Global.DBGMovedPlayersNum += 1;
