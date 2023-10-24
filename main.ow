@@ -172,6 +172,7 @@ variables
 		26: FEATURE_HAMMOND_ICICLE_GRAPPLE
 		27: FEATURE_HAMMOND_BUFF_PILEDRIVER
 		28: LobbyBalance_Paused
+		29: ChaserVar1
 		45: DBGMovedPlayersNum
 		46: DBGRoundNum
 		47: DBGAllowHeroSelect
@@ -195,6 +196,7 @@ variables
 subroutines
 {
 	0: FindRealPlayers
+	1: LobbyBalance_Notify
 }
 
 rule("PROJECT INFO")
@@ -437,6 +439,7 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		Global.Texts[10] = Custom String("powered up!");
 		Global.Texts[11] = Custom String("Round ends in:");
 		Global.Texts[12] = Custom String("                       ");
+		Global.Texts[13] = Custom String("Players reordered");
 		If(False);
 		"de-DE"
 		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Trainingsbereich"));
@@ -798,6 +801,33 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		Move Player to Team(Global.GTemp[8], Empty Array, -1);
 		Move Player to Team(Global.GTemp[7], Opposite Team Of(Global.GTemp[13]), -1);
 		Move Player to Team(Global.GTemp[8], Global.GTemp[13], -1);
+		Start Rule(LobbyBalance_Notify, Do Nothing);
+	}
+}
+
+rule("Lobby Balance: Sub: Show notification")
+{
+	event
+	{
+		Subroutine;
+		LobbyBalance_Notify;
+	}
+
+	actions
+	{
+		Global.ChaserVar1 = 0;
+		Wait(0.800, Ignore Condition);
+		Chase Global Variable Over Time(ChaserVar1, 190, 0.200, None);
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n\n\n{0}", Global.Texts[13]), Top, 0, Null, Null,
+			Custom Color(255, 255, 255, Global.ChaserVar1), Color, Visible Always);
+		Global.TextIDS[1] = Last Text ID;
+		Wait Until(Global.ChaserVar1 == 190, 1);
+		Stop Chasing Global Variable(ChaserVar1);
+		Wait(3, Ignore Condition);
+		Chase Global Variable Over Time(ChaserVar1, 0, 0.300, None);
+		Wait Until(Global.ChaserVar1 == 0, 1);
+		Stop Chasing Global Variable(ChaserVar1);
+		Destroy HUD Text(Global.TextIDS[1]);
 	}
 }
 
