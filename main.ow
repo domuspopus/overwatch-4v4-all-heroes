@@ -796,11 +796,10 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 			Global.GTemp[8] = Random Value In Array(All Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
 		End;
 		Log To Inspector(Custom String("swapping teams for \"{0}\" and \"{1}\"", Global.GTemp[7], Global.GTemp[8]));
-		Global.GTemp[13] = Team Of(Global.GTemp[7]);
 		Move Player to Team(Global.GTemp[7], Empty Array, -1);
 		Move Player to Team(Global.GTemp[8], Empty Array, -1);
-		Move Player to Team(Global.GTemp[7], Opposite Team Of(Global.GTemp[13]), -1);
-		Move Player to Team(Global.GTemp[8], Global.GTemp[13], -1);
+		Move Player to Team(Global.GTemp[7], Opposite Team Of(Global.LobbyBalance_VictorTeam), -1);
+		Move Player to Team(Global.GTemp[8], Global.LobbyBalance_VictorTeam, -1);
 		Start Rule(LobbyBalance_Notify, Do Nothing);
 	}
 }
