@@ -1050,7 +1050,7 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 
 	actions
 	{
-		">>>>>>>>>>>>>>>>>>>>>>>>> SETUP, CALC POWERUP <<<<<<<<<<<<<<<<<<<<<<<<<"
+		">>>>>>>>>>>>>>>>>> SETUP, CALC POWERUP <<<<<<<<<<<<<<<<<<"
 		Event Player.ChaserVar1 = 1;
 		Event Player.ChaserVar2 = 1;
 		"Estimate as to where the ball shall land"
@@ -1065,7 +1065,7 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 		Event Player.PTemp[4] = Last Damage Modification ID;
 		Set Knockback Dealt(Event Player, 115);
 		Start Scaling Player(Event Player, Event Player.ChaserVar1, True);
-		">>>>>>>>>>>>>>>>>>>>>>>>> APPLY VISUAL EFFECTS <<<<<<<<<<<<<<<<<<<<<<<<<"
+		">>>>>>>>>>>>>>>>>> APPLY VISUAL EFFECTS <<<<<<<<<<<<<<<<<<"
 		Create Effect(Event Player, Ring, Color(Gray), Event Player.PTemp[8], 8, Position and Radius);
 		Event Player.PTemp[6] = Last Created Entity;
 		Create Effect(Event Player, Ring, Color(White), Event Player.PTemp[8], 8 * Event Player.ChaserVar2, Position and Radius);
@@ -1078,14 +1078,14 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 		"Scale player (exaggerate final size slightly, devide distance by 150 meters for the animation speed)"
 		Chase Player Variable Over Time(Event Player, ChaserVar1, Event Player.PTemp[10] * 1.300, Event Player.PTemp[9] / 150, None);
 		Wait Until(Vertical Speed Of(Event Player) == 0, 1);
-		">>>>>>>>>>>>>>>>>>>>>>>>> LANDING, IMMEDIATE CLEANUP <<<<<<<<<<<<<<<<<<<<<<<<<"
+		">>>>>>>>>>>>>>>>>> LANDING, IMMEDIATE CLEANUP <<<<<<<<<<<<<<<<<<"
 		Stop Chasing Player Variable(Event Player, ChaserVar1);
 		Stop Chasing Player Variable(Event Player, ChaserVar2);
 		Destroy Effect(Event Player.PTemp[6]);
 		Destroy Effect(Event Player.PTemp[7]);
 		"Scale player back down (better idea was to scale in two instant steps: half to original then to original, split by .1s waits, looks way better but too janky for hammond)"
 		Chase Player Variable Over Time(Event Player, ChaserVar1, 1, 0.130, None);
-		">>>>>>>>>>>>>>>>>>>>>>>>> FIND VICTIMS AND FLAG THEM TO BE HARMED <<<<<<<<<<<<<<<<<<<<<<<<<"
+		">>>>>>>>>>>>>>>>>> FIND VICTIMS AND FLAG THEM TO BE HARMED <<<<<<<<<<<<<<<<<<"
 		Call Subroutine(FindRealPlayers);
 		Event Player.PTempArray1 = Filtered Array(Global.RealAlivePlayers, Team Of(Current Array Element) != Team Of(Event Player));
 		Event Player.PTemp[11] = 0;
@@ -1128,7 +1128,7 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 				Event Player.PTemp[16] += 1;
 			End;
 		End;
-		">>>>>>>>>>>>>>>>>>>>>>>>> FINAL CLEANUP <<<<<<<<<<<<<<<<<<<<<<<<<"
+		">>>>>>>>>>>>>>>>>> FINAL CLEANUP <<<<<<<<<<<<<<<<<<"
 		Skip(0);
 		"Short wait to ensure all damages taken place"
 		Wait(0.250, Ignore Condition);
