@@ -646,7 +646,7 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
 			Event Player));
 		Wait(1, Ignore Condition);
-		Small Message(All Players(All Teams), Custom String("{0} {1}", Team Of(Event Player), Global.Texts[10]));
+		Small Message(All Players(All Teams), Custom String(" {0} {1}", Team Of(Event Player), Global.Texts[10]));
 	}
 }
 
