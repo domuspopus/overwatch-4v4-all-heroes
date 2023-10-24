@@ -171,6 +171,7 @@ variables
 		25: FEATURE_JUNK_AIR_ULT
 		26: FEATURE_HAMMOND_ICICLE_GRAPPLE
 		27: FEATURE_HAMMOND_BUFF_PILEDRIVER
+		28: LobbyBalance_Paused
 		45: DBGMovedPlayersNum
 		46: DBGRoundNum
 		47: DBGAllowHeroSelect
@@ -476,10 +477,13 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 	{
 		"Global tips and HUDs"
 		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
-			Custom String("{0}, {1}, {2}", Custom String("{0}% avg {1}% pk", Server Load Average, Server Load Peak), Custom String("{0}++",
-			Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : String("None")), Custom String("R{0}/{1}, {2}", Match Round,
-			Global.DBGRoundNum, Custom String("Pm{0}, Sk{1}", Global.DBGMovedPlayersNum, Global.LobbyBalance_WinStreak))), Null, Right, -1,
-			Null, Custom Color(255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
+			Custom String("{0}% AVG {1}% PK, {2}", Server Load Average, Server Load Peak, Custom String("{0}v{1}, {2}", Number Of Players(
+			Team 1), Number Of Players(Team 2), Custom String("{0}++, R{1}/{2}",
+			Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : Custom String("None"), Match Round, Custom String(
+			"{0}, PM{1}, SK{2}", Global.DBGRoundNum, Global.DBGMovedPlayersNum, Custom String("{0}{1}{2}", String Slice(
+			Global.LobbyBalance_WinStreakID, 0, 1), Global.LobbyBalance_WinStreak, Global.LobbyBalance_Paused ? Custom String("P")
+			: Custom String("")))))), Null, Right, -1, Null, Custom Color(255, 255, 255, 80), Null, Visible To String and Color,
+			Visible Always);
 		Create HUD Text(Team Of(Local Player) == Global.Powerup_EmpoweredTeam ? Local Player : Null, Null, Null, Global.Powerup_HUDText,
 			Left, 10, Null, Null, Color(Lime Green), Visible To and String, Visible Never);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
@@ -729,6 +733,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 
 	conditions
 	{
+		Global.LobbyBalance_Paused != True;
 		Global.DBG != True;
 		Global.IsRoundActive != True;
 		Global.LobbyBalance_VictorTeam != -1;
@@ -793,6 +798,28 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		Move Player to Team(Global.GTemp[8], Empty Array, -1);
 		Move Player to Team(Global.GTemp[7], Opposite Team Of(Global.GTemp[13]), -1);
 		Move Player to Team(Global.GTemp[8], Global.GTemp[13], -1);
+	}
+}
+
+rule("Lobby Balancing: Allow to pause / unpause")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Interact)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+	}
+
+	actions
+	{
+		Global.LobbyBalance_Paused = !Global.LobbyBalance_Paused;
 	}
 }
 
