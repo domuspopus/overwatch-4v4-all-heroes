@@ -21,9 +21,9 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
 
 Mode [workshop.codes](https://workshop.codes/48CYD) page.
 
-### Configuration
+### Advanced Configuration
 
-Anything that isn't a simple setting (e.g. HP of a character) can be turned off by disabling workshop rule associated with it. All rules have descriptive names. For instance to disable Ana self ult ability, find a rule named "Hero: Ana (self ult)", tick the checkbox on the side of it and toggle the rule off using the button atop the interface.
+Some features and parameters are defined and can be toggled / tweaked inside `Base: Set global variables` rule. Anything else will probably require you disabling workshop rule associated with it. All rules have descriptive names. For instance to disable anti-air mechanics, find a rule named `Base: Prevent heroes flying away`, tick the checkbox on the side of it and toggle the rule off using the button atop the interface.
 
 ### Changelog
 
