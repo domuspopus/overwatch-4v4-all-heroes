@@ -530,9 +530,9 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 			Global.GTemp[2] += 1;
 		End;
 		"HUD top spacing"
-		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n"), Left, 0, Null, Null, Color(White), Visible To,
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n"), Left, -1, Null, Null, Color(White), Visible To,
 			Default Visibility);
-		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n"), Top, 0, Null, Null, Color(White), Visible To,
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n"), Top, -1, Null, Null, Color(White), Visible To,
 			Default Visibility);
 	}
 }
