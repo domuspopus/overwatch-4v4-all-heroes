@@ -831,7 +831,7 @@ rule("Lobby Balance: Sub: Show notification")
 	}
 }
 
-rule("Lobby Balancing: Allow to pause / unpause")
+rule("Lobby Balance: Allow to pause / unpause")
 {
 	event
 	{
