@@ -762,8 +762,13 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 			"Swap random players when one team wins this many rounds in a row (0 to disable)"), 4, 0, 10, 1);
 		Abort If(!Global.GTemp[6]);
 		Abort If(Number Of Players(All Teams) <= 2);
-		Global.GTemp[7] = Custom String("{0}-{1}-{2}", Number Of Players(Team 1), Number Of Players(Team 2),
-			Global.LobbyBalance_VictorTeam);
+		If(Number Of Players(Team 1) > Number Of Players(Team 2));
+			Global.GTemp[7] = Custom String(">{0}", Global.LobbyBalance_VictorTeam);
+		Else If(Number Of Players(Team 1) < Number Of Players(Team 2));
+			Global.GTemp[7] = Custom String("<{0}", Global.LobbyBalance_VictorTeam);
+		Else;
+			Global.GTemp[7] = Custom String("={0}", Global.LobbyBalance_VictorTeam);
+		End;
 		If(Global.GTemp[7] != Global.LobbyBalance_WinStreakID);
 			Global.LobbyBalance_WinStreak = 0;
 		End;
