@@ -535,6 +535,12 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 			Default Visibility);
 		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n"), Top, -1, Null, Null, Color(White), Visible To,
 			Default Visibility);
+		"Tips in config page"
+		Skip If(Workshop Setting Combo(Custom String("2. Information"), Custom String(
+			"Toggle automatic lobby balancing via <Interact> + <Primary Fire> + <Secondary Fire>"), 0, Array(Custom String(
+			"I understand")), 0), 0);
+		Skip If(Workshop Setting Combo(Custom String("2. Information"), Custom String(
+			"Toggle debug HUD visibility via <Interact> + <Reload>"), 0, Array(Custom String("I understand")), 0), 0);
 	}
 }
 
