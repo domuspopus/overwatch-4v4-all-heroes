@@ -755,7 +755,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		Global.GTemp[13] = False;
 		"XXX: Have to be very careful in this rule, moving players doesn't immediately update lobby data. We keep track of things ourselves and only one step is allowed to actually move players."
 		Global.GTemp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
-		"We do not actually randomize team for all new players, we only move a single new player randomly to Team 2 at round end. This is to avoid situation where an equal lobby with long stay players doesn't get many new people join but those that occasionally joi"
+		"We only move a single new player randomly to Team 2 at round end. That's to avoid situation where small equal lobby with long stay players doesn't get many new joiners but when someone does join they always go to Team 1."
 		If(Entity Exists(Global.LobbyBalance_Team1Newbie) && Global.GTemp[0] >= 1 && Random Integer(0, 1));
 			Log To Inspector(Custom String("randomly moving \"{0}\" to {1}", Global.LobbyBalance_Team1Newbie, Team 2));
 			Global.GTemp[13] = True;
