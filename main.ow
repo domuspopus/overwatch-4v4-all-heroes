@@ -162,7 +162,7 @@ variables
 		16: RealAlivePlayers
 		17: GTempArray1
 		18: Powerup_EmpoweredTeam
-		19: LobbyBalance_LastSeenPlayers
+		19: LobbyBalance_Team1Newbie
 		20: LobbyBalance_WinStreak
 		21: LobbyBalance_WinStreakID
 		22: LobbyBalance_VictorTeam
@@ -240,8 +240,6 @@ rule("Base: Set global variables")
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
 		Global.DBGRoundNum = 1;
-		Wait Until(Host Player, 3);
-		Global.LobbyBalance_LastSeenPlayers = Array(Host Player);
 	}
 }
 
@@ -747,17 +745,34 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		"Wait before all utility bots are destroyed"
 		Wait Until(!Count Of(Filtered Array(All Players(All Teams), Is Dummy Bot(Current Array Element) && Slot Of(Current Array Element)
 			> 3)), 2);
-		">>> STEP 1: Ensure minimal size difference <<<"
-		If(Workshop Setting Toggle(Custom String("Lobby Balance"), Custom String("Balance team sizes at round end"), True, 0));
-			Global.GTemp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
+		">>>>>>>>>>>>>>>>>> STEP 1: Move newbies into new random team <<<<<<<<<<<<<<<<<<"
+		Global.GTemp[13] = False;
+		"XXX: Have to be very careful in this rule, moving players doesn't immediately update lobby data. We keep track of things ourselves and only one step is allowed to actually move players."
+		Global.GTemp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
+		"We do not actually randomize team for all new players, we only move a single new player randomly to Team 2 at round end. This is to avoid situation where an equal lobby with long stay players doesn't get many new people join but those that occasionally joi"
+		If(Entity Exists(Global.LobbyBalance_Team1Newbie) && Global.GTemp[0] >= 1 && Random Integer(0, 1));
+			Log To Inspector(Custom String("randomly moving \"{0}\" to {1}", Global.LobbyBalance_Team1Newbie, Team 2));
+			Global.GTemp[13] = True;
+			Global.GTemp[0] -= 1;
+			Global.DBGMovedPlayersNum += 1;
+			Move Player to Team(Global.LobbyBalance_Team1Newbie, Empty Array, -1);
+			Move Player to Team(Global.LobbyBalance_Team1Newbie, Team 2, -1);
+		End;
+		Global.LobbyBalance_Team1Newbie = Null;
+		">>>>>>>>>>>>>>>>>> STEP 2: Ensure minimal size difference <<<<<<<<<<<<<<<<<<"
+		If(Workshop Setting Toggle(Custom String("1. Lobby Balance"), Custom String("Balance team sizes at round end"), True, 0)
+			&& !Global.GTemp[13]);
 			Global.GTemp[11] = Null;
 			If(Global.GTemp[0] > 1);
 				Global.GTemp[11] = Last Of(All Players(Team 1));
+				Global.GTemp[0] -= 1;
 			Else If(Global.GTemp[0] < -1);
 				Global.GTemp[11] = Last Of(All Players(Team 2));
+				Global.GTemp[0] += 1;
 			End;
 			"NOTE: In case of teams being 1:4 players it will take 2 rounds to balance"
 			If(Global.GTemp[11]);
+				Global.GTemp[13] = True;
 				Global.GTemp[12] = Opposite Team Of(Team Of(Global.GTemp[11]));
 				Log To Inspector(Custom String("moving \"{0}\" to {1}", Global.GTemp[11], Global.GTemp[12]));
 				Global.DBGMovedPlayersNum += 1;
@@ -765,14 +780,13 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 				Move Player to Team(Global.GTemp[11], Global.GTemp[12], -1);
 			End;
 		End;
-		">>> STEP 2: Swap players when one team dominates <<<"
-		Global.GTemp[6] = Workshop Setting Integer(Custom String("Lobby Balance"), Custom String(
+		">>>>>>>>>>>>>>>>>> STEP 3: Swap players when one team dominates <<<<<<<<<<<<<<<<<<"
+		Global.GTemp[6] = Workshop Setting Integer(Custom String("1. Lobby Balance"), Custom String(
 			"Swap random players when one team wins this many rounds in a row (0 to disable)"), 4, 0, 10, 1);
 		Abort If(!Global.GTemp[6]);
-		Abort If(Number Of Players(All Teams) <= 2);
-		If(Number Of Players(Team 1) > Number Of Players(Team 2));
+		If(Global.GTemp[0] >= 1);
 			Global.GTemp[7] = Custom String(">{0}", Global.LobbyBalance_VictorTeam);
-		Else If(Number Of Players(Team 1) < Number Of Players(Team 2));
+		Else If(Global.GTemp[0] <= -1);
 			Global.GTemp[7] = Custom String("<{0}", Global.LobbyBalance_VictorTeam);
 		Else;
 			Global.GTemp[7] = Custom String("={0}", Global.LobbyBalance_VictorTeam);
@@ -781,16 +795,22 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 			Global.LobbyBalance_WinStreak = 0;
 		End;
 		Global.LobbyBalance_WinStreakID = Global.GTemp[7];
+		"Abort if: draw"
 		Abort If(!Global.LobbyBalance_VictorTeam);
 		Global.LobbyBalance_WinStreak += 1;
+		"Abort if: 1v1"
+		Abort If(Number Of Players(All Teams) <= 2);
+		"Abort if: low streak"
 		Abort If(Global.LobbyBalance_WinStreak < Global.GTemp[6]);
+		"Abort if: we already moved someone on other steps (NOTE: After this point lobby data can be expected to be correct)"
+		Abort If(Global.GTemp[13]);
+		"Abort if: smaller team dominating"
+		Abort If(Number Of Players(Global.LobbyBalance_VictorTeam) < Number Of Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
 		Global.LobbyBalance_WinStreak = 0;
 		Global.GTemp[7] = Null;
 		Global.GTemp[8] = Null;
-		If(Number Of Players(Global.LobbyBalance_VictorTeam) >= Number Of Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
-			Global.DBGMovedPlayersNum += 1;
-			Global.GTemp[7] = Random Value In Array(All Players(Global.LobbyBalance_VictorTeam));
-		End;
+		Global.DBGMovedPlayersNum += 1;
+		Global.GTemp[7] = Random Value In Array(All Players(Global.LobbyBalance_VictorTeam));
 		If(Number Of Players(Global.LobbyBalance_VictorTeam) == Number Of Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
 			Global.DBGMovedPlayersNum += 1;
 			Global.GTemp[8] = Random Value In Array(All Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
@@ -852,7 +872,7 @@ rule("Lobby Balance: Allow to pause / unpause")
 	}
 }
 
-disabled rule("Lobby Balance: Randomize which team new players joins")
+rule("Lobby Balance: Keep track of new players joining")
 {
 	event
 	{
@@ -863,32 +883,16 @@ disabled rule("Lobby Balance: Randomize which team new players joins")
 
 	conditions
 	{
+		Workshop Setting Toggle(Custom String("1. Lobby Balance"), Custom String(
+			"Put new players in random team at round end (when lobby becomes imbalanced)"), True, 2) == True;
+		"Don't bother tracking newbies inbetween rounds, too messy too account for that"
+		Global.IsRoundActive == True;
 		Is Dummy Bot(Event Player) == False;
-		"Ensure our tracker variable is initialized"
-		Count Of(Global.LobbyBalance_LastSeenPlayers) > 0;
 	}
 
 	actions
 	{
-		Abort If(!Workshop Setting Toggle(Custom String("Lobby Balance"), Custom String(
-			"(INACTIVE!) Put new players in random team (when teams are of equal size)"), False, 2));
-		"Dont do anything if player was simply moved to Team 1 by unrelated action"
-		Abort If(Array Contains(Global.LobbyBalance_LastSeenPlayers, Event Player));
-		Call Subroutine(FindRealPlayers);
-		Global.LobbyBalance_LastSeenPlayers = Global.RealPlayers;
-		"By default new players will be slotted into Team 1, we introduce a 50% chance for them to be moved to Team 2 if teams were equal before they arrived"
-		Abort If(Random Integer(0, 1));
-		"Add a momentary wait to space out the swapping, may address issues of occasional burst of new players joining"
-		Wait(Random Real(0.100, 0.400), Ignore Condition);
-		"Recalculate real players as it may have changed after last wait"
-		Call Subroutine(FindRealPlayers);
-		"If Team 2 is larger or equal size, no need to move"
-		Global.GTemp[4] = Count Of(Filtered Array(Global.RealPlayers, Team Of(Current Array Element) == Team 1));
-		Global.GTemp[5] = Count Of(Filtered Array(Global.RealPlayers, Team Of(Current Array Element) == Team 2));
-		Abort If(Global.GTemp[5] >= Global.GTemp[4]);
-		Log To Inspector(Custom String("randomly moving new player \"{0}\" to Team 2", Event Player));
-		Global.DBGMovedPlayersNum += 1;
-		Move Player to Team(Event Player, Team 2, -1);
+		Global.LobbyBalance_Team1Newbie = Event Player;
 	}
 }
 
