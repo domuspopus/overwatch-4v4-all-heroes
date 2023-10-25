@@ -861,6 +861,7 @@ rule("Lobby Balance: Allow to pause / unpause")
 
 	conditions
 	{
+		Event Player == Host Player;
 		Is Button Held(Event Player, Button(Interact)) == True;
 		Is Button Held(Event Player, Button(Primary Fire)) == True;
 		Is Button Held(Event Player, Button(Secondary Fire)) == True;
@@ -869,6 +870,8 @@ rule("Lobby Balance: Allow to pause / unpause")
 	actions
 	{
 		Global.LobbyBalance_Paused = !Global.LobbyBalance_Paused;
+		Small Message(Host Player, Global.LobbyBalance_Paused ? Custom String("Lobby Balancing: Paused") : Custom String(
+			"Lobby Balancing: Resumed"));
 	}
 }
 
