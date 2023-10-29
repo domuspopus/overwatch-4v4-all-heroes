@@ -876,8 +876,11 @@ rule("Lobby Balance: Allow to pause / unpause")
 	actions
 	{
 		Global.LobbyBalance_Paused = !Global.LobbyBalance_Paused;
-		Small Message(Host Player, Global.LobbyBalance_Paused ? Custom String("Lobby Balancing: Paused") : Custom String(
-			"Lobby Balancing: Resumed"));
+		If(Global.LobbyBalance_Paused);
+			Small Message(Event Player, Custom String("Lobby Balancing: Paused"));
+		Else;
+			Small Message(Event Player, Custom String("Lobby Balancing: Resumed"));
+		End;
 	}
 }
 
