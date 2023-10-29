@@ -27,7 +27,7 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 
 ### Changelog
 
-#### 1.6 (in-development)
+#### 1.6
 
 - Add advanced lobby balancing.
     - Make each mechanic a toggleable workshop setting.
