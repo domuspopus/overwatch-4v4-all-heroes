@@ -751,6 +751,8 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		"Wait before all utility bots are destroyed"
 		Wait Until(!Count Of(Filtered Array(All Players(All Teams), Is Dummy Bot(Current Array Element) && Slot Of(Current Array Element)
 			> 3)), 2);
+		"Wait a bit so the player swap feels less jarring to the players being moved"
+		Wait(0.500, Ignore Condition);
 		">>>>>>>>>>>>>>>>>> STEP 1: Move newbies into new random team <<<<<<<<<<<<<<<<<<"
 		Global.GTemp[13] = False;
 		"XXX: Have to be very careful in this rule, moving players doesn't immediately update lobby data. We keep track of things ourselves and only one step is allowed to actually move players."
