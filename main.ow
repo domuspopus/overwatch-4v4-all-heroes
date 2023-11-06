@@ -136,6 +136,11 @@ settings
 			{
 				Health: 65%
 			}
+
+			enabled heroes
+			{
+				Widowmaker
+			}
 		}
 	}
 }
@@ -173,6 +178,7 @@ variables
 		27: FEATURE_HAMMOND_BUFF_PILEDRIVER
 		28: LobbyBalance_Paused
 		29: ChaserVar1
+		30: FEATURE_WIDOW_POISON_ULT
 		45: DBGMovedPlayersNum
 		46: DBGRoundNum
 		47: DBGAllowHeroSelect
@@ -191,12 +197,18 @@ variables
 		7: ChaserVar2
 		8: PTempArray1
 		9: Hammond_PiledriverHarmFlag
+		10: Widow_PoisonCloudsID
+		11: Widow_PoisonCloudsPos
+		12: Widow_LastPos
+		13: PTempArray2
 }
 
 subroutines
 {
 	0: FindRealPlayers
 	1: LobbyBalance_Notify
+	2: Widow_DestroyPoisonAura
+	3: Widow_PoisonVictim
 }
 
 rule("PROJECT INFO")
@@ -236,6 +248,7 @@ rule("Base: Set global variables")
 		Global.FEATURE_JUNK_AIR_ULT = True;
 		Global.FEATURE_HAMMOND_ICICLE_GRAPPLE = True;
 		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER = True;
+		Global.FEATURE_WIDOW_POISON_ULT = True;
 		"Misc"
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
@@ -348,6 +361,9 @@ rule("Base: Round end (cleanup - per player)")
 		Stop Chasing Player Variable(Event Player, ChaserVar2);
 		Event Player.Echo_JustDuplicated = Null;
 		Event Player.Hammond_PiledriverHarmFlag = Null;
+		Event Player.Widow_LastPos = Null;
+		Event Player.Widow_PoisonCloudsID = Empty Array;
+		Event Player.Widow_PoisonCloudsPos = Empty Array;
 	}
 }
 
@@ -564,7 +580,7 @@ rule("Misc: HUD tip highlight")
 	}
 }
 
-rule("Misc: Cleanup utility dummies")
+disabled rule("Misc: Cleanup utility dummies")
 {
 	event
 	{
@@ -1555,7 +1571,7 @@ rule("Hero: Echo (support others faux abilities - cleanup)")
 	}
 }
 
-disabled rule("DBG: Main toggle")
+rule("DBG: Main toggle")
 {
 	event
 	{
@@ -1625,7 +1641,7 @@ rule("DBG: Persistent dummy bots")
 
 	actions
 	{
-		Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
+		Create Dummy Bot(Hero(Widowmaker), Opposite Team Of(Team Of(Host Player)), 0, Vector(0, 0, 0), Vector(0, 0, 0));
 		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 1, Vector(0, 0, 0), Vector(0, 0, 0));
 		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 2, Vector(0, 0, 0), Vector(0, 0, 0));
 		disabled Create Dummy Bot(Hero(Zenyatta), Opposite Team Of(Team Of(Host Player)), 3, Vector(0, 0, 0), Vector(0, 0, 0));
@@ -1704,6 +1720,277 @@ rule("DBG: Melee actions (for dev drafts)")
 
 	actions
 	{
-		Small Message(All Players(All Teams), Custom String("Melee DBG"));
+		Global.GTemp[125] = !Global.GTemp[125];
+		If(Global.GTemp[125]);
+			Start Forcing Player Position(Host Player, Position Of(Host Player), False);
+		Else;
+			Stop Forcing Player Position(Host Player);
+		End;
+	}
+}
+
+rule("Widow AI")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == True;
+		Slot Of(Event Player) == 0;
+		Is Button Held(Host Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Start Forcing Player Position(Event Player, Vector(X Component Of(Position Of(Host Player)) * 1, Y Component Of(Position Of(
+			Host Player)), Z Component Of(Position Of(Host Player)) * -1), True);
+		Wait(1, Ignore Condition);
+		Wait Until(Is Button Held(Host Player, Button(Crouch)), 9999);
+		Stop Forcing Player Position(All Players(All Teams));
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+rule("Hero: Widow (enhanced ult - create poison aura)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.FEATURE_WIDOW_POISON_ULT == True;
+		// TODO rm
+		Event Player == Host Player;
+		// Is Using Ultimate(Event Player) == True;
+		(Hero Of(Event Player) == Hero(Widowmaker) || Hero Being Duplicated(Event Player) == Hero(Widowmaker)) == True;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
+		"Destroy and recreate aura when widow moves far enough from last recorded position"
+		(!Event Player.Widow_LastPos || Distance Between(Event Player.Widow_LastPos, Event Player) > 2) == True;
+	}
+
+	actions
+	{
+		// TODO: change indexes
+		// TODO: still crashing
+		Log To Inspector(Custom String("ADD1"));
+		Event Player.Widow_LastPos = Position Of(Event Player);
+		If(!Is In Air(Event Player));
+			Log To Inspector(Custom String("ADD2"));
+			Event Player.PTemp[105] = Event Player.Widow_LastPos;
+			"Shift cloud a bit to the front of widow"
+			Event Player.PTemp[105] = Event Player.PTemp[105] + Facing Direction Of(Event Player) * Vector(2,0,2);
+			"Reset cloud vertical position to slightly undeground"
+			Event Player.PTemp[105] = Event Player.PTemp[105] * Vector(1,0,1) + Vector(0,-.5,0);
+			"Restrict cloud position to island inner boundaries"
+			If(Absolute Value(X Component Of(Event Player.PTemp[105])) > 15);
+				Event Player.PTemp[112] = X Component Of(Event Player.PTemp[105])/Absolute Value(X Component Of(Event Player.PTemp[105]));
+				Event Player.PTemp[105] = Event Player.PTemp[105] * Vector(0, 1, 1) + Vector(15 * Event Player.PTemp[112], 0, 0);
+			End;
+			If(Absolute Value(Z Component Of(Event Player.PTemp[105])) > 15);
+				Event Player.PTemp[112] = Z Component Of(Event Player.PTemp[105])/Absolute Value(Z Component Of(Event Player.PTemp[105]));
+				Event Player.PTemp[105] = Event Player.PTemp[105] * Vector(1, 1, 0) + Vector(0, 0, 15 * Event Player.PTemp[112]);
+			End;
+			"4 clouds individual offsets"
+			Event Player.PTempArray1 = Array(Vector(0, 0, -3), Vector(0, 0, 3), Vector(-3, 0, 0), Vector(3, 0, 0));
+			Log To Inspector(Custom String("ADD3"));
+			While(Count Of(Event Player.PTempArray1));
+				Event Player.PTemp[124] = Event Player.PTemp[105] + Event Player.PTempArray1[0];
+				Event Player.PTempArray1 = Array Slice(Event Player.PTempArray1, 1, 4);
+				Create Effect(All Players(All Teams), Cloud, Color(Violet), Event Player.PTemp[124], 3.5, None);
+				Event Player.Widow_PoisonCloudsID = Append To Array(Event Player.Widow_PoisonCloudsID, Last Created Entity);
+				Event Player.Widow_PoisonCloudsPos = Append To Array(Event Player.Widow_PoisonCloudsPos, Event Player.PTemp[124]);
+			End;
+			Log To Inspector(Custom String("ADD4"));
+			Start Rule(Widow_DestroyPoisonAura, Restart Rule);
+		Else;
+			Log To Inspector(Custom String("ADD2.B"));
+			Event Player.Widow_LastPos = Null;
+			Start Rule(Widow_DestroyPoisonAura, Restart Rule);
+		End;
+		"Throttles how often this rule executes"
+		Wait(.15, Ignore Condition);
+		Log To Inspector(Custom String("ADD5-"));
+		Loop If Condition Is True;
+	}
+}
+
+
+// TODO: check if multiple targets affected by poison
+rule("Hero: Widow (enhanced ult - destroy poison aura)")
+{
+	event
+	{
+		Subroutine;
+		Widow_DestroyPoisonAura;
+	}
+
+	actions
+	{
+		Log To Inspector(Custom String("DEL1"));
+		"If we cleared Widow_LastPos remove all clouds, otherwise leave last N of them to exist"
+		Event Player.PTemp[123] = Event Player.Widow_LastPos ? 4 : 0;
+		Event Player.PTempArray2 = Empty Array;
+		"Generate list of random delays after which we will remove clouds"
+		While(Count Of(Event Player.PTempArray2) < Max(0, Count Of(Event Player.Widow_PoisonCloudsID) - Event Player.PTemp[123]));
+			Event Player.PTempArray2 = Append To Array(Event Player.PTempArray2, Random Real(0, .5));
+		End;
+		Log To Inspector(Custom String("DEL2"));
+		Event Player.PTempArray2 = Sorted Array(Event Player.PTempArray2, Current Array Element);
+		Event Player.PTemp[121] = 0;
+		Log To Inspector(Custom String("DEL3"));
+		While(Count Of(Event Player.PTempArray2));
+			Event Player.PTemp[122] = First Of(Event Player.PTempArray2);
+			Wait(Event Player.PTemp[122] - Event Player.PTemp[121], Ignore Condition);
+			Abort If(Count Of(Event Player.Widow_PoisonCloudsID) <= Event Player.PTemp[123]);
+			Destroy Effect(Event Player.Widow_PoisonCloudsID[0]);
+			Event Player.PTemp[121] = Event Player.PTemp[122];
+			Event Player.PTempArray2 = Array Slice(Event Player.PTempArray2, 1, 100);
+			Event Player.Widow_PoisonCloudsID = Array Slice(Event Player.Widow_PoisonCloudsID, 1, 100);
+			Event Player.Widow_PoisonCloudsPos = Array Slice(Event Player.Widow_PoisonCloudsPos, 1, 100);
+		End;
+		Log To Inspector(Custom String("DEL4-"));
+	}
+}
+
+disabled rule("Hero: Widow (enhanced ult - cleanup)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.FEATURE_WIDOW_POISON_ULT == True;
+		Is Using Ultimate(Event Player) == False;
+		Event Player.Widow_LastPos != Null;
+		(Hero Of(Event Player) == Hero(Widowmaker) || Hero Being Duplicated(Event Player) == Hero(Widowmaker)) == True;
+	}
+
+	actions
+	{
+		Event Player.Widow_LastPos = Null;
+		Start Rule(Widow_DestroyPoisonAura, Restart Rule);
+	}
+}
+
+disabled rule("Hero: Widow (enhanced ult - detect aura victims)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		// TODO: slow
+		// TODO: replace all Players On Hero(Hero(Widowmaker) with filtered array of widow OR echo or some such
+		Global.FEATURE_WIDOW_POISON_ULT == True;
+		Slot Of(Event Player) < 4;
+		// Is Using Ultimate(Players On Hero(Hero(Widowmaker), Opposite Team Of(Team Of(Event Player)))) == True;
+		Count Of(Filtered Array(
+			Players On Hero(Hero(Widowmaker), Opposite Team Of(Team Of(Event Player))).Widow_PoisonCloudsPos,
+			Distance Between(Current Array Element, Event Player) < 4
+		)) > 0;
+	}
+
+	actions
+	{
+		Start Rule(Widow_PoisonVictim, Do Nothing);
+		Wait(.1, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Hero: Widow (enhanced ult - on-hit effects)")
+{
+	event
+	{
+		Player Took Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.FEATURE_WIDOW_POISON_ULT == True;
+		(Hero Of(Attacker) == Hero(Widowmaker) || Hero Being Duplicated(Attacker) == Hero(Widowmaker)) == True;
+		// Is Using Ultimate(Attacker) == True;
+		Is Firing Secondary(Attacker) == True;
+		Event Ability == Button(Primary Fire);
+	}
+
+	actions
+	{
+		Start Rule(Widow_PoisonVictim, Do Nothing);
+	}
+}
+
+rule("Hero: Widow (enhanced ult - poisoning mechanic)")
+{
+	event
+	{
+		Subroutine;
+		Widow_PoisonVictim;
+	}
+
+	actions
+	{
+		// TODO: check if reenters for multiple victims
+		// TODO: keep some kinda small message
+		Small Message(Host Player, Custom String("POISONING {0}", Event Player));
+		// TODO: check duration and strength with her default dot
+		// TODO: clear on phase and invuln
+		Wait(5, Ignore Condition);
+		Small Message(Host Player, Custom String("CLEARED {0}", Event Player));
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+rule("Setup")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player == Host Player;
+		Total Time Elapsed > 1;
+		Total Time Elapsed < 2;
+	}
+
+	actions
+	{
+		Wait(5, Ignore Condition);
+
+		Create HUD Text(All Players(All Teams), Null, Null, 
+			Custom String("{0} {1} {2}",
+				Is Firing Secondary(Host Player)
+			),
+		Left, 10, Null, Null, Color(White), Visible To and String, Visible Never);
+
+		Start Facing(Players In Slot(0, Team 2), Direction Towards(Players In Slot(0, Team 2), Host Player), 9999, To World, Direction and Turn Rate);
+
+		Disable Built-In Game Mode Completion;
+		Pause Match Time;
 	}
 }
