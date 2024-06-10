@@ -105,6 +105,8 @@ settings
 			{
 				Health: 65%
 				Spawn With Ultimate Ready: Off
+				Take a Breather Recharge Rate: 350%
+				Whole Hog Knockback Scalar: 80%
 			}
 
 			Soldier: 76
@@ -1410,6 +1412,28 @@ rule("Hero: McCree (start with some ult%)")
 	actions
 	{
 		Set Ultimate Charge(Event Player, 98);
+	}
+}
+
+rule("Hero: Roadhog (start with some ult%)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Global.IsRoundActive == True;
+		"This ensure this also triggers on resurrect"
+		Is Alive(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Ultimate Charge(Event Player, 80);
 	}
 }
 
