@@ -27,7 +27,16 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 
 ### Changelog
 
-#### 1.6
+#### 1.7 (11-Jun-24)
+
+- Reduce tank heroes knockback resist to before Feb 2024 value.
+- Character balance changes:
+    - Orisa: slightly increase HP.
+    - Roadhog: increase vape recharge rate, start with some % of ult instead of none, decrease ult knockback.
+    - Hanzo: slightly increase damage (just to re-introduce one shot potential).
+    - Baptiste: increase lamp cooldown.
+
+#### 1.6 (29-Oct-23)
 
 - Add advanced lobby balancing.
     - Make each mechanic a toggleable workshop setting.
@@ -44,7 +53,7 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
     - Mei: decrease HP.
 - Various fixes.
 
-#### 1.5
+#### 1.5 (9-Oct-23)
 
 - Buff HP/Damage auto-balancing for a team of 1.
 - Allow Echo to be affected by some faux abilities and effects (e.g. Ana self-ult, Hammond icicle grapple) when she is duplicating.
@@ -64,14 +73,14 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 - Add server load debug view (interact + reload).
 - Various fixes.
 
-#### 1.4
+#### 1.4 (27-Sep-23)
 
 - Rework Hammond icicle grapple for a more consistent and reliable mechanic.
 - Buff Hammond piledriver damage and knockback.
 - 1v1 time limit improvements, HUD indication for it.
 - Various fixes.
 
-#### 1.3
+#### 1.3 (21-Sep-23)
 
 - Allow Junkrat to ult in mid-air.
 - Fix D.Va having instant ult on re-mech (constant D.Va explosions).
@@ -90,7 +99,7 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 - Shorter / better UI messages.
 - Increase 1v1 time limit.
 
-#### 1.2
+#### 1.2 (17-Sep-23)
 
 - Add team sizes balancing between rounds.
 - Add measures to prevent overly long 1v1s (e.g Moira vs Moira).
@@ -99,13 +108,13 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 - Decrease ultimate generation rate (280% -> 200%).
 - Nerf Moira HP and cooldowns.
 
-#### 1.1
+#### 1.1 (17-Sep-23)
 
 - Add trolling prevention (anti-fly rules).
 - Ensure faux abilities are affected by "hacked" etc. status effects.
 - Increase Hammond cooldowns.
 
-#### 1.0 (changes compared to original script)
+#### 1.0 (16-Sep-23, changes compared to original script)
 
 - Initial version.
 - Decrease some tanks HP (Winston/Orisa/Zarya/Hammond/Roadhog).
