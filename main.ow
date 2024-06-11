@@ -327,6 +327,7 @@ rule("Base: Round end (cleanup)")
 		Allow Button(All Players(All Teams), Button(Secondary Fire));
 		Destroy HUD Text(Global.TextIDS[0]);
 		Set Knockback Dealt(All Players(All Teams), 100);
+		Set Knockback Received(All Players(All Teams), 100);
 		Destroy All In-World Text;
 		Destroy All Progress Bar In-World Text;
 		Destroy All Effects;
@@ -938,6 +939,28 @@ rule("Sub: Find all real players")
 		"This also excludes not spawned players. Joined but not spawned players count as alive which is usually undesirable."
 		Global.RealAlivePlayers = Filtered Array(Global.RealPlayers, Is Alive(Current Array Element) && Has Spawned(
 			Current Array Element));
+	}
+}
+
+rule("Tank Heroes: Increase knockback received")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.IsRoundStart == True;
+		Array Contains(All Tank Heroes, Hero Of(Event Player)) == True;
+	}
+
+	actions
+	{
+		"Assuming tanks have 50% knockback resist (Feb 2025 change), this will revert it to only 30% knockback resist (pre-change value)"
+		Set Knockback Received(Event Player, 140);
 	}
 }
 
