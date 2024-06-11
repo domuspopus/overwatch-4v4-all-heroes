@@ -48,6 +48,11 @@ settings
 			Ultimate Generation: 200%
 			Ultimate Generation - Combat: 130%
 
+			Baptiste
+			{
+				Immortality Field Cooldown Time: 30%
+			}
+
 			Cassidy
 			{
 				Spawn With Ultimate Ready: Off
@@ -59,6 +64,11 @@ settings
 			{
 				Self Destruct Knockback Scalar: 200%
 				Spawn With Ultimate Ready: Off
+			}
+
+			Hanzo
+			{
+				Damage Dealt: 105%
 			}
 
 			Junkrat
