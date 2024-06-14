@@ -434,8 +434,7 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 
 	actions
 	{
-		"en-US (just for reference), credit for string comparisons goes to people behind https://workshop.codes/ auto translation system"
-		disabled If(Custom String("{0}", Map(Practice Range)) == Custom String("Practice Range"));
+		"NOTE: All text were pooled into one rule for plans to add dynamic translations. Those plans were later abandoned however. See issue #11 on github."
 		Global.Texts[0] = Custom String("Can self-ultimate      ");
 		Global.Texts[1] = Custom String("Can ultimate mid-air");
 		Global.Texts[2] = Custom String("Can grapple air / sky");
@@ -451,32 +450,7 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		Global.Texts[11] = Custom String("Round ends in:");
 		Global.Texts[12] = Custom String("                       ");
 		Global.Texts[13] = Custom String("Players reordered");
-		If(False);
-		"de-DE"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Trainingsbereich"));
-		"es-ES"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Práctica de combate"));
-			disabled Global.Texts[4] = Custom String("Hero tips (in spanish)");
-		"es-MX"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Campo de pruebas"));
-		"fr-FR"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Champ de tir"));
-		"it-IT"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Zona d'addestramento"));
-		"ja-JP"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("練習場"));
-		"ko-KR"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("훈련장"));
-		"pl-PL"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Obszar treningowy"));
-		"pt-BR"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("Campo de Treinamento"));
-		"ru-RU"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("УЧЕБНЫЙ ПОЛИГОН"));
-		"zh-CN"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("训练靶场"));
-		"zh-TW"
-		Else If(Custom String("{0}", Map(Practice Range)) == Custom String("訓練中心"));
+		Global.Texts[14] = Custom String("Damage");
 	}
 }
 
@@ -658,7 +632,7 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 		Set Max Health(All Players(Team Of(Event Player)), 100 + Global.GTemp[9]);
 		Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.GTemp[10]);
 		Global.Powerup_HUDText = Custom String("\n+{0}% {1} {2}", Global.GTemp[9], Global.Texts[5], Custom String("+{0}% {1}",
-			Global.GTemp[10], String("Damage")));
+			Global.GTemp[10], Global.Texts[14]));
 		Global.Powerup_EmpoweredTeam = Team Of(Event Player);
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
 			Event Player));
@@ -770,7 +744,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		Global.GTemp[13] = False;
 		"XXX: Have to be very careful in this rule, moving players doesn't immediately update lobby data. We keep track of things ourselves and only one step is allowed to actually move players."
 		Global.GTemp[0] = Number Of Players(Team 1) - Number Of Players(Team 2);
-		"We only move a single new player randomly to Team 2 at round end. That's to avoid situation where small equal lobby with long stay players doesn't get many new joiners but when someone does join they always go to Team 1."
+		"For a single new joiner or odd amount of joiners, lobby is biased towards Team 1. We remove bias by randomly moving a single new joiner to Team 2."
 		If(Entity Exists(Global.LobbyBalance_Team1Newbie) && Global.GTemp[0] >= 1 && Random Integer(0, 1));
 			Log To Inspector(Custom String("randomly moving \"{0}\" to {1}", Global.LobbyBalance_Team1Newbie, Team 2));
 			Global.GTemp[13] = True;
@@ -823,7 +797,7 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		Abort If(Number Of Players(All Teams) <= 2);
 		"Abort if: low streak"
 		Abort If(Global.LobbyBalance_WinStreak < Global.GTemp[6]);
-		"Abort if: we already moved someone on other steps (NOTE: After this point lobby data can be expected to be correct)"
+		"Abort if: we already moved someone on other steps (NOTE: If this does not abort then we did not move anything prior and the lobby data can be relied on)"
 		Abort If(Global.GTemp[13]);
 		"Abort if: smaller team dominating"
 		Abort If(Number Of Players(Global.LobbyBalance_VictorTeam) < Number Of Players(Opposite Team Of(Global.LobbyBalance_VictorTeam)));
