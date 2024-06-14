@@ -2,7 +2,7 @@ Rebalanced and improved Overwatch **4v4 All Heroes** mode (alias **J-edit**, cod
 
 ---
 
-Main differences from the [older script](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow) which is often used in Overwatch custom games:
+Main differences from the older script (KCVSP, [source](https://github.com/domuspopus/overwatch-4v4-all-heroes/blob/48df90949be856888b5e3db5ca1917e87e950997/main.ow)) which is often used in Overwatch custom games:
 
 - All new Overwatch 2 heroes are included.
 - Ana can nano herself if no target is selected.
