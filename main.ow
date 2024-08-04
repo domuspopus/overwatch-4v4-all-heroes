@@ -933,8 +933,11 @@ rule("Tank Heroes: Increase knockback received")
 
 	actions
 	{
-		"Assuming tanks have 50% knockback resist (Feb 2025 change), this will revert it to only 30% knockback resist (pre-change value)"
-		Set Knockback Received(Event Player, 140);
+		"Desired resist (original Overwatch 2 release value of 30%)"
+		Global.GTemp[14] = 30;
+		"Hardcoded resist of most recent patch (July 9, 2024)"
+		Global.GTemp[15] = 40;
+		Set Knockback Received(Event Player, 100 * ((100 - Global.GTemp[14]) / (100 - Global.GTemp[15])));
 	}
 }
 
