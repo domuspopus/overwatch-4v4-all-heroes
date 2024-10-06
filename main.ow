@@ -911,7 +911,7 @@ rule("Sub: Find all real players")
 	}
 }
 
-rule("Tank Heroes: Increase knockback received")
+disabled rule("Tank Heroes: Increase knockback received")
 {
 	event
 	{
@@ -922,6 +922,7 @@ rule("Tank Heroes: Increase knockback received")
 
 	conditions
 	{
+		"XXX: Disabled for now. Rule not needed as of most recent patch (September 17, 2024, tank knockback resist 25%)."
 		Global.IsRoundStart == True;
 		Array Contains(All Tank Heroes, Hero Of(Event Player)) == True;
 	}
