@@ -66,11 +66,6 @@ settings
 				Spawn With Ultimate Ready: Off
 			}
 
-			Hanzo
-			{
-				Damage Dealt: 105%
-			}
-
 			Junkrat
 			{
 				Concussion Mine Knockback Scalar: 120%
