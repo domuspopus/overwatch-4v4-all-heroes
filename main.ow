@@ -250,6 +250,7 @@ rule("Base: Set global variables")
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
 		Global.DBGRoundNum = 1;
+		// Top PTemp=21 GTemp=15
 	}
 }
 
@@ -1611,6 +1612,32 @@ rule("Hero: Widowmaker (armor on ult)")
 	actions
 	{
 		Add Health Pool To Player(Event Player, Armor, 100, False, True);
+	}
+}
+
+rule("Hero: Hanzo (armor on ult)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		(Hero Of(Event Player) == Hero(Hanzo) || Hero Being Duplicated(Event Player) == Hero(Hanzo)) == True;
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		Add Health Pool To Player(Event Player, Armor, 500, False, True);
+		Event Player.PTemp[21] = Last Created Health Pool;
+		Add Health Pool To Player(Event Player, Armor, 45, False, True);
+		Wait Until(!Is Using Ultimate(Event Player), 3);
+		Remove Health Pool From Player(Event Player.PTemp[21]);
 	}
 }
 
