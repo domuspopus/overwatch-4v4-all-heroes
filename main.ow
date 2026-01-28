@@ -773,6 +773,10 @@ rule("Lobby Balance: Minimize team size difference and shuffle players when one 
 		">>>>>>>>>>>>>>>>>> STEP 3: Swap players when one team dominates <<<<<<<<<<<<<<<<<<"
 		Global.GTemp[6] = Workshop Setting Integer(Custom String("1. Lobby Balance"), Custom String(
 			"Swap random players when one team wins this many rounds in a row (0 to disable)"), 4, 0, 10, 1);
+		If(Number Of Players(Team 1) == 1 || Number Of Players(Team 2) == 1);
+			Global.GTemp[6] = Workshop Setting Integer(Custom String("1. Lobby Balance"), Custom String(
+				"Swap random players when one team wins this many rounds in a row in 2v1 (0 to disable)"), 3, 0, 10, 1);
+		End;
 		Abort If(!Global.GTemp[6]);
 		If(Global.GTemp[0] >= 1);
 			Global.GTemp[7] = Custom String(">{0}", Global.LobbyBalance_VictorTeam);
