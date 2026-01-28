@@ -122,7 +122,10 @@ settings
 
 			Widowmaker
 			{
+				Ammunition Clip Size Scalar: 200%
 				Grappling Hook Cooldown Time: 10%
+				Health: 110%
+				Movement Speed: 140%
 				Venom Mine Cooldown Time: 5%
 			}
 
@@ -1586,6 +1589,28 @@ rule("Hero: Echo (support others faux abilities - cleanup)")
 			Destroy Dummy Bot(Team Of(Event Player), 10);
 		End;
 		Event Player.Echo_JustDuplicated = Null;
+	}
+}
+
+rule("Hero: Widowmaker (armor on ult)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		(Hero Of(Event Player) == Hero(Widowmaker) || Hero Being Duplicated(Event Player) == Hero(Widowmaker)) == True;
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		Add Health Pool To Player(Event Player, Armor, 100, False, True);
 	}
 }
 
