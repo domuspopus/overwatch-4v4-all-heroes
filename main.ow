@@ -339,6 +339,7 @@ rule("Base: Round end (cleanup)")
 		Destroy All Effects;
 		Stop Scaling Player(All Players(All Teams));
 		Set Move Speed(All Players(All Teams), 100);
+		Remove All Health Pools From Player(All Players(All Teams));
 	}
 }
 
