@@ -1099,7 +1099,7 @@ rule("Hero: Hammond (icicle grapple - when grapple enabled)")
 	}
 }
 
-rule("Hero: Hammond (piledriver buff)")
+disabled rule("Hero: Hammond (piledriver buff)")
 {
 	event
 	{
@@ -1110,6 +1110,7 @@ rule("Hero: Hammond (piledriver buff)")
 
 	conditions
 	{
+		"Simple buffed piledriver rule, enable if empowered piledriver starts being an issue"
 		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		Ability Cooldown(Event Player, Button(Crouch)) > 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
@@ -1118,7 +1119,7 @@ rule("Hero: Hammond (piledriver buff)")
 
 	actions
 	{
-		Start Damage Modification(All Players(All Teams), Event Player, 210, Receivers Damagers and Damage Percent);
+		Start Damage Modification(All Players(All Teams), Event Player, 215, Receivers Damagers and Damage Percent);
 		Event Player.PTemp[4] = Last Damage Modification ID;
 		Set Knockback Dealt(Event Player, 115);
 		Wait Until(Vertical Speed Of(Event Player) == 0, 2);
@@ -1128,7 +1129,7 @@ rule("Hero: Hammond (piledriver buff)")
 	}
 }
 
-disabled rule("Hero: Hammond (empowered piledriver)")
+rule("Hero: Hammond (empowered piledriver)")
 {
 	event
 	{
@@ -1158,7 +1159,7 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 		"Distance from landing into radius multiplier (+1x size every 13 meters, maximum of 3x)"
 		Event Player.PTemp[10] = 1 + Min(Event Player.PTemp[9] / 13, 2);
 		"Static damage and knockback powerups of inner ring"
-		Start Damage Modification(All Players(All Teams), Event Player, 200, Receivers Damagers and Damage Percent);
+		Start Damage Modification(All Players(All Teams), Event Player, 215, Receivers Damagers and Damage Percent);
 		Event Player.PTemp[4] = Last Damage Modification ID;
 		Set Knockback Dealt(Event Player, 115);
 		Start Scaling Player(Event Player, Event Player.ChaserVar1, True);
@@ -1238,7 +1239,7 @@ disabled rule("Hero: Hammond (empowered piledriver)")
 	}
 }
 
-disabled rule("Hero: Hammond (empowered piledriver - harm bonus victims)")
+rule("Hero: Hammond (empowered piledriver - harm bonus victims)")
 {
 	event
 	{
@@ -1279,7 +1280,7 @@ disabled rule("Hero: Hammond (empowered piledriver - harm bonus victims)")
 	}
 }
 
-disabled rule("Hero: Hammond (empowered piledriver - prevent double damage)")
+rule("Hero: Hammond (empowered piledriver - prevent double damage)")
 {
 	event
 	{
@@ -1303,7 +1304,7 @@ disabled rule("Hero: Hammond (empowered piledriver - prevent double damage)")
 	}
 }
 
-disabled rule("Hero: Hammond (empowered piledriver - hovering guide circle)")
+rule("Hero: Hammond (empowered piledriver - hovering guide circle)")
 {
 	event
 	{
