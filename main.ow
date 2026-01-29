@@ -232,6 +232,8 @@ rule("PROJECT INFO")
 	{
 		"Some important implementation details and notes are available at (click to show): https://github.com/domuspopus/overwatch-4v4-all-heroes/issues/20"
 		Abort;
+		"Top PTemp=22 GTemp=15"
+		Abort;
 	}
 }
 
@@ -262,7 +264,6 @@ rule("Base: Set global variables")
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
 		Global.DBGRoundNum = 1;
-		// Top PTemp=22 GTemp=15
 	}
 }
 
@@ -451,7 +452,6 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		Global.Texts[1] = Custom String("Can ultimate mid-air");
 		Global.Texts[2] = Custom String("Can grapple air / sky");
 		Global.Texts[3] = Custom String("Stronger piledriver ");
-		disabled Global.Texts[3] = Custom String("Empowered piledriver");
 		Global.Texts[4] = Custom String("Hero tips");
 		Global.Texts[5] = Custom String("HP");
 		Global.Texts[6] = Custom String("Don't stray too far");
@@ -463,6 +463,7 @@ rule("Texts / HUD: Define texts for all UI / HUD elements")
 		Global.Texts[12] = Custom String("                       ");
 		Global.Texts[13] = Custom String("Players reordered");
 		Global.Texts[14] = Custom String("Damage");
+		Global.Texts[15] = Custom String("Armor on ultimate     ");
 	}
 }
 
@@ -491,33 +492,40 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
 		"Show hero specific tips and gather them into a list"
 		Global.GTempArray1 = Empty Array;
+		If(True);
+			Global.GTempArray1[0] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Hanzo)), Hero Icon String(Hero(Widowmaker)),
+				Global.Texts[15]);
+			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && (Hero Of(Local Player) == Hero(Widowmaker) || Hero Of(
+				Local Player) == Hero(Hanzo)) ? Local Player : Null, Null, Global.GTempArray1[0], Null, Left, 3, Null, Global.HUDTipColor,
+				Null, Visible To and Color, Visible Never);
+		End;
 		If(Global.FEATURE_ANA_SELF_ULT);
-			Global.GTempArray1[0] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Ana)), Ability Icon String(Hero(Ana), Button(Ultimate)),
+			Global.GTempArray1[1] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Ana)), Ability Icon String(Hero(Ana), Button(Ultimate)),
 				Global.Texts[0]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Ana) ? Local Player : Null, Null,
-				Global.GTempArray1[0], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+				Global.GTempArray1[1], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		If(Global.FEATURE_JUNK_AIR_ULT);
-			Global.GTempArray1[1] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Junkrat)), Ability Icon String(Hero(Junkrat), Button(
+			Global.GTempArray1[2] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Junkrat)), Ability Icon String(Hero(Junkrat), Button(
 				Ultimate)), Global.Texts[1]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
-				Null, Global.GTempArray1[1], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+				Null, Global.GTempArray1[2], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		If(Global.FEATURE_HAMMOND_ICICLE_GRAPPLE);
-			Global.GTempArray1[2] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
+			Global.GTempArray1[3] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
 				Wrecking Ball), Button(Secondary Fire)), Global.Texts[2]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[2],
+				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[3],
 				Global.Texts[8]), Null, Left, 2, Null, Custom Color(255, 255, 255, 50), Null, Visible To and Color, Visible Never);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[2],
+				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[3],
 				Global.Texts[7]), Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		If(Global.FEATURE_HAMMOND_BUFF_PILEDRIVER);
-			Global.GTempArray1[3] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
+			Global.GTempArray1[4] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
 				Wrecking Ball), Button(Crouch)), Global.Texts[3]);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-				? Local Player : Null, Null, Custom String("{0}{1}", Global.GTempArray1[3], Global.Texts[12]), Null, Left, 3, Null,
+				? Local Player : Null, Null, Custom String("{0}{1}", Global.GTempArray1[4], Global.Texts[12]), Null, Left, 3, Null,
 				Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		"Create HUDs of all hero tips as a big list visible between rounds"
