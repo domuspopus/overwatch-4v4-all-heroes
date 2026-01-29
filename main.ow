@@ -150,7 +150,8 @@ settings
 
 			Zarya
 			{
-				Health: 65%
+				Health: 70%
+				Particle Barrier Cooldown Time: 60%
 			}
 		}
 	}
@@ -256,7 +257,7 @@ rule("Base: Set global variables")
 		Disable Built-In Game Mode Announcer;
 		Global.ServerLoadVisibleTo = Empty Array;
 		Global.DBGRoundNum = 1;
-		// Top PTemp=21 GTemp=15
+		// Top PTemp=22 GTemp=15
 	}
 }
 
@@ -1670,6 +1671,53 @@ rule("Hero: Hanzo (armor on ult)")
 		Add Health Pool To Player(Event Player, Armor, 45, False, True);
 		Wait Until(!Is Using Ultimate(Event Player), 3);
 		Remove Health Pool From Player(Event Player.PTemp[21]);
+	}
+}
+
+rule("Hero: Zarya (no self damage + secondary refund)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Hero Of(Event Player) == Hero(Zarya) || Hero Being Duplicated(Event Player) == Hero(Zarya)) == True;
+		Global.IsRoundActive == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		(Ammo(Event Player, 0) != Event Player.PTemp[22] && Ammo(Event Player, 0) > 10 && Ammo(Event Player, 0) < Max Ammo(Event Player,
+			0)) == True;
+	}
+
+	actions
+	{
+		Start Damage Modification(Event Player, Event Player, 0, None);
+		Set Ammo(Event Player, 0, Ammo(Event Player, 0) + 15);
+		Event Player.PTemp[22] = Ammo(Event Player, 0);
+	}
+}
+
+rule("Hero: Zarya (big self knockback)")
+{
+	event
+	{
+		Player Dealt Knockback;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Hero Of(Event Player) == Hero(Zarya) || Hero Being Duplicated(Event Player) == Hero(Zarya)) == True;
+		Victim == Event Player;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Event Direction, 22, To World, Incorporate Contrary Motion);
 	}
 }
 
