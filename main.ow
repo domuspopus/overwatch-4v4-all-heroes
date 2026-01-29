@@ -1397,6 +1397,29 @@ rule("Hero: Junkrat (faster / smaller tire)")
 	}
 }
 
+rule("Hero: Junkrat (infinite mines outside the island)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Hero Of(Event Player) == Hero(Junkrat) || Hero Being Duplicated(Event Player) == Hero(Junkrat)) == True;
+		Global.IsRoundActive == True;
+		Y Component Of(Position Of(Event Player)) < -1;
+		Ability Charge(Event Player, Button(Ability 1)) == 0;
+	}
+
+	actions
+	{
+		Set Ability Charge(Event Player, Button(Ability 1), 1);
+	}
+}
+
 rule("Hero: D.Va (start with an ult)")
 {
 	event
