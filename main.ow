@@ -1363,6 +1363,32 @@ rule("Hero: Junkrat (mid-air ult)")
 	}
 }
 
+rule("Hero: Junkrat (faster / smaller tire)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		(Hero Of(Event Player) == Hero(Junkrat) || Hero Being Duplicated(Event Player) == Hero(Junkrat)) == True;
+		Global.IsRoundActive == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 120);
+		Start Scaling Player(Event Player, 0.750, True);
+		Wait Until(!Is Using Ultimate(Event Player), 10);
+		Set Move Speed(Event Player, 100);
+		Stop Scaling Player(Event Player);
+	}
+}
+
 rule("Hero: D.Va (start with an ult)")
 {
 	event
