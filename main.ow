@@ -66,6 +66,12 @@ settings
 				Spawn With Ultimate Ready: Off
 			}
 
+			Junker Queen
+			{
+				Commanding Shout Cooldown Time: 40%
+				Health: 85%
+			}
+
 			Junkrat
 			{
 				Concussion Mine Knockback Scalar: 120%
