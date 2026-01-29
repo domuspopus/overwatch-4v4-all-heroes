@@ -66,6 +66,11 @@ settings
 				Spawn With Ultimate Ready: Off
 			}
 
+			Freja
+			{
+				Quick Dash Cooldown Time: 50%
+			}
+
 			Junker Queen
 			{
 				Commanding Shout Cooldown Time: 40%
