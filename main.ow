@@ -178,7 +178,6 @@ variables
 		10: ServerLoadVisibleTo
 		11: TimeLimit1v1_Triggers
 		12: HUDTipColor
-		13: Texts
 		14: GTemp
 		15: RealPlayers
 		16: RealAlivePlayers
@@ -398,7 +397,7 @@ rule("Base: Prevent heroes flying away")
 
 	actions
 	{
-		Small Message(Event Player, Custom String(" {0} {1} {2}", Global.Texts[6], Icon String(Warning), Ability Icon String(Hero(Mercy),
+		Small Message(Event Player, Custom String("  Don't stray too far {0} {1}", Icon String(Warning), Ability Icon String(Hero(Mercy),
 			Button(Ability 1))));
 		Set Status(Event Player, Null, Frozen, 2);
 		Wait(1.900, Abort When False);
@@ -474,7 +473,7 @@ rule("Base: Prevent premature game completion and skip victory screen")
 	{
 		Call Subroutine(FindRealPlayers);
 		If(Count Of(Global.RealPlayers) == 1);
-			Small Message(All Players(All Teams), Global.Texts[9]);
+			Small Message(All Players(All Teams), Custom String("  Everyone left - restarting..."));
 			Wait(1.500, Ignore Condition);
 			"Skip victory screen on default victory when all but one players leave"
 			Restart Match;
@@ -486,35 +485,6 @@ rule("Base: Prevent premature game completion and skip victory screen")
 			Move Player to Team(Global.GTemp[1], Empty Array, -1);
 			Move Player to Team(Global.GTemp[1], Opposite Team Of(Team Of(Global.GTemp[1])), -1);
 		End;
-	}
-}
-
-rule("Texts / HUD: Define texts for all UI / HUD elements")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-
-	actions
-	{
-		"NOTE: All text were pooled into one rule for plans to add dynamic translations. Those plans were later abandoned however. See issue #11 on github."
-		Global.Texts[0] = Custom String("Can self-ultimate      ");
-		Global.Texts[1] = Custom String("Can ultimate mid-air");
-		Global.Texts[2] = Custom String("Can grapple air / sky");
-		Global.Texts[3] = Custom String("Stronger piledriver ");
-		Global.Texts[4] = Custom String("Hero tips");
-		Global.Texts[5] = Custom String("HP");
-		Global.Texts[6] = Custom String("Don't stray too far");
-		Global.Texts[7] = Custom String("(HOLD)         ");
-		Global.Texts[8] = Custom String("(NOT NOW)");
-		Global.Texts[9] = Custom String("Everyone left - restarting...");
-		Global.Texts[10] = Custom String("powered up!");
-		Global.Texts[11] = Custom String("Round ends in:");
-		Global.Texts[12] = Custom String("                       ");
-		Global.Texts[13] = Custom String("Players reordered");
-		Global.Texts[14] = Custom String("Damage");
-		Global.Texts[15] = Custom String("Armor on ultimate     ");
 	}
 }
 
@@ -540,43 +510,40 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 			Left, 10, Null, Null, Color(Lime Green), Visible To and String, Visible Never);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
 		Create HUD Text(Filtered Array(All Players(All Teams), !Global.IsRoundActive || Is Dead(Current Array Element)), Null, Null,
-			Global.Texts[4], Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
+			Custom String("Hero tips"), Left, 1, Null, Null, Color(Lime Green), Visible To, Visible Always);
 		"Show hero specific tips and gather them into a list"
 		Global.GTempArray1 = Empty Array;
 		If(True);
-			Global.GTempArray1[0] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Hanzo)), Hero Icon String(Hero(Widowmaker)),
-				Global.Texts[15]);
+			Global.GTempArray1[0] = Custom String("{0} {1} Armor on ultimate     ", Hero Icon String(Hero(Hanzo)), Hero Icon String(Hero(Widowmaker)));
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && (Hero Of(Local Player) == Hero(Widowmaker) || Hero Of(
 				Local Player) == Hero(Hanzo)) ? Local Player : Null, Null, Global.GTempArray1[0], Null, Left, 3, Null, Global.HUDTipColor,
 				Null, Visible To and Color, Visible Never);
 		End;
 		If(Global.FEATURE_ANA_SELF_ULT);
-			Global.GTempArray1[1] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Ana)), Ability Icon String(Hero(Ana), Button(Ultimate)),
-				Global.Texts[0]);
+			Global.GTempArray1[1] = Custom String("{0} {1} Can self-ultimate      ", Hero Icon String(Hero(Ana)), Ability Icon String(Hero(Ana), Button(Ultimate)));
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Ana) ? Local Player : Null, Null,
 				Global.GTempArray1[1], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		If(Global.FEATURE_JUNK_AIR_ULT);
-			Global.GTempArray1[2] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Junkrat)), Ability Icon String(Hero(Junkrat), Button(
-				Ultimate)), Global.Texts[1]);
+			Global.GTempArray1[2] = Custom String("{0} {1} Can ultimate mid-air", Hero Icon String(Hero(Junkrat)), Ability Icon String(Hero(Junkrat), Button(
+				Ultimate)));
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
 				Null, Global.GTempArray1[2], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		If(Global.FEATURE_HAMMOND_ICICLE_GRAPPLE);
-			Global.GTempArray1[3] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
-				Wrecking Ball), Button(Secondary Fire)), Global.Texts[2]);
+			Global.GTempArray1[3] = Custom String("{0} {1} Can grapple air / sky", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
+				Wrecking Ball), Button(Secondary Fire)));
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[3],
-				Global.Texts[8]), Null, Left, 2, Null, Custom Color(255, 255, 255, 50), Null, Visible To and Color, Visible Never);
+				&& Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} (NOT NOW)", Global.GTempArray1[3]), Null, Left, 2, Null, Custom Color(255, 255, 255, 50), Null, Visible To and Color, Visible Never);
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} {1}", Global.GTempArray1[3],
-				Global.Texts[7]), Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+				&& !Local Player.Hammond_GrappleIsOn ? Local Player : Null, Null, Custom String("{0} (HOLD)         ", Global.GTempArray1[3]
+				), Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		If(Global.FEATURE_HAMMOND_BUFF_PILEDRIVER);
-			Global.GTempArray1[4] = Custom String("{0} {1} {2}", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
-				Wrecking Ball), Button(Crouch)), Global.Texts[3]);
+			Global.GTempArray1[4] = Custom String("{0} {1} Stronger piledriver ", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
+				Wrecking Ball), Button(Crouch)));
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Wrecking Ball)
-				? Local Player : Null, Null, Custom String("{0}{1}", Global.GTempArray1[4], Global.Texts[12]), Null, Left, 3, Null,
+				? Local Player : Null, Null, Custom String("{0}                       ", Global.GTempArray1[4]), Null, Left, 3, Null,
 				Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
 		"Create HUDs of all hero tips as a big list visible between rounds"
@@ -702,13 +669,13 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 		End;
 		Set Max Health(All Players(Team Of(Event Player)), 100 + Global.GTemp[9]);
 		Set Damage Dealt(All Players(Team Of(Event Player)), 100 + Global.GTemp[10]);
-		Global.Powerup_HUDText = Custom String("\n+{0}% {1} {2}", Global.GTemp[9], Global.Texts[5], Custom String("+{0}% {1}",
-			Global.GTemp[10], Global.Texts[14]));
+		Global.Powerup_HUDText = Custom String("\n+{0}% HP {1}", Global.GTemp[9], Custom String("+{0}% Damage",
+			Global.GTemp[10]));
 		Global.Powerup_EmpoweredTeam = Team Of(Event Player);
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
 			Event Player));
 		Wait(1, Ignore Condition);
-		Small Message(All Players(All Teams), Custom String(" {0} {1}", Team Of(Event Player), Global.Texts[10]));
+		Small Message(All Players(All Teams), Custom String("  {0} powered up!", Team Of(Event Player)));
 	}
 }
 
@@ -742,7 +709,7 @@ rule("1v1 Time Limit: Prevent long 1v1s when others waiting")
 			If(Global.GTemp[3] == 30);
 				"This line is just to hide default countdown UI"
 				Set Match Time(120);
-				Create HUD Text(All Players(All Teams), Null, Null, Custom String("{0} {1}", Global.Texts[11], Global.GTemp[3]), Top, 1, Color(
+				Create HUD Text(All Players(All Teams), Null, Null, Custom String("Round ends in: {0}", Global.GTemp[3]), Top, 1, Color(
 					White), Color(White), Global.GTemp[3] > 10 ? Color(White) : Custom Color(250, 55, 65, 255), String and Color,
 					Default Visibility);
 				Global.TextIDS[0] = Last Text ID;
@@ -907,7 +874,7 @@ rule("Lobby Balance: Sub: Show notification")
 		Global.ChaserVar1 = 0;
 		Wait(0.800, Ignore Condition);
 		Chase Global Variable Over Time(ChaserVar1, 190, 0.200, None);
-		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n\n\n{0}", Global.Texts[13]), Top, 0, Null, Null,
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("\n\n\n\n\nPlayers reordered"), Top, 0, Null, Null,
 			Custom Color(255, 255, 255, Global.ChaserVar1), Color, Visible Always);
 		Global.TextIDS[1] = Last Text ID;
 		Wait Until(Global.ChaserVar1 == 190, 1);
@@ -941,9 +908,9 @@ rule("Lobby Balance: Allow to pause / unpause")
 	{
 		Global.LobbyBalance_Paused = !Global.LobbyBalance_Paused;
 		If(Global.LobbyBalance_Paused);
-			Small Message(Event Player, Custom String("Lobby Balancing: Paused"));
+			Small Message(Event Player, Custom String("  Lobby Balancing: Paused"));
 		Else;
-			Small Message(Event Player, Custom String("Lobby Balancing: Resumed"));
+			Small Message(Event Player, Custom String("  Lobby Balancing: Resumed"));
 		End;
 	}
 }
@@ -1959,6 +1926,6 @@ rule("DBG: Melee actions (for dev drafts)")
 
 	actions
 	{
-		Small Message(All Players(All Teams), Custom String("Melee DBG"));
+		Small Message(All Players(All Teams), Custom String("  Melee DBG"));
 	}
 }
