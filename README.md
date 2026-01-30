@@ -27,6 +27,29 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 
 ### Changelog
 
+#### 1.8dev (30-Jan-26)
+
+- Punish players for stalling outside the map (on Hammond, Doomfist, etc.). Show a warning and begin HP drain if ignored.
+- Make lobby balancing kick in faster when there is a team with only one player. Add configs for it.
+- Grant armor to Widowmaker and Hanzo once they use ultimate.
+- Decrease Junkrat mines cooldown when outside the map so he can climb back in.
+- Massively increase Zarya self knockback on secondary fire and remove self damage.
+- Overhaul Hammonds Piledriver (slam).
+    - Show outlines/guidelines when in the air.
+    - Increase area of effect depending on slam height.
+    - Scale the ball up during it to indicate increased impact to victims.
+- Character balance changes:
+    - Widowmaker: increase HP, increase speed, increase ammo.
+    - Junkrat: smaller and faster tire during ultimate.
+    - Zarya: slightly increase HP, decrease bubble cooldown, reduce ammo expenditure on secondary.
+    - Mauga: decrease ultimate duration.
+    - Junker Queen: decrease HP, increase shout cooldown.
+    - Freja: increase dash cooldown.
+
+#### 1.7.3 (06-Oct-24)
+
+- Revert recent Hanzo damage and tanks knockback changes. No longer needed after recent patches.
+
 #### 1.7 (11-Jun-24)
 
 - Reduce tank heroes knockback resist to before Feb 2024 value.
@@ -118,7 +141,7 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 
 - Initial version.
 - Decrease some tanks HP (Winston/Orisa/Zarya/Hammond/Roadhog).
-- Mildly changed ultimate generation values, cleaned up remnants of original "4v4 Nanoblade" in that regard. 
+- Mildly changed ultimate generation values, cleaned up remnants of original "4v4 Nanoblade" in that regard.
 - Roadhog and Moira spawn with no ult ready initially (but can build it).
 - Increase Winston damage.
 - Let Ana use ult on herself.
