@@ -133,7 +133,7 @@ settings
 
 			Widowmaker
 			{
-				Ammunition Clip Size Scalar: 200%
+				Ammunition Clip Size Scalar: 150%
 				Grappling Hook Cooldown Time: 10%
 				Health: 110%
 				Movement Speed: 140%
