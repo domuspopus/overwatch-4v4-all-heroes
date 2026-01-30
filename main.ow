@@ -1147,7 +1147,7 @@ disabled rule("Hero: Hammond (piledriver buff)")
 
 	conditions
 	{
-		"Simple buffed piledriver rule, enable if empowered piledriver starts being an issue"
+		"Simple buffed piledriver rule, enable if empowered piledriver starts being an issue and need to be turned off"
 		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		Ability Cooldown(Event Player, Button(Crouch)) > 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
@@ -1177,6 +1177,7 @@ rule("Hero: Hammond (empowered piledriver)")
 
 	conditions
 	{
+		"It's a bit overkill in terms of implementation and effects. Mostly just added for fun. Might cause load issues or stray bugs."
 		Global.FEATURE_HAMMOND_BUFF_PILEDRIVER == True;
 		Ability Cooldown(Event Player, Button(Crouch)) > 0;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
