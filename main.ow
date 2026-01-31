@@ -236,7 +236,7 @@ rule("PROJECT INFO")
 	{
 		"Some important implementation details and notes are available at (click to show): https://github.com/domuspopus/overwatch-4v4-all-heroes/issues/20"
 		Abort;
-		"Top PTemp=22 GTemp=15 GTextIDS=1 PTextIDS=1"
+		"Top PTemp=21 GTemp=15 GTextIDS=1 PTextIDS=1"
 		Abort;
 	}
 }
@@ -1749,16 +1749,13 @@ rule("Hero: Zarya (no self damage + secondary refund)")
 	{
 		(Hero Of(Event Player) == Hero(Zarya) || Hero Being Duplicated(Event Player) == Hero(Zarya)) == True;
 		Global.IsRoundActive == True;
-		Is Button Held(Event Player, Button(Secondary Fire)) == True;
-		(Ammo(Event Player, 0) != Event Player.PTemp[22] && Ammo(Event Player, 0) > 10 && Ammo(Event Player, 0) < Max Ammo(Event Player,
-			0)) == True;
+		Is Firing Secondary(Event Player) == True;
 	}
 
 	actions
 	{
 		Start Damage Modification(Event Player, Event Player, 0, None);
-		Set Ammo(Event Player, 0, Ammo(Event Player, 0) + 15);
-		Event Player.PTemp[22] = Ammo(Event Player, 0);
+		Set Ammo(Event Player, 0, Ammo(Event Player, 0) + 25);
 	}
 }
 
