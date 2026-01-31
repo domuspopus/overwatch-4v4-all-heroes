@@ -540,6 +540,10 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 			Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) ? Local Player : Null,
 				Null, Global.GTempArray1[2], Null, Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 		End;
+		Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Junkrat) && Y Component Of(
+			Position Of(Local Player)) < -1 ? Local Player : Null, Null, Custom String("{0} {1} More mines (on fall) ", Hero Icon String(
+			Hero(Junkrat)), Ability Icon String(Hero(Junkrat), Button(Ability 1))), Null, Left, 2, Null, Global.HUDTipColor, Null,
+			Visible To and Color, Visible Never);
 		If(Global.FEATURE_HAMMOND_ICICLE_GRAPPLE);
 			Global.GTempArray1[3] = Custom String("{0} {1} Can grapple air / sky", Hero Icon String(Hero(Wrecking Ball)), Ability Icon String(Hero(
 				Wrecking Ball), Button(Secondary Fire)));
