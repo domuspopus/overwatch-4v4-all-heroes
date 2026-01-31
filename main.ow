@@ -237,7 +237,7 @@ rule("PROJECT INFO")
 	{
 		"Some important implementation details and notes are available at (click to show): https://github.com/domuspopus/overwatch-4v4-all-heroes/issues/20"
 		Abort;
-		"Top PTemp=21 GTemp=15 GTextIDS=1 PTextIDS=1"
+		"Top PTemp=23 GTemp=15 GTextIDS=1 PTextIDS=1"
 		Abort;
 	}
 }
@@ -447,10 +447,13 @@ rule("Base: Punish for stalling outside the map")
 				)
 			);
 				Destroy HUD Text(Event Player.PTextIDS[1]);
+				Stop Healing Modification(Event Player.PTemp[22]);
 				Abort;
 			End;
 			If(Event Player.PTemp[23] == 0 && Number Of Players(Team Of(Event Player)) == 1);
 				Small Message(All Players(All Teams), Custom String("  {0} killing {1}", Icon String(Poison), Event Player));
+				Start Healing Modification(Event Player, All Players(All Teams), 25, None);
+				Event Player.PTemp[22] = Last Healing Modification ID;
 			End;
 			If(Event Player.PTemp[23] <= 0);
 				Damage(Event Player, Null, Max Health(Event Player) * 0.04);
