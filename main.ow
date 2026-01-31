@@ -1728,9 +1728,9 @@ rule("Hero: Hanzo (armor on ult)")
 
 	actions
 	{
+		Add Health Pool To Player(Event Player, Armor, 50, False, True);
 		Add Health Pool To Player(Event Player, Armor, 500, False, True);
 		Event Player.PTemp[21] = Last Created Health Pool;
-		Add Health Pool To Player(Event Player, Armor, 45, False, True);
 		Wait Until(!Is Using Ultimate(Event Player), 3);
 		Remove Health Pool From Player(Event Player.PTemp[21]);
 	}
