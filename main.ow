@@ -351,6 +351,7 @@ rule("Base: Round end (cleanup)")
 		Stop Scaling Player(All Players(All Teams));
 		Set Move Speed(All Players(All Teams), 100);
 		Remove All Health Pools From Player(All Players(All Teams));
+		Set Gravity(All Players(All Teams), 100);
 	}
 }
 
@@ -1459,6 +1460,33 @@ rule("Hero: Junkrat (infinite mines outside the island)")
 	actions
 	{
 		Set Ability Charge(Event Player, Button(Ability 1), 1);
+	}
+}
+
+rule("Hero: Junkrat + Bastion (reduce gravity when ulting outside the island)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Global.IsRoundActive == True;
+		"Won't bother letting Echo clone use this rule"
+		(Hero Of(Event Player) == Hero(Junkrat) || Hero Of(Event Player) == Hero(Bastion)) == True;
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 20 || Absolute Value(Z Component Of(Position Of(Event Player))) > 20)
+			== True;
+	}
+
+	actions
+	{
+		Set Gravity(Event Player, 35);
+		Wait Until(!Is Using Ultimate(Event Player), 10);
+		Set Gravity(Event Player, 100);
 	}
 }
 
