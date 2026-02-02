@@ -885,6 +885,7 @@ rule("Lobby Balance: Sub: Show notification")
 
 	actions
 	{
+		"The chasing serves for a fade in / out effect. Not exactly necessary, unsure why I bothered but w/e."
 		Global.ChaserVar1 = 0;
 		Wait(0.800, Ignore Condition);
 		Chase Global Variable Over Time(ChaserVar1, 190, 0.200, None);
