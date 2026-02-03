@@ -1490,6 +1490,7 @@ rule("Hero: Junkrat + Bastion (reduce gravity when ulting outside the island)")
 	actions
 	{
 		Set Gravity(Event Player, 35);
+		Apply Impulse(Event Player, Vector(0, 1, 0), 1, To World, Cancel Contrary Motion);
 		Wait Until(!Is Using Ultimate(Event Player), 10);
 		Set Gravity(Event Player, 100);
 	}
