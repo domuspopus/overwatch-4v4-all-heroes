@@ -1612,7 +1612,7 @@ rule("Hero: Lifeweaver (ult duration)")
 		Create Progress Bar In-World Text(All Players(Team Of(Event Player)), Event Player.ChaserVar1, Null, Event Player.PTemp[1], 0.750,
 			Do Not Clip, Custom Color(255, 235, 130, 255), Null, Values, Default Visibility);
 		Event Player.PTextIDS[0] = Last Text ID;
-		Chase Player Variable Over Time(Event Player, ChaserVar1, 0, 7, None);
+		Chase Player Variable Over Time(Event Player, ChaserVar1, 0, 5, None);
 		Wait Until(Event Player.ChaserVar1 == 0, 15);
 		Press Button(Event Player, Button(Ultimate));
 		Destroy Progress Bar In-World Text(Event Player.PTextIDS[0]);
