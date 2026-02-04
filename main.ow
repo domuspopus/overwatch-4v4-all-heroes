@@ -137,6 +137,11 @@ settings
 				Ultimate Duration: 50%
 			}
 
+			Venture
+			{
+				Burrow Cooldown Time: 45%
+			}
+
 			Widowmaker
 			{
 				Ammunition Clip Size Scalar: 150%
