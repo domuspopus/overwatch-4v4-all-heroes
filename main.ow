@@ -514,13 +514,24 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 	{
 		"Global tips and HUDs"
 		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
-			Custom String("{0}% AVG {1}% PK, {2}", Server Load Average, Server Load Peak, Custom String("{0}v{1}, {2}", Number Of Players(
-			Team 1), Number Of Players(Team 2), Custom String("{0}++, R{1}/{2}",
-			Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : Custom String("None"), Match Round, Custom String(
-			"{0}, PM{1}, SK{2}", Global.DBGRoundNum, Global.DBGMovedPlayersNum, Custom String("{0}{1}{2}", String Slice(
-			Global.LobbyBalance_WinStreakID, 0, 1), Global.LobbyBalance_WinStreak, Global.LobbyBalance_Paused ? Custom String("P")
-			: Custom String("")))))), Null, Right, -1, Null, Custom Color(255, 255, 255, 80), Null, Visible To String and Color,
-			Visible Always);
+			Custom String("{0}% AVG {1}% PK, {2}",
+			Server Load Average, Server Load Peak,
+				Custom String("{0}v{1}, {2}",
+				Number Of Players(Team 1), Number Of Players(Team 2),
+					Custom String("{0}++, R{1}/{2}",
+					Global.Powerup_EmpoweredTeam ? Global.Powerup_EmpoweredTeam : Custom String("None"), Match Round,
+						Custom String("{0}, PM{1}, SK{2}",
+						Global.DBGRoundNum, Global.DBGMovedPlayersNum,
+							Custom String("{0}{1}{2}",
+							String Slice(Global.LobbyBalance_WinStreakID, 0, 1),
+							Global.LobbyBalance_WinStreak,
+							Global.LobbyBalance_Paused ? Custom String("P") : Custom String("")
+		))))), Null, Right, -1, Null, Custom Color(255, 255, 255, 80), Null, Visible To String and Color, Visible Always);
+		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
+			Custom String("HOST={0}", Host Player), Null, Right, -1, Null, Custom Color(255, 255, 255, 80), Null,
+			Visible To String and Color, Visible Always);
+		Create HUD Text(Local Player, Null, Custom String("v1.8dev"), Null, Right, 0, Null, Custom Color(255, 255, 255, 80), Null,
+			Visible To String and Color, Visible Always);
 		Create HUD Text(Team Of(Local Player) == Global.Powerup_EmpoweredTeam ? Local Player : Null, Null, Null, Global.Powerup_HUDText,
 			Left, 10, Null, Null, Color(Lime Green), Visible To and String, Visible Never);
 		"NOTE: Don't use local player for fixed tips that everyone should see between rounds, they wont show to dead players spectating through teammate"
