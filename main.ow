@@ -240,7 +240,7 @@ rule("PROJECT INFO")
 
 	actions
 	{
-		"Some important implementation details and notes are available at (click to show): https://github.com/domuspopus/overwatch-4v4-all-heroes/issues/20"
+		"Some implementation details and notes are available at (click to show): https://github.com/domuspopus/overwatch-4v4-all-heroes/wiki"
 		Abort;
 		"Top PTemp=23 GTemp=15 GTextIDS=1 PTextIDS=1"
 		Abort;
