@@ -19,19 +19,17 @@ Main differences from the older script (KCVSP, [source](https://github.com/domus
 
 Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked randomly and start with an ultimates ready or a high ultimate charge. Ability cooldowns are largely reduced. Perfectly playable as 1v1, 1v2, 2v2, etc. In case of team size imbalance, the smaller team will have buffed HP and damage.
 
-Mode [workshop.codes](https://workshop.codes/48CYD) page.
+- Mode [workshop.codes](https://workshop.codes/48CYD) page.
+- Some [implementation details](https://github.com/domuspopus/overwatch-4v4-all-heroes/wiki).
 
-### Advanced Configuration
-
-Some features and parameters are defined and can be toggled / tweaked inside `Base: Set global variables` rule. Anything else will probably require you disabling workshop rule associated with it. All rules have descriptive names. For instance to disable anti-air mechanics, find a rule named `Base: Prevent heroes flying away`, tick the checkbox on the side of it and toggle the rule off using the button atop the interface.
 
 ### Changelog
 
-#### 1.8dev (30-Jan-26)
+#### 1.8 (05-Feb-26)
 
 - Punish players for stalling outside the map (on Doomfist, Lucio, etc.). Show a warning and begin HP drain if ignored.
 - Make lobby balancing kick in faster when there is a team with only one player. Add configs for it.
-- Grant armor to Widowmaker and Hanzo once they use ultimate.
+- Grant armor to Widowmaker and Hanzo when they use ultimate.
 - Decrease Junkrat mines cooldown when outside the map so he can climb back in.
 - Massively increase Zarya self knockback on secondary fire and remove self damage.
 - For Bastion and Junkrat, reduce gravity when they're falling off the map during an ultimate. To allow them a chance to finish the ultimate.
