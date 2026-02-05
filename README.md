@@ -29,11 +29,12 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 
 #### 1.8dev (30-Jan-26)
 
-- Punish players for stalling outside the map (on Hammond, Doomfist, etc.). Show a warning and begin HP drain if ignored.
+- Punish players for stalling outside the map (on Doomfist, Lucio, etc.). Show a warning and begin HP drain if ignored.
 - Make lobby balancing kick in faster when there is a team with only one player. Add configs for it.
 - Grant armor to Widowmaker and Hanzo once they use ultimate.
 - Decrease Junkrat mines cooldown when outside the map so he can climb back in.
 - Massively increase Zarya self knockback on secondary fire and remove self damage.
+- For Bastion and Junkrat, reduce gravity when they're falling off the map during an ultimate. To allow them a chance to finish the ultimate.
 - Overhaul Hammonds Piledriver (slam).
     - Show outlines/guidelines when in the air.
     - Increase area of effect depending on slam height.
@@ -41,10 +42,12 @@ Some features and parameters are defined and can be toggled / tweaked inside `Ba
 - Character balance changes:
     - Widowmaker: increase HP, increase speed, increase ammo.
     - Junkrat: smaller and faster tire during ultimate.
-    - Zarya: slightly increase HP, decrease bubble cooldown, reduce ammo expenditure on secondary.
+    - Zarya: slightly increase HP, decrease bubble cooldown, remove ammo expenditure for secondary.
     - Mauga: decrease ultimate duration.
     - Junker Queen: decrease HP, increase shout cooldown.
-    - Freja: increase dash cooldown.
+    - Freja: increase dash and take aim cooldowns.
+    - Lifeweaver: decrease ultimate duration.
+    - Venture: increase burrow cooldown.
 
 #### 1.7.3 (06-Oct-24)
 
