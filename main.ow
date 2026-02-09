@@ -1505,10 +1505,22 @@ rule("Hero: Junkrat + Bastion (reduce gravity when ulting outside the island)")
 
 	actions
 	{
-		Set Gravity(Event Player, 35);
-		Apply Impulse(Event Player, Vector(0, 1, 0), 1, To World, Cancel Contrary Motion);
-		Wait Until(!Is Using Ultimate(Event Player), 10);
-		Set Gravity(Event Player, 100);
+		If(Hero Of(Event Player) != Hero(Junkrat));
+			Set Gravity(Event Player, 35);
+			Apply Impulse(Event Player, Vector(0, 1, 0), 1, To World, Cancel Contrary Motion);
+			Wait Until(!Is Using Ultimate(Event Player), 10);
+			Set Gravity(Event Player, 100);
+		Else;
+			Wait(1.5, Abort When False);
+			"Simulate gravity for Junkrat. `Set Gravity` and `Start Accel..` affects his tire which is bad."
+			While(True);
+				Wait(.1, Abort When False);
+				If(Speed Of In Direction(Event Player, Vector(0, -1, 0)) > 0);
+					"Magick value that looks ~like 35% gravity. Found by trial and error."
+					Apply Impulse(Event Player, Vector(0, 1, 0), 1.48, To World, Incorporate Contrary Motion);
+				End;
+			End;
+		End;
 	}
 }
 
