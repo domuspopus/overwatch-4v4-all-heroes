@@ -25,6 +25,14 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
 
 ### Changelog
 
+#### 1.8.1dev (12-Feb-26)
+
+- These changes are tackling the big "Overwatch 2 -> Overwatch" patch with 5 new heroes.
+- Disable all role passives (the new self heal in air seems especially a problem).
+- Prevent Anran from getting full ult on self-ressurect.
+- Domina: decrease barrier cooldown.
+- Fix Junkrat tire gravity in some cases.
+
 #### 1.8 (05-Feb-26)
 
 - Punish players for stalling outside the map (on Doomfist, Lucio, etc.). Show a warning and begin HP drain if ignored.
