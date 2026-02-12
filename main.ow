@@ -2012,29 +2012,7 @@ rule("DBG: Persistent bot aim and shoot")
 	}
 }
 
-rule("DBG: Melee actions (for dev drafts)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Global.DBG == True;
-		Event Player == Host Player;
-		Is Button Held(Event Player, Button(Melee)) == True;
-	}
-
-	actions
-	{
-		Small Message(All Players(All Teams), Custom String("  Melee DBG"));
-	}
-}
-
-rule("DBG: Toggle spawn chance for in-development heroes")
+disabled rule("DBG: Toggle spawn chance for in-development heroes")
 {
 	event
 	{
@@ -2089,5 +2067,27 @@ rule("DBG: Bump spawn chance for in-development heroes")
 		Else;
 			Log To Inspector(Custom String("Indev Heroes +Spawn: skipping, chance"));
 		End;
+	}
+}
+
+rule("DBG: Melee actions (for dev drafts)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.DBG == True;
+		Event Player == Host Player;
+		Is Button Held(Event Player, Button(Melee)) == True;
+	}
+
+	actions
+	{
+		Small Message(All Players(All Teams), Custom String("  Melee DBG"));
 	}
 }
