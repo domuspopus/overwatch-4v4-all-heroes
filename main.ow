@@ -48,6 +48,11 @@ settings
 			Ultimate Generation: 200%
 			Ultimate Generation - Combat: 130%
 
+			Anran
+			{
+				Spawn With Ultimate Ready: Off
+			}
+
 			Baptiste
 			{
 				Immortality Field Cooldown Time: 30%
@@ -1541,6 +1546,29 @@ rule("Hero: D.Va (start with an ult)")
 	actions
 	{
 		"NOTE: We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
+		Set Ultimate Charge(Event Player, 100);
+	}
+}
+
+rule("Hero: Anran (start with an ult)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Anran;
+	}
+
+	conditions
+	{
+		"True in first 3 seconds of match"
+		Match Time == 0;
+		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
+	}
+
+	actions
+	{
+		"NOTE: Same reason as D.Va. Anran gets ult on self-resurrect."
 		Set Ultimate Charge(Event Player, 100);
 	}
 }
