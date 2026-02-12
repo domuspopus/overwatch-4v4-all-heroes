@@ -71,6 +71,11 @@ settings
 				Spawn With Ultimate Ready: Off
 			}
 
+			Domina
+			{
+				Barrier Array Cooldown Time: 50%
+			}
+
 			Freja
 			{
 				Quick Dash Cooldown Time: 50%
