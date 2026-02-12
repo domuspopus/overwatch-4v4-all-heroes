@@ -44,6 +44,7 @@ settings
 		General
 		{
 			Ability Cooldown Time: 25%
+			Role Passives: Off
 			Spawn With Ultimate Ready: On
 			Ultimate Generation: 200%
 			Ultimate Generation - Combat: 130%
