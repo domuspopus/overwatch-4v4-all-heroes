@@ -2,7 +2,7 @@ settings
 {
 	main
 	{
-		Description: "All new OW2 heroes. Code: 48CYD\n- Lobby balancing.\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Restricted airspace (trolling prevention).\n\nv1.8 (05-Feb-26). All changes and info at:\ngithub.com/domuspopus/overwatch-4v4-all-heroes\nAlso at: workshop.codes/48CYD"
+		Description: "All new OW2 heroes. Code: 48CYD\n- Lobby balancing.\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Restricted airspace (trolling prevention).\n\nv1.8.1dev (12-Feb-26). All changes and info at:\ngithub.com/domuspopus/overwatch-4v4-all-heroes\nAlso at: workshop.codes/48CYD"
 		Mode Name: "4v4 All Heroes (J-edit)"
 	}
 
@@ -541,7 +541,7 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 		Create HUD Text(Array Contains(Global.ServerLoadVisibleTo, Custom String("{0}", Local Player)) ? Local Player : Null, Null,
 			Custom String("HOST={0}", Host Player), Null, Right, -1, Null, Custom Color(255, 255, 255, 80), Null,
 			Visible To String and Color, Visible Always);
-		Create HUD Text(Local Player, Null, Custom String("v1.8"), Null, Right, 0, Null, Custom Color(255, 255, 255, 80), Null,
+		Create HUD Text(Local Player, Null, Custom String("v1.8.1dev"), Null, Right, 0, Null, Custom Color(255, 255, 255, 80), Null,
 			Visible To String and Color, Visible Always);
 		Create HUD Text(Team Of(Local Player) == Global.Powerup_EmpoweredTeam ? Local Player : Null, Null, Null, Global.Powerup_HUDText,
 			Left, 10, Null, Null, Color(Lime Green), Visible To and String, Visible Never);
