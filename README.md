@@ -27,11 +27,13 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
 
 #### 1.8.1dev (12-Feb-26)
 
-- These changes are tackling the big "Overwatch 2 -> Overwatch" patch with 5 new heroes.
-- Disable all role passives (the new self heal in air seems especially a problem).
-- Prevent Anran from getting full ult on self-ressurect.
+- This version is tackling the big "Overwatch 2 -> Overwatch" patch. [TODO]
+- Disable all role passives (new self heal in air seems especially an issue). [TODO]
+    - Simulate global heal passive with a code rule as it can't be re-enabled separately.
+- Roadhog: slightly increase HP, increase speed during vape. [TODO]
 - Domina: decrease barrier cooldown.
-- Fix Junkrat tire gravity in some cases.
+- Fix Anran infinite self-resurrect.
+- Few other fixes.
 
 #### 1.8 (05-Feb-26)
 
