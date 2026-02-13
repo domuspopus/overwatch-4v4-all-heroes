@@ -435,6 +435,7 @@ rule("Base: Punish for stalling outside the map")
 		Is Alive(Event Player) == True;
 		Global.IsRoundActive == True;
 		Y Component Of(Position Of(Event Player)) < -0.100;
+		(Absolute Value(X Component Of(Position Of(Event Player))) > 19.5 || Absolute Value(Z Component Of(Position Of(Event Player))) > 19.5) == True;
 	}
 
 	actions
