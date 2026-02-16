@@ -141,7 +141,7 @@ settings
 
 			Roadhog
 			{
-				Health: 65%
+				Health: 70%
 				Spawn With Ultimate Ready: Off
 				Take a Breather Recharge Rate: 350%
 				Whole Hog Knockback Scalar: 80%
