@@ -185,6 +185,11 @@ settings
 				Health: 70%
 				Particle Barrier Cooldown Time: 60%
 			}
+
+			// enabled heroes
+			// {
+			// 	Ana
+			// }
 		}
 	}
 }
