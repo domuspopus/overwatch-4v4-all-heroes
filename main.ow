@@ -605,6 +605,17 @@ rule("Texts / HUD: Create permanent UI / HUD elements")
 			Null, Custom String("{0}{1}", Last Of(Global.GTempArray1), Global.StrSpacer), Null,
 			Left, 3, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
 
+		"Zarya"
+		Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Zarya) ? Local Player : Null,
+			Null, Custom String("{0} {1} Large self-knockback{2}", Hero Icon String(Hero(Zarya)), Ability Icon String(Hero(Zarya), Button(Secondary Fire)), Global.StrSpacer), Null,
+			Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+
+		"Roadhog"
+		Global.GTempArray1 = Append To Array(Global.GTempArray1, Custom String("{0} {1} Speed during vape", Hero Icon String(Hero(Roadhog)), Ability Icon String(Hero(Roadhog), Button(Ability 2))));
+		Create HUD Text(Global.IsRoundActive && Is Alive(Local Player) && Hero Of(Local Player) == Hero(Roadhog) ? Local Player : Null,
+			Null, Custom String("{0}{1}", Last Of(Global.GTempArray1), Global.StrSpacer), Null,
+			Left, 2, Null, Global.HUDTipColor, Null, Visible To and Color, Visible Never);
+
 		"Create HUDs of all hero tips as a big list visible between rounds"
 		Global.GTemp[2] = 0;
 		While(Global.GTemp[2] < Count Of(Global.GTempArray1));
