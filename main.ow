@@ -467,7 +467,7 @@ rule("Base: Punish for stalling outside the map")
 				Event Player.PTemp[22] = Last Healing Modification ID;
 			End;
 			If(Event Player.PTemp[23] <= 0);
-				Damage(Event Player, Null, Max Health(Event Player) * 0.04);
+				Damage(Event Player, Event Player, Max Health(Event Player) * 0.04);
 			End;
 			Event Player.PTemp[23] -= 1;
 			Wait(Event Player.PTemp[23] > 0 ? 1 : .3, Ignore Condition);
