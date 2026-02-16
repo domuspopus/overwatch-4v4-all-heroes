@@ -128,6 +128,12 @@ settings
 				Health: 65%
 			}
 
+			Ramattra
+			{
+				Nemesis Form Cooldown Time: 35%
+				Void Barrier Omnic Form Cooldown Time: 40%
+			}
+
 			Reinhardt
 			{
 				Ultimate Generation - Passive Earthshatter: 400%
