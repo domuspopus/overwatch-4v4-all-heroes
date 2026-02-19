@@ -811,6 +811,37 @@ rule("Passives: Pre-game ult generation (healing)")
 	}
 }
 
+rule("Passives: Muffle dive tanks self heal-in-air passive")
+{
+	event
+	{
+		Player Received Healing;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Healer == Event Player;
+		Event Healing > 10;
+		Array Contains(Array(
+			Hero(Doomfist),
+			Hero(D.Va),
+			Hero(Winston),
+			Hero(Wrecking Ball)
+		), Hero Of(Event Player)) == True;
+	}
+
+	actions
+	{
+		"Dive tanks get to heal 75 in air (6s cd), we only allow first tick of it (~14 heal)"
+		Start Healing Modification(Event Player, Event Player, 0, None);
+		Event Player.PTemp[24] = Last Healing Modification ID;
+		Wait(1, Ignore Condition);
+		Stop Healing Modification(Event Player.PTemp[24]);
+	}
+}
+
 rule("Ultimate initial charge: Set explicitely for some heroes")
 {
 	event
