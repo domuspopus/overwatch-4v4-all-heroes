@@ -2,7 +2,7 @@ settings
 {
 	main
 	{
-		Description: "All new OW2 heroes. Code: 48CYD\n- Lobby balancing.\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Restricted airspace (trolling prevention).\n\nv1.8.1dev (12-Feb-26). All changes and info at:\ngithub.com/domuspopus/overwatch-4v4-all-heroes\nAlso at: workshop.codes/48CYD"
+		Description: "All new OW2 heroes. Code: 48CYD\n- Lobby balancing.\n- Hammond can grapple air.\n- Ana can self-ult.\n- Junk can ult mid-air.\n- D.Va doesn't get infinite nukes.\n- Restricted airspace (trolling prevention).\n\nv1.8.1dev (20-Feb-26)\n\nAll changes and info at:\ngithub.com/domuspopus/overwatch-4v4-all-heroes\nAlso at: workshop.codes/48CYD\nContact: JunySmock#2753 (battlenet)"
 		Mode Name: "4v4 All Heroes (J-edit)"
 	}
 
