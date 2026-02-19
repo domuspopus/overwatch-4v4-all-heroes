@@ -299,7 +299,7 @@ rule("PROJECT INFO")
 	{
 		"Some implementation details and notes are available at (click to show): https://github.com/domuspopus/overwatch-4v4-all-heroes/wiki"
 		Abort;
-		"Top PTemp=23 GTemp=16 GTextIDS=1 PTextIDS=1"
+		"Top PTemp=24 GTemp=16 GTextIDS=1 PTextIDS=1"
 		Abort;
 	}
 }
