@@ -1834,7 +1834,7 @@ rule("Hero: Lifeweaver (ult duration - cleanup)")
 	}
 }
 
-rule("Hero: Winstor (limit barrier HP)")
+rule("Hero: Winston (limit barrier HP)")
 {
 	event
 	{
