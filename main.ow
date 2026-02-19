@@ -180,6 +180,11 @@ settings
 				Ultimate Duration: 50%
 			}
 
+			Sombra
+			{
+				Spawn With Ultimate Ready: Off
+			}
+
 			Venture
 			{
 				Burrow Cooldown Time: 45%
@@ -904,6 +909,8 @@ rule("Ultimate initial charge: Set explicitely for some heroes")
 			Event Player.PreGameUltPoints = Event Player.PreGameUltPointsMax * .90;
 		Else If(Hero Of(Event Player) == Hero(Roadhog));
 			Event Player.PreGameUltPoints = Event Player.PreGameUltPointsMax * .75;
+		Else If(Hero Of(Event Player) == Hero(Sombra));
+			Event Player.PreGameUltPoints = Event Player.PreGameUltPointsMax * .90;
 		Else If(Hero Of(Event Player) == Hero(Moira));
 			Event Player.PreGameUltPoints = 1;
 		Else If(Hero Of(Event Player) == Hero(D.Va));
