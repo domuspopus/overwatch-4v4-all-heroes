@@ -275,6 +275,8 @@ variables
 		8: PTempArray1
 		9: Hammond_PiledriverHarmFlag
 		10: LastAbilityResource
+		11: PreGameUltPoints
+		12: PreGameUltPointsMax
 }
 
 subroutines
@@ -757,6 +759,8 @@ rule("Passives: Global heal for non-tanks")
 		);
 	}
 }
+
+rule("Passives: Pre-game ult generation (damage)")
 {
 	event
 	{
@@ -770,16 +774,86 @@ rule("Passives: Global heal for non-tanks")
 		"For the first ~3 seconds of the round ultimates to not generate so we have to calc it manually for some heroes during this"
 		Global.IsRoundActive == True;
 		Is Game In Progress == False;
+		Event Player.PreGameUltPoints > 0;
+		Is Using Ultimate(Event Player) != True;
+		Event Ability != Button(Ultimate);
+		Ultimate Charge Percent(Event Player) < 100;
 	}
 
 	actions
 	{
+		Event Player.PreGameUltPoints += Event Damage * 2 * 1.3 * (Array Contains(All Tank Heroes, Hero Of(Victim)) ? .6 : 1);
+		Set Ultimate Charge(Event Player, Round To Integer(Event Player.PreGameUltPoints / Event Player.PreGameUltPointsMax * 100, To Nearest));
+	}
+}
+
+rule("Passives: Pre-game ult generation (healing)")
+{
+	event
+	{
+		Player Dealt Healing;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.IsRoundActive == True;
+		Is Game In Progress == False;
+		Event Player.PreGameUltPoints > 0;
+		Is Using Ultimate(Event Player) != True;
+		Event Ability != Button(Ultimate);
+		Ultimate Charge Percent(Event Player) < 100;
+	}
+
+	actions
+	{
+		Event Player.PreGameUltPoints += Event Healing * 2 * 1.3 * (Array Contains(All Tank Heroes, Hero Of(Healee)) ? .6 : 1);
+		Set Ultimate Charge(Event Player, Round To Integer(Event Player.PreGameUltPoints / Event Player.PreGameUltPointsMax * 100, To Nearest));
+	}
+}
+
+rule("Ultimate initial charge: Set explicitely for some heroes")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.IsRoundActive == True;
+		"This ensure this also triggers on resurrect"
+		Is Alive(Event Player) == True;
+		Entity Exists(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.PreGameUltPointsMax = 2000;
+		Event Player.PreGameUltPoints = 0;
+		"Charge value is tweaked with respect to `pre-game ult generation` rule"
 		If(Hero Of(Event Player) == Hero(Soldier: 76));
-			"Soldiers normal rounds do ~18 damage, we take this much for a +1% to charge"
-			Set Ultimate Charge(Event Player, Ultimate Charge Percent(Event Player) + Round To Integer(Event Damage / 20, Up));
+			"5 bodyshot hits on non-tank to gain 100%"
+			Event Player.PreGameUltPoints = Event Player.PreGameUltPointsMax * .88;
 		Else If(Hero Of(Event Player) == Hero(Cassidy));
-			Set Ultimate Charge(Event Player, Ultimate Charge Percent(Event Player) + 1);
+			"2 bodyshot hits on non-tank"
+			Event Player.PreGameUltPoints = Event Player.PreGameUltPointsMax * .90;
+		Else If(Hero Of(Event Player) == Hero(Roadhog));
+			Event Player.PreGameUltPoints = Event Player.PreGameUltPointsMax * .75;
+		Else If(Hero Of(Event Player) == Hero(Moira));
+			Event Player.PreGameUltPoints = 1;
+		Else If(Hero Of(Event Player) == Hero(D.Va));
+			"We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
+			Set Ultimate Charge(Event Player, 100);
+		Else If(Hero Of(Event Player) == Hero(Anran) && Match Time == 0);
+			"Same reason as D.Va. Anran gets ult on self-resurrect."
+			Set Ultimate Charge(Event Player, 100);
 		End;
+		Abort If(Event Player.PreGameUltPoints == 0);
+		Set Ultimate Charge(Event Player, Round To Integer(Event Player.PreGameUltPoints / Event Player.PreGameUltPointsMax * 100, To Nearest));
 	}
 }
 
@@ -1624,117 +1698,6 @@ rule("Hero: Junkrat + Bastion (reduce gravity when ulting outside the island)")
 				End;
 			End;
 		End;
-	}
-}
-
-rule("Hero: D.Va (start with an ult)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		D.Va;
-	}
-
-	conditions
-	{
-		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
-	}
-
-	actions
-	{
-		"NOTE: We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
-		Set Ultimate Charge(Event Player, 100);
-	}
-}
-
-rule("Hero: Anran (start with an ult)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		Anran;
-	}
-
-	conditions
-	{
-		"True in first 3 seconds of match"
-		Match Time == 0;
-		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
-	}
-
-	actions
-	{
-		"NOTE: Same reason as D.Va. Anran gets ult on self-resurrect."
-		Set Ultimate Charge(Event Player, 100);
-	}
-}
-
-rule("Hero: Soldier 76 (start with some ult%)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		Soldier: 76;
-	}
-
-	conditions
-	{
-		Global.IsRoundActive == True;
-		"This ensure this also triggers on resurrect"
-		Is Alive(Event Player) == True;
-	}
-
-	actions
-	{
-		"Value is tweaked with respect to \"Pre-game ult generation\""
-		Set Ultimate Charge(Event Player, 95);
-	}
-}
-
-rule("Hero: McCree (start with some ult%)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		Cassidy;
-	}
-
-	conditions
-	{
-		Global.IsRoundActive == True;
-		"This ensure this also triggers on resurrect"
-		Is Alive(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Ultimate Charge(Event Player, 98);
-	}
-}
-
-rule("Hero: Roadhog (start with some ult%)")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		Roadhog;
-	}
-
-	conditions
-	{
-		Global.IsRoundActive == True;
-		"This ensure this also triggers on resurrect"
-		Is Alive(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Ultimate Charge(Event Player, 80);
 	}
 }
 
