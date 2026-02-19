@@ -1212,7 +1212,7 @@ rule("Hero: Ana (self ult)")
 	conditions
 	{
 		Is Button Held(Event Player, Button(Ultimate)) == True;
-		Ultimate Charge Percent(Event Player) == 100;
+		Ultimate Charge Percent(Event Player) >= 100;
 		Is Dummy Bot(Event Player) == False;
 		(Hero Of(Event Player) == Hero(Ana) || Hero Being Duplicated(Event Player) == Hero(Ana)) == True;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
@@ -1588,7 +1588,7 @@ rule("Hero: Junkrat (mid-air ult)")
 	{
 		Is Button Held(Event Player, Button(Ultimate)) == True;
 		(Hero Of(Event Player) == Hero(Junkrat) || Hero Being Duplicated(Event Player) == Hero(Junkrat)) == True;
-		Ultimate Charge Percent(Event Player) == 100;
+		Ultimate Charge Percent(Event Player) >= 100;
 		(Is Alive(Event Player) && Entity Exists(Event Player) && Global.IsRoundActive) == True;
 		(Has Status(Event Player, Knocked Down) || Has Status(Event Player, Frozen) || Has Status(Event Player, Stunned)) == False;
 	}
