@@ -842,6 +842,38 @@ rule("Passives: Muffle dive tanks self heal-in-air passive")
 	}
 }
 
+rule("Passives: Disable brawl tanks knockback reduction passive")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.IsRoundStart == True;
+		Array Contains(Array(
+			Hero(Domina),
+			Hero(Hazard),
+			Hero(Junker Queen),
+			Hero(Ramattra),
+			Hero(Reinhardt),
+			Hero(Sigma)
+		), Hero Of(Event Player)) == True;
+	}
+
+	actions
+	{
+		"Desired resist"
+		Global.GTemp[14] = 0;
+		"Hardcoded resist of most recent patch (Overwatch 2 -> 1 Feb 2026)"
+		Global.GTemp[15] = 40;
+		Set Knockback Received(Event Player, 100 * ((100 - Global.GTemp[14]) / (100 - Global.GTemp[15])));
+	}
+}
+
 rule("Ultimate initial charge: Set explicitely for some heroes")
 {
 	event
@@ -1202,32 +1234,6 @@ rule("Sub: Find all real players")
 		"This also excludes not spawned players. Joined but not spawned players count as alive which is usually undesirable."
 		Global.RealAlivePlayers = Filtered Array(Global.RealPlayers, Is Alive(Current Array Element) && Has Spawned(
 			Current Array Element));
-	}
-}
-
-disabled rule("Tank Heroes: Increase knockback received")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		"XXX: Disabled for now. Rule not needed as of most recent patch (September 17, 2024, tank knockback resist 25%)."
-		Global.IsRoundStart == True;
-		Array Contains(All Tank Heroes, Hero Of(Event Player)) == True;
-	}
-
-	actions
-	{
-		"Desired resist (original Overwatch 2 release value of 30%)"
-		Global.GTemp[14] = 30;
-		"Hardcoded resist of most recent patch (July 9, 2024)"
-		Global.GTemp[15] = 40;
-		Set Knockback Received(Event Player, 100 * ((100 - Global.GTemp[14]) / (100 - Global.GTemp[15])));
 	}
 }
 
