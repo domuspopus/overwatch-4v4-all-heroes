@@ -44,6 +44,7 @@ settings
 		General
 		{
 			Ability Cooldown Time: 25%
+			Role Passives: Off
 			Spawn With Ultimate Ready: On
 			Ultimate Generation: 200%
 			Ultimate Generation - Combat: 130%
@@ -67,6 +68,7 @@ settings
 
 			D.Va
 			{
+				Role Passives: On
 				Self Destruct Knockback Scalar: 200%
 				Spawn With Ultimate Ready: Off
 			}
@@ -74,6 +76,17 @@ settings
 			Domina
 			{
 				Barrier Array Cooldown Time: 50%
+				Role Passives: On
+			}
+
+			Doomfist
+			{
+				Role Passives: On
+			}
+
+			Emre
+			{
+				Role Passives: On
 			}
 
 			Freja
@@ -82,10 +95,16 @@ settings
 				Take Aim Cooldown Time: 75%
 			}
 
+			Hazard
+			{
+				Role Passives: On
+			}
+
 			Junker Queen
 			{
 				Commanding Shout Cooldown Time: 30%
 				Health: 85%
+				Role Passives: On
 			}
 
 			Junkrat
@@ -101,6 +120,7 @@ settings
 
 			Mauga
 			{
+				Role Passives: On
 				Ultimate Duration: 65%
 			}
 
@@ -126,25 +146,34 @@ settings
 			Orisa
 			{
 				Health: 65%
+				Role Passives: On
 			}
 
 			Ramattra
 			{
 				Nemesis Form Cooldown Time: 35%
+				Role Passives: On
 				Void Barrier Omnic Form Cooldown Time: 40%
 			}
 
 			Reinhardt
 			{
+				Role Passives: On
 				Ultimate Generation - Passive Earthshatter: 400%
 			}
 
 			Roadhog
 			{
 				Health: 70%
+				Role Passives: On
 				Spawn With Ultimate Ready: Off
 				Take a Breather Recharge Rate: 350%
 				Whole Hog Knockback Scalar: 80%
+			}
+
+			Sigma
+			{
+				Role Passives: On
 			}
 
 			Soldier: 76
@@ -172,18 +201,21 @@ settings
 				Barrier Projector Cooldown Time: 35%
 				Damage Dealt: 130%
 				Health: 75%
+				Role Passives: On
 			}
 
 			Wrecking Ball
 			{
 				Grappling Claw Knockback Scalar: 115%
 				Health: 65%
+				Role Passives: On
 			}
 
 			Zarya
 			{
 				Health: 70%
 				Particle Barrier Cooldown Time: 60%
+				Role Passives: On
 			}
 
 			// enabled heroes
@@ -685,7 +717,46 @@ rule("Misc: Cleanup utility dummies")
 	}
 }
 
-rule("Misc: Pre-game ult generation")
+rule("Passives: Global heal for non-tanks")
+{
+	event
+	{
+		Player Took Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Array Contains(Array(
+			Hero(D.Va),
+			Hero(Domina),
+			Hero(Doomfist),
+			Hero(Hazard),
+			Hero(Junker Queen),
+			Hero(Mauga),
+			Hero(Orisa),
+			Hero(Ramattra),
+			Hero(Reinhardt),
+			Hero(Roadhog),
+			Hero(Sigma),
+			Hero(Winston),
+			Hero(Wrecking Ball),
+			Hero(Zarya),
+			Hero(Emre)
+		), Hero Of(Event Player)) != True;
+	}
+
+	actions
+	{
+		Stop All Heal Over Time(Event Player);
+		Wait(6, Restart When True);
+		Start Heal Over Time(Event Player, Event Player,
+			(Max Health(Event Player) - Health(Event Player)) / (10 + Max Health(Event Player)*.05) + .5,
+			10 + Max Health(Event Player)*.05
+		);
+	}
+}
 {
 	event
 	{
