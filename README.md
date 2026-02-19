@@ -25,15 +25,26 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
 
 ### Changelog
 
-#### 1.8.1dev (12-Feb-26)
+#### 1.8.1dev (20-Feb-26)
 
-- This version is tackling the big "Overwatch 2 -> Overwatch" patch. [TODO]
-- Disable all role passives (new self heal in air seems especially an issue). [TODO]
-    - Simulate global heal passive with a code rule as it can't be re-enabled separately.
-- Roadhog: slightly increase HP, increase speed during vape. [TODO]
-- Domina: decrease barrier cooldown.
+- Much of this version is tackling the big "Overwatch 2 -> Overwatch" patch.
+- Minimize effect of new role passives.
+    - For Damage and Support disable all role passives (also disables self heal passive).
+    - Simulate self heal passive (for Damage and Support) with a code rule as it can't be re-enabled separately.
+    - Tank passives can't be disabled easily as it disables ult-gen reduction (too troublesome to simulate).
+        - Greatly muffle new in-air self heal passive for dive (Initiator) tanks.
+        - Disable knockback resist for brawl (Stalwart) tanks (nothing done about slow resist).
+- Improvements to ult charge generation in the first 3 seconds of round (for heroes that don't start at 100%).
+- Character balance changes:
+    - Sombra: start at 90% ult instead of full.
+    - Roadhog: slightly increase HP, increase speed during vape, can now generate ult in the first 3 seconds.
+    - Moira: can now generate ult in the first 3 seconds.
+    - Domina: decrease barrier cooldown.
+    - Ramattra: decrease barrier and nemesis form cooldowns.
+    - Cassidy: use global ult-gen values (buff to passive, nerf to active).
+        - Just legacy code removal, won't be of any noticable effect.
 - Fix Anran infinite self-resurrect.
-- Few other fixes.
+- Various fixes.
 
 #### 1.8 (05-Feb-26)
 
