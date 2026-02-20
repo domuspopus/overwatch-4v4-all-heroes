@@ -131,6 +131,7 @@ settings
 			{
 				Health: 85%
 				Resurrect Cooldown Time: 60%
+				Role Passives: On
 			}
 
 			Moira
@@ -748,7 +749,8 @@ rule("Passives: Global heal for non-tanks")
 			Hero(Winston),
 			Hero(Wrecking Ball),
 			Hero(Zarya),
-			Hero(Emre)
+			Hero(Emre),
+			Hero(Mercy)
 		), Hero Of(Event Player)) != True;
 	}
 
