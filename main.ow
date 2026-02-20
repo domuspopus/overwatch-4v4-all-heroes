@@ -1763,6 +1763,8 @@ rule("Hero: Roadhog (speed on vape)")
 	{
 		If(Event Player.LastAbilityResource <= Ability Resource(Event Player, Button(Ability 2)));
 			Event Player.LastAbilityResource = Ability Resource(Event Player, Button(Ability 2));
+			Wait(0.1, Abort When False);
+			Loop If Condition Is True;
 			Abort;
 		End;
 		Set Move Speed(Event Player, 160);
