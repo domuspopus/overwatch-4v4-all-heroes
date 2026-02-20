@@ -25,7 +25,7 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
 
 ### Changelog
 
-#### 1.8.2dev (20-Feb-26)
+#### 1.8.2 (20-Feb-26)
 
 - Much of this version is tackling the big "Overwatch 2 -> Overwatch" patch.
 - Minimize effect of new role passives.
