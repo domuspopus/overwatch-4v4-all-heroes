@@ -25,12 +25,13 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
 
 ### Changelog
 
-#### 1.8.1dev (20-Feb-26)
+#### 1.8.2dev (20-Feb-26)
 
 - Much of this version is tackling the big "Overwatch 2 -> Overwatch" patch.
 - Minimize effect of new role passives.
     - For Damage and Support disable all role passives (also disables self heal passive).
     - Simulate self heal passive (for Damage and Support) with a code rule as it can't be re-enabled separately.
+    - Mercy and Emre get to keep role passives mianly due to some necessary kit interactions with those passives.
     - Tank passives can't be disabled easily as it disables ult-gen reduction (too troublesome to simulate).
         - Greatly muffle new in-air self heal passive for dive (Initiator) tanks.
         - Disable knockback resist for brawl (Stalwart) tanks (nothing done about slow resist).
@@ -41,8 +42,8 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
     - Moira: can now generate ult in the first 3 seconds.
     - Domina: decrease barrier cooldown.
     - Ramattra: decrease barrier and nemesis form cooldowns.
-    - Cassidy: use global ult-gen values (buff to passive, nerf to active).
-        - Just legacy code removal, won't be of any noticable effect.
+- Cassidy: use global ult-gen values (effectively buff to passive gen and nerf to active).
+    - Just legacy code removal, won't be felt nor have effect on ballance.
 - Fix Anran infinite self-resurrect.
 - Various fixes.
 
