@@ -830,12 +830,14 @@ rule("Passives: Muffle dive tanks self heal-in-air passive")
 	conditions
 	{
 		Healer == Event Player;
-		Event Healing > 10;
+		"Differentiate from global passive, highest observed event value of it for 500hp tank was 7.28"
+		Event Healing > 8;
 		Array Contains(Array(
 			Hero(Doomfist),
 			Hero(D.Va),
 			Hero(Winston),
-			Hero(Wrecking Ball)
+			Hero(Wrecking Ball),
+			Hero(Hazard)
 		), Hero Of(Event Player)) == True;
 	}
 
@@ -863,7 +865,6 @@ rule("Passives: Disable brawl tanks knockback reduction passive")
 		Global.IsRoundStart == True;
 		Array Contains(Array(
 			Hero(Domina),
-			Hero(Hazard),
 			Hero(Junker Queen),
 			Hero(Ramattra),
 			Hero(Reinhardt),
