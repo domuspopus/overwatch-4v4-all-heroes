@@ -40,8 +40,8 @@ Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked 
     - Sombra: start at 90% ult instead of full.
     - Roadhog: slightly increase HP, increase speed during vape, can now generate ult in the first 3 seconds.
     - Moira: can now generate ult in the first 3 seconds.
-    - Domina: decrease barrier cooldown.
-    - Ramattra: decrease barrier and nemesis form cooldowns.
+    - Domina: increase barrier cooldown.
+    - Ramattra: increase barrier and nemesis form cooldowns.
 - Cassidy: use global ult-gen values (effectively buff to passive gen and nerf to active).
     - Just legacy code removal, won't be felt nor have effect on ballance.
 - Fix Anran infinite self-resurrect.
