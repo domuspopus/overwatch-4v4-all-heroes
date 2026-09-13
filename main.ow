@@ -71,6 +71,16 @@ settings
 				Spawn With Ultimate Ready: Off
 			}
 
+			D.Mon
+			{
+				Role Passives: On
+				Spawn With Ultimate Ready: Off
+				Fusion Repeater Cooldown Time: 65%
+				Propulsors Knockback Scalar: 150%
+				Propulsors Recharge Rate: 150%
+				Ultimate Generation - Combat Limit Break: 50%
+			}
+
 			Domina
 			{
 				Barrier Array Cooldown Time: 50%
@@ -734,24 +744,10 @@ rule("Passives: Global heal for non-tanks")
 
 	conditions
 	{
-		Array Contains(Array(
-			Hero(D.Va),
-			Hero(Domina),
-			Hero(Doomfist),
-			Hero(Hazard),
-			Hero(Junker Queen),
-			Hero(Mauga),
-			Hero(Orisa),
-			Hero(Ramattra),
-			Hero(Reinhardt),
-			Hero(Roadhog),
-			Hero(Sigma),
-			Hero(Winston),
-			Hero(Wrecking Ball),
-			Hero(Zarya),
-			Hero(Emre),
-			Hero(Mercy)
-		), Hero Of(Event Player)) != True;
+		(
+			Array Contains(Array(Hero(Emre), Hero(Mercy)), Hero Of(Event Player)) ||
+			Array Contains(All Tank Heroes, Hero Of(Event Player))
+		) != True;
 	}
 
 	actions
@@ -868,6 +864,7 @@ rule("Passives: Disable brawl tanks knockback reduction passive")
 			Hero(Junker Queen),
 			Hero(Ramattra),
 			Hero(Reinhardt),
+			Hero(D.Mon),
 			Hero(Sigma)
 		), Hero Of(Event Player)) == True;
 	}
@@ -918,6 +915,9 @@ rule("Ultimate initial charge: Set explicitely for some heroes")
 			Event Player.PreGameUltPoints = 1;
 		Else If(Hero Of(Event Player) == Hero(D.Va));
 			"We are setting ult to 100% in the rules instead of settings because the setting makes her gain 100% ult every time she re-mechs."
+			Set Ultimate Charge(Event Player, 100);
+		Else If(Hero Of(Event Player) == Hero(D.Mon));
+			"Similar deal to D.Va."
 			Set Ultimate Charge(Event Player, 100);
 		Else If(Hero Of(Event Player) == Hero(Anran) && Match Time == 0);
 			"Same reason as D.Va. Anran gets ult on self-resurrect."
