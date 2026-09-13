@@ -473,7 +473,7 @@ rule("Base: Prevent heroes flying away")
 
 	actions
 	{
-		Small Message(Event Player, Custom String("  Don't stray too far {0} {1}", Icon String(Warning), Ability Icon String(Hero(Mercy),
+		Small Message(Event Player, Custom String("Don't stray too far {0} {1}", Icon String(Warning), Ability Icon String(Hero(Mercy),
 			Button(Ability 1))));
 		Set Status(Event Player, Null, Frozen, 2);
 		Wait(1.900, Abort When False);
@@ -522,7 +522,7 @@ rule("Base: Punish for stalling outside the map")
 				Abort;
 			End;
 			If(Event Player.PTemp[23] == 0 && Number Of Players(Team Of(Event Player)) == 1);
-				Small Message(All Players(All Teams), Custom String("  {0} killing {1}", Icon String(Poison), Event Player));
+				Small Message(All Players(All Teams), Custom String("{0} killing {1}", Icon String(Poison), Event Player));
 				Start Healing Modification(Event Player, All Players(All Teams), 25, None);
 				Event Player.PTemp[22] = Last Healing Modification ID;
 			End;
@@ -553,7 +553,7 @@ rule("Base: Prevent premature game completion and skip victory screen")
 	{
 		Call Subroutine(FindRealPlayers);
 		If(Count Of(Global.RealPlayers) == 1);
-			Small Message(All Players(All Teams), Custom String("  Everyone left - restarting..."));
+			Small Message(All Players(All Teams), Custom String("Everyone left - restarting..."));
 			Wait(1.500, Ignore Condition);
 			"Skip victory screen on default victory when all but one players leave"
 			Restart Match;
@@ -963,7 +963,7 @@ rule("HP/Damage Balance: Powerup players belonging to smaller team")
 		Log To Inspector(Custom String("powerup x{1} {0} (evt:{2})", Team Of(Event Player), Global.Powerup_PlayersNumAdvantage,
 			Event Player));
 		Wait(1, Ignore Condition);
-		Small Message(All Players(All Teams), Custom String("  {0} powered up!", Team Of(Event Player)));
+		Small Message(All Players(All Teams), Custom String("{0} powered up!", Team Of(Event Player)));
 	}
 }
 
@@ -1197,9 +1197,9 @@ rule("Lobby Balance: Allow to pause / unpause")
 	{
 		Global.LobbyBalance_Paused = !Global.LobbyBalance_Paused;
 		If(Global.LobbyBalance_Paused);
-			Small Message(Event Player, Custom String("  Lobby Balancing: Paused"));
+			Small Message(Event Player, Custom String("Lobby Balancing: Paused"));
 		Else;
-			Small Message(Event Player, Custom String("  Lobby Balancing: Resumed"));
+			Small Message(Event Player, Custom String("Lobby Balancing: Resumed"));
 		End;
 	}
 }
@@ -2166,10 +2166,10 @@ disabled rule("DBG: Toggle spawn chance for in-development heroes")
 	{
 		If(Global.DBGIndevHeroes == Null);
 			Global.DBGIndevHeroes = Array(Hero(Anran), Hero(Domina), Hero(Jetpack Cat), Hero(Mizuki), Hero(Emre));
-			Small Message(All Players(All Teams), Custom String("  Indev Heroes +Spawn: ON"));
+			Small Message(All Players(All Teams), Custom String("Indev Heroes +Spawn: ON"));
 		Else;
 			Global.DBGIndevHeroes = Null;
-			Small Message(All Players(All Teams), Custom String("  Indev Heroes +Spawn: OFF"));
+			Small Message(All Players(All Teams), Custom String("Indev Heroes +Spawn: OFF"));
 	}
 }
 
@@ -2221,6 +2221,6 @@ rule("DBG: Melee actions (for dev drafts)")
 
 	actions
 	{
-		Small Message(All Players(All Teams), Custom String("  Melee DBG"));
+		Small Message(All Players(All Teams), Custom String("Melee DBG"));
 	}
 }
