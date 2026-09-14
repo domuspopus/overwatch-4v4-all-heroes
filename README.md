@@ -27,7 +27,7 @@ Can be played on other Elimination maps. However ballance and certain mechanics 
 
 ### Changelog
 
-#### 1.8.4 (20-Feb-26)
+#### 1.8.4 (14-Sep-26)
 
 - Disable trolling prevention on normal maps (anti-fly rules, under island stalling rules).
     - This makes normal maps playable. These rules were coded with only Workshop Island map geometry in mind.
