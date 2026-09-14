@@ -35,7 +35,7 @@ Can be played on other Elimination maps. However ballance and certain mechanics 
 - Character ballance changes:
     - Sierra: nerf tracking shot cooldown.
     - D.Mon:
-        - Ult charge rate largely nerfed to reduce how quick it is for baby D.Mon to get her mech (due to _hitscan_ primary).
+        - Ult charge rate largely nerfed to reduce how quick it is for baby D.Mon to get her mech.
         - Nerfed mech gun cooldown.
         - Buffed propulsors recharge rate and slightly its knockback scalar.
 - Various fixes.
