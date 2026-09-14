@@ -180,6 +180,11 @@ settings
 				Whole Hog Knockback Scalar: 80%
 			}
 
+			Sierra
+			{
+				Tracking Shot Cooldown Time: 70%
+			}
+
 			Sigma
 			{
 				Role Passives: On
