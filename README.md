@@ -19,11 +19,26 @@ Main differences from the older script (KCVSP, [source](https://github.com/domus
 
 Endless 4v4 Elimination quick rounds on a small flat map. Characters are picked randomly and start with an ultimates ready or a high ultimate charge. Ability cooldowns are largely reduced. Perfectly playable as 1v1, 1v2, 2v2, etc. In case of team size imbalance, the smaller team will have buffed HP and damage.
 
+Can be played on other Elimination maps. However ballance and certain mechanics were specifically tailored for Workshop Island map.
+
 - Mode [workshop.codes](https://workshop.codes/48CYD) page.
 - Some [implementation details](https://github.com/domuspopus/overwatch-4v4-all-heroes/wiki).
 
 
 ### Changelog
+
+#### 1.8.4 (20-Feb-26)
+
+- Disable trolling prevention on normal maps (anti-fly rules, under island stalling rules).
+    - This makes normal maps playable. These rules were coded with only Workshop Island map geometry in mind.
+- Fix infinite remech issue on D.Mon (she could always insta-remech when getting de-meched).
+- Character ballance changes:
+    - Sierra: nerf tracking shot cooldown.
+    - D.Mon:
+        - Ult charge rate largely nerfed to reduce how quick it is for baby D.Mon to get her mech (due to _hitscan_ primary).
+        - Nerfed mech gun cooldown.
+        - Buffed propulsors recharge rate and slightly its knockback scalar.
+- Various fixes.
 
 #### 1.8.2 (20-Feb-26)
 
